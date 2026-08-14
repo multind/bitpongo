@@ -1,10 +1,11 @@
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
+import { runtimeConfig } from '@/config/runtime';
 import { useUserStore } from '@/store/modules/user.ts';
 import router from '@/router';
 
 const service: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_URL_PREFIX,
+  baseURL: runtimeConfig.apiBaseUrl,
   withCredentials: false,
   timeout: 20000,
 });
