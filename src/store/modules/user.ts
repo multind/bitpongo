@@ -1,4 +1,4 @@
-import { loginPassword } from '@/api';
+import { deleteAccount as deleteAccountRequest, loginPassword } from '@/api';
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { defineStore } from 'pinia';
 
@@ -41,6 +41,10 @@ export const useUserStore = defineStore('user', {
       this.token = '';
       // 清除持久化的 cookie token
       useCookies().remove(VITE_TOKEN_KEY as string);
+    },
+    async deleteAccount(password: string) {
+      await deleteAccountRequest({ password });
+      this.logout();
     },
   },
   persist: {

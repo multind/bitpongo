@@ -10,6 +10,10 @@ export function loginPassword(data: { username: string; password: string }) {
   return http.post('/users/login', data);
 }
 
+export function deleteAccount(data: { password: string }): Promise<void> {
+  return http.delete('/users/account', { data });
+}
+
 /**
  * 创建交易所连接
  * @param data - 交易所配置数据
