@@ -53,19 +53,19 @@ service.interceptors.response.use(
 
 export const http = {
   get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    return service.get(url, config);
+    return service.get(url, config) as unknown as Promise<T>;
   },
 
   post<T = any>(url: string, data?: object, config?: AxiosRequestConfig): Promise<T> {
-    return service.post(url, data, config);
+    return service.post(url, data, config) as unknown as Promise<T>;
   },
 
   put<T = any>(url: string, data?: object, config?: AxiosRequestConfig): Promise<T> {
-    return service.put(url, data, config);
+    return service.put(url, data, config) as unknown as Promise<T>;
   },
 
   delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    return service.delete(url, config);
+    return service.delete(url, config) as unknown as Promise<T>;
   },
 };
 
