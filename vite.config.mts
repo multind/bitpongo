@@ -1,7 +1,7 @@
-import { createVitePlugins } from './build/vite/plugins';
+import { createVitePlugins } from './build/vite/plugins/index.ts';
 import type { ConfigEnv, UserConfig } from 'vite';
 import { loadEnv } from 'vite';
-import { wrapperEnv } from './build/utils';
+import { wrapperEnv } from './build/utils.ts';
 import { fileURLToPath, URL } from 'node:url';
 import { readdirSync, statSync } from 'node:fs';
 import { dirname } from 'node:path';

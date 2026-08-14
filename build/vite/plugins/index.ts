@@ -6,20 +6,20 @@
 import type { PluginOption } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
-import { ConfigSvgIconsPlugin } from './svgIcons';
-import { ConfigAutoComponentsPlugin } from './component';
-import { ConfigAutoImportPlugin } from './autoImport';
-import { ConfigMockPlugin } from './mock';
-import { ConfigCompressPlugin } from './compress';
-import { ConfigPagesPlugin } from './pages';
-import { ConfigRestartPlugin } from './restart';
-import { ConfigProgressPlugin } from './progress';
-import { ConfigErudaPlugin } from './eruda';
-import { ConfigImageminPlugin } from './imagemin';
-import { ConfigVisualizerPlugin } from './visualizer';
-import { ConfigSslPlugin } from './ssl';
-import { ConfigQrcodePlugin } from './qrcode';
-import { ConfigPwaPlugin } from './pwa';
+import { ConfigSvgIconsPlugin } from './svgIcons.ts';
+import { ConfigAutoComponentsPlugin } from './component.ts';
+import { ConfigAutoImportPlugin } from './autoImport.ts';
+import { ConfigMockPlugin } from './mock.ts';
+import { ConfigCompressPlugin } from './compress.ts';
+import { ConfigPagesPlugin } from './pages.ts';
+import { ConfigRestartPlugin } from './restart.ts';
+import { ConfigProgressPlugin } from './progress.ts';
+import { ConfigErudaPlugin } from './eruda.ts';
+import { ConfigImageminPlugin } from './imagemin.ts';
+import { ConfigVisualizerPlugin } from './visualizer.ts';
+import { ConfigSslPlugin } from './ssl.ts';
+import { ConfigQrcodePlugin } from './qrcode.ts';
+import { ConfigPwaPlugin } from './pwa.ts';
 
 export function createVitePlugins(env: ViteEnv, isBuild: boolean) {
   const { VITE_USE_MOCK, VITE_USE_ERUDA, VITE_USE_COMPRESS, VITE_USE_REPORT, VITE_USE_HTTPS, VITE_USE_PWA } = env;
