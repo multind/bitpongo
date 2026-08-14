@@ -1,8 +1,9 @@
 import { getExchangeList } from '@/api';
+import type { Exchange } from '@/views/list/types/exchange';
 
 export const useListStore = defineStore('list', {
   state: () => ({
-    dataList: [],
+    dataList: [] as Exchange[],
     isLoading: false,
   }),
   actions: {

@@ -69,7 +69,7 @@
 
   <nut-row type="flex" justify="center" flex-wrap="nowrap">
     <nut-col span="22">
-      <nut-button color="#101010" block size="24" @click="goCreate">创建 API</nut-button>
+      <nut-button color="#101010" block size="large" @click="goCreate">创建 API</nut-button>
     </nut-col>
   </nut-row>
   <nut-action-sheet v-model:visible="more" :menu-items="menuItems" cancel-txt="取消" @choose="choose" />
@@ -81,9 +81,10 @@
   import { MoreX } from '@nutui/icons-vue';
   import { onMounted, ref } from 'vue';
   import { deleteExchange } from '@/api';
+  import type { Exchange } from '@/views/list/types/exchange';
 
   const listStore = useListStore();
-  const listData = ref([]);
+  const listData = ref<Exchange[]>([]);
 
   // 获取列表数据
   onMounted(async () => {

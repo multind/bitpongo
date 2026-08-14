@@ -27,11 +27,12 @@
           <nut-row type="flex" justify="space-evenly" wrap="nowrap">
             <nut-col :span="9">
               <nut-input
-                v-model="coin.min"
+                :model-value="coin.min ?? undefined"
                 placeholder="最低价"
                 type="number"
                 :border="true"
                 style="background-color: #eee; border: #999 1px solid; border-radius: 5px"
+                @update:model-value="coin.min = $event == null ? null : Number($event)"
               />
             </nut-col>
             <nut-col :span="2" align="center">
@@ -39,12 +40,13 @@
             </nut-col>
             <nut-col :span="9">
               <nut-input
-                v-model="coin.max"
+                :model-value="coin.max ?? undefined"
                 placeholder="最高价"
                 input-align="right"
                 type="number"
                 :border="true"
                 style="background-color: #eee; border: #999 1px solid; border-radius: 5px"
+                @update:model-value="coin.max = $event == null ? null : Number($event)"
               />
             </nut-col>
           </nut-row>

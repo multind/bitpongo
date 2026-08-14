@@ -181,7 +181,7 @@
   const userStore = useUserStore();
   const router = useRouter();
   const value = ref('1');
-  const plans = ref([]);
+  const plans = ref<any[]>([]);
 
   const show = ref(false);
   const sharePopup = ref(false);
@@ -243,6 +243,7 @@
     const element = document.querySelector('#capture');
     html2canvas(<HTMLElement>element, options).then((canvas) => {
       canvas.toBlob(function (blob) {
+        if (!blob) return;
         const a = document.createElement('a');
         const url = window.URL.createObjectURL(blob);
         const filename = 'poster.png';

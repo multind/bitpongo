@@ -1,5 +1,5 @@
 import { http } from '@/utils/request';
-import type { CheckExchangeData, CreateExchangeData } from '@/views/list/types/exchange.ts';
+import type { CheckExchangeData, CreateExchangeData, Exchange } from '@/views/list/types/exchange.ts';
 import type { Strategy } from '@/views/list/types/strategy.ts';
 
 /**
@@ -20,7 +20,7 @@ export function createExchange(data: CreateExchangeData) {
 }
 
 export function getExchangeList() {
-  return http.get('/exchanges/list');
+  return http.get<Exchange[]>('/exchanges/list');
 }
 
 export function deleteExchange(id: string) {

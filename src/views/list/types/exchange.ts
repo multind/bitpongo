@@ -6,6 +6,7 @@ export interface Exchange {
   secret_key: string;
   password: string;
   status: string;
+  created_at: string;
 }
 
 export interface CreateExchangeData {
@@ -18,8 +19,8 @@ export interface CreateExchangeData {
 
 export interface CheckExchangeData {
   id: number;
-  exchange: string;
-  access_key: string;
-  secret_key: string;
-  password: string;
+  exchange?: string;
+  access_key?: string;
+  secret_key?: string;
+  password?: string;
 }

@@ -132,7 +132,7 @@
 
     <nut-row type="flex" justify="center" style="margin-top: 30px">
       <nut-col span="22">
-        <nut-button block size="24" color="#101010" @click="testClick" :loading="testLoading">
+        <nut-button block size="large" color="#101010" @click="testClick" :loading="testLoading">
           <template #icon>
             <Tips v-if="!testSuccess" />
             <Success v-if="testSuccess" />

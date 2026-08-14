@@ -165,6 +165,7 @@
     });
 
     try {
+      if (currentItem.value.id === null) return;
       const result = await checkExchange(<CheckExchangeData>{
         exchange: currentItem.value.exchange,
         id: currentItem.value.id,

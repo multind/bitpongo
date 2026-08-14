@@ -17,7 +17,13 @@
         style="margin-top: 20px"
       >
         <nut-col span="22">
-          <nut-input v-model="coin.proportion" input-align="right" :border="true" style="background-color: #eee">
+          <nut-input
+            :model-value="coin.proportion ?? undefined"
+            input-align="right"
+            :border="true"
+            style="background-color: #eee"
+            @update:model-value="coin.proportion = $event == null ? null : Number($event)"
+          >
             <template #left>
               <text>{{ coin.symbol }}</text>
             </template>

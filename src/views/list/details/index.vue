@@ -206,7 +206,7 @@
               <text>{{ coin.average }}</text>
             </nut-col>
           </nut-row>
-          <nut-divider v-if="index < plan.coins.length - 1" :hairline="true" dashed style="margin-top: 10px; margin-bottom: 10px" />
+          <nut-divider v-if="Number(index) < plan.coins.length - 1" :hairline="true" dashed style="margin-top: 10px; margin-bottom: 10px" />
         </div>
       </nut-tab-pane>
 
@@ -252,7 +252,12 @@
                     <text>{{ order.total_amount }} USDT</text>
                   </nut-col>
                 </nut-row>
-                <nut-divider v-if="index < plan.orders.length - 1" :hairline="true" dashed style="margin-top: 10px; margin-bottom: 10px" />
+                <nut-divider
+                  v-if="Number(index) < plan.orders.length - 1"
+                  :hairline="true"
+                  dashed
+                  style="margin-top: 10px; margin-bottom: 10px"
+                />
               </div>
             </div>
             <nut-empty v-else></nut-empty>
@@ -422,7 +427,9 @@
   import { useWebSocketBase } from '@/utils/useWebSocket';
 
   const route = useRoute();
-  const planId = route.query.planId;
+  const planIdQuery = route.query.planId;
+  const planId = Array.isArray(planIdQuery) ? planIdQuery[0] : planIdQuery;
+  const emit = defineEmits<{ 'update-status': [] }>();
   const plan = ref<any>(null);
   const loading = ref(true);
   const showOrderDetailsPopup = ref(false);

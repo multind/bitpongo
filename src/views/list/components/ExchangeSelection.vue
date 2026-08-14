@@ -58,6 +58,7 @@
   import { ref } from 'vue';
   import { useListStore } from '@/store/modules/list.ts';
   import type { Strategy } from '@/views/list/types/strategy.ts';
+  import type { Exchange } from '@/views/list/types/exchange.ts';
   import { showToast } from '@nutui/nutui';
 
   interface Props {
@@ -72,7 +73,7 @@
   const showPopup = ref(false);
   const exchangeDesc = ref('');
   const listStore = useListStore();
-  const listData = ref([]);
+  const listData = ref<Exchange[]>([]);
   // 获取列表数据
   onMounted(async () => {
     await listStore.fetchList();

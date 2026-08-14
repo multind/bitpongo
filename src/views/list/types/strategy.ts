@@ -13,8 +13,8 @@ export interface Coin {
   symbol: string;
   icon: string;
   checked: boolean;
-  max: number;
-  min: number;
-  proportion: number;
+  max: number | null;
+  min: number | null;
+  proportion: number | null;
   average_down: boolean;
 }
