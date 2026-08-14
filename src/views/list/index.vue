@@ -19,7 +19,11 @@
       <div v-if="plans.length">
         <PlanCard v-for="plan in plans" :key="plan.id" :plan="plan" @show-popup="handleShowPopup" @update-status="updateStatus" />
       </div>
-      <nut-empty v-else></nut-empty>
+      <nut-empty v-else>
+        <template #image>
+          <img src="@/assets/empty.svg" alt="暂无数据" />
+        </template>
+      </nut-empty>
     </nut-tab-pane>
   </nut-tabs>
   <nut-popup v-model:visible="show" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '30%' }">

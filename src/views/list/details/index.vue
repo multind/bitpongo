@@ -260,7 +260,11 @@
                 />
               </div>
             </div>
-            <nut-empty v-else></nut-empty>
+            <nut-empty v-else>
+              <template #image>
+                <img src="@/assets/empty.svg" alt="暂无数据" />
+              </template>
+            </nut-empty>
           </nut-infinite-loading>
         </nut-pull-refresh>
       </nut-tab-pane>
@@ -295,7 +299,11 @@
   </div>
 
   <div v-else class="empty-container">
-    <nut-empty description="数据加载失败" />
+    <nut-empty description="数据加载失败">
+      <template #image>
+        <img src="@/assets/empty.svg" alt="数据加载失败" />
+      </template>
+    </nut-empty>
   </div>
 
   <nut-popup
