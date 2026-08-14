@@ -17,6 +17,7 @@ types/auto-imports.d.ts
 types/components.d.ts
 
 # Editor directories and files
+.worktrees/
 !.vscode/extensions.json
 .idea
 .fleet
