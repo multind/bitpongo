@@ -24,6 +24,7 @@ export const lang: langType = {
     exchangeCreate: 'Exchange create',
     exchangeDetails: 'Exchange details',
     noticeInfo: 'Notice info',
+    account: 'Account settings',
     about: 'About',
     agreement: 'Agreement',
     login: 'Login',

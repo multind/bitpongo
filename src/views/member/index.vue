@@ -22,6 +22,7 @@
           <Notice />
         </template>
       </nut-cell>
+      <nut-cell title="&nbsp;账号设置" is-link @click="goAccountSettings" />
       <nut-cell title="&nbsp;关于" is-link @click="goAbout">
         <template #icon>
           <Issue />
@@ -69,6 +70,9 @@
   };
   const goNoticeInfo = () => {
     router.push('/member/notice');
+  };
+  const goAccountSettings = () => {
+    router.push('/member/account');
   };
   const goAbout = () => {
     router.push('/member/about');

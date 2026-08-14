@@ -24,6 +24,7 @@ export const lang: langType = {
     exchangeCreate: '创建 API',
     exchangeDetails: 'API 详情',
     noticeInfo: '通知信息',
+    account: '账号设置',
     about: '关于',
     agreement: '用户协议',
     login: '登录',

@@ -22,6 +22,7 @@ export type langType = {
     exchangeCreate: string;
     exchangeDetails: string;
     noticeInfo: string;
+    account: string;
     about: string;
     agreement: string;
     login: string;

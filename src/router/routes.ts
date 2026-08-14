@@ -74,6 +74,15 @@ export const routes = [
         },
       },
       {
+        name: 'memberAccount',
+        path: '/member/account',
+        component: () => import('@/views/member/account/index.vue'),
+        meta: {
+          title: 'member.account',
+          border: true,
+        },
+      },
+      {
         name: 'listDetails',
         path: '/details',
         component: () => import('@/views/list/details/index.vue'),
