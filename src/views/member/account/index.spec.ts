@@ -1,5 +1,6 @@
 import { defineComponent } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -62,9 +63,15 @@ function mountView() {
   return { store, wrapper };
 }
 
-async function completeForm(wrapper: ReturnType<typeof mount>['wrapper']) {
+async function completeForm(wrapper: VueWrapper) {
   await wrapper.get('[data-test="account-password"]').setValue('secret');
   await wrapper.get('[data-test="account-confirmation"]').setValue(true);
+}
+
+function currentDialog() {
+  const dialog = mocks.showDialog.mock.calls[0]?.[0];
+  if (!dialog) throw new Error('确认弹窗未显示');
+  return dialog;
 }
 
 describe('account deletion view', () => {
@@ -99,7 +106,7 @@ describe('account deletion view', () => {
     await completeForm(wrapper);
 
     await wrapper.get('[data-test="delete-account"]').trigger('click');
-    const dialog = mocks.showDialog.mock.calls[0][0];
+    const dialog = currentDialog();
     await dialog.onOk();
     await flushPromises();
 
@@ -114,10 +121,10 @@ describe('account deletion view', () => {
     await completeForm(wrapper);
 
     await wrapper.get('[data-test="delete-account"]').trigger('click');
-    expect(mocks.showDialog.mock.calls[0][0].title).toBe('确认注销账号');
+    expect(currentDialog().title).toBe('确认注销账号');
     expect(deleteAccount).not.toHaveBeenCalled();
 
-    await mocks.showDialog.mock.calls[0][0].onOk();
+    await currentDialog().onOk();
     await flushPromises();
 
     expect(deleteAccount).toHaveBeenCalledWith('secret');
