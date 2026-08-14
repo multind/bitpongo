@@ -1,0 +1,55 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import { getNativeContext, saveImage, shareImage } from './bridge';
+
+const nativeContext = {
+  appVersion: '1.0.0',
+  platform: 'ios' as const,
+  systemVersion: '18.0',
+  safeArea: { top: 47, right: 0, bottom: 34, left: 0 },
+};
+
+afterEach(() => {
+  delete window.ZhitoubaoBridge;
+  vi.restoreAllMocks();
+});
+
+describe('native bridge', () => {
+  it('posts a versioned getContext request and resolves the native reply', async () => {
+    window.ZhitoubaoBridge = {
+      postMessage: vi.fn((message: string) => {
+        const request = JSON.parse(message);
+        window.__ZHITOUBAO_NATIVE_RESOLVE__?.(request.requestId, nativeContext);
+      }),
+    };
+
+    await expect(getNativeContext()).resolves.toEqual(nativeContext);
+    expect(window.ZhitoubaoBridge.postMessage).toHaveBeenCalledWith(expect.stringContaining('"version":1'));
+    expect(window.ZhitoubaoBridge.postMessage).toHaveBeenCalledWith(expect.stringContaining('"command":"getContext"'));
+  });
+
+  it('returns browser fallbacks when the native channel is missing', async () => {
+    await expect(getNativeContext()).resolves.toBeNull();
+    await expect(saveImage({ url: 'https://example.com/poster.png' })).resolves.toBe(false);
+    await expect(shareImage({ url: 'https://example.com/poster.png' })).resolves.toBe(false);
+  });
+
+  it.each([saveImage, shareImage])('rejects unsafe image URLs before posting', async (command) => {
+    const postMessage = vi.fn();
+    window.ZhitoubaoBridge = { postMessage };
+
+    await expect(command({ url: 'file:///private/poster.png' })).rejects.toThrow('图片地址无效');
+    expect(postMessage).not.toHaveBeenCalled();
+  });
+
+  it('expires an unanswered request after ten seconds', async () => {
+    vi.useFakeTimers();
+    window.ZhitoubaoBridge = { postMessage: vi.fn() };
+
+    const result = getNativeContext();
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    await expect(result).resolves.toBeNull();
+    vi.useRealTimers();
+  });
+});

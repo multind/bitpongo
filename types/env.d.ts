@@ -8,4 +8,8 @@ interface ZhitoubaoAppConfig {
 
 interface Window {
   __ZHITOUBAO_APP_CONFIG__?: ZhitoubaoAppConfig;
+  ZhitoubaoBridge?: {
+    postMessage(message: string): void;
+  };
+  __ZHITOUBAO_NATIVE_RESOLVE__?: (requestId: string, result: unknown) => void;
 }
