@@ -1,0 +1,11 @@
+.git
+.worktrees
+node_modules
+mock
+src
+build
+types
+public
+*.log
+.env
+.DS_Store

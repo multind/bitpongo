@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-80}:80"
+    networks:
+      - zhitoubao-net
+
+networks:
+  zhitoubao-net:
+    external: true

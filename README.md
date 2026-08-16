@@ -6,6 +6,23 @@ https://nutui.jd.com/h5/vue/4x/#/zh-CN/component/button
 
 https://icon-sets.iconify.design/?query=sched
 
+## Docker 发布（与后端分开发布）
+
+前端镜像只包含构建产物和 Nginx 配置，构建前先在本地产出 `dist`：
+
+```bash
+pnpm install --frozen-lockfile
+pnpm build
+docker compose up -d --build
+```
+
+Nginx 通过 Docker 服务名 `api:8000` 反向代理 `/api/`（含 WebSocket `/api/ws/`），使用 Docker 内置 DNS 运行时解析，后端重启不影响前端容器。要求：
+
+1. 先启动 `zhitoubao` 的 Compose（会创建共享网络 `zhitoubao-net`）；
+2. 前端 Compose 加入该外部网络，对外只暴露 `80`（可用 `WEB_PORT` 覆盖）。
+
+页面 SPA 路由回退到 `index.html`；浏览器与 API 同源访问，不依赖 CORS。
+
 ## Flutter WebView 集成
 
 页面会在 Vue 应用启动前加载 `/app-config.js`。浏览器部署默认保留构建时的 `VITE_URL_PREFIX`；Flutter 内嵌构建必须在该脚本中提供绝对 HTTP(S) API 地址：
