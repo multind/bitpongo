@@ -177,6 +177,10 @@
       } else {
         currentItem.value.status = 'inactive';
       }
+    } catch (error) {
+      currentItem.value.status = 'inactive';
+      ff.value = '-';
+      showToast.fail(error instanceof Error ? error.message : '查询失败');
     } finally {
       // 接口调用完成后隐藏toast
       toast.hide();

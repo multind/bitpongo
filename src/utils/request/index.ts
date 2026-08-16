@@ -47,7 +47,8 @@ service.interceptors.response.use(
     }
 
     // showToast(error.message);
-    return Promise.reject(error.message);
+    const message = (error.response?.data as { message?: string } | undefined)?.message || error.message;
+    return Promise.reject(new Error(message));
   },
 );
 
