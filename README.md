@@ -23,6 +23,14 @@ Nginx 通过 Docker 服务名 `api:8000` 反向代理 `/api/`（含 WebSocket `/
 
 页面 SPA 路由回退到 `index.html`；浏览器与 API 同源访问，不依赖 CORS。
 
+镜像推送到 Docker Hub（`docker.io/corbettzhang/zhitoubaofront:latest`）：
+
+```bash
+docker login
+docker compose build
+docker compose push
+```
+
 ## Flutter WebView 集成
 
 页面会在 Vue 应用启动前加载 `/app-config.js`。浏览器部署默认保留构建时的 `VITE_URL_PREFIX`；Flutter 内嵌构建必须在该脚本中提供绝对 HTTP(S) API 地址：

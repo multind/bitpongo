@@ -1,5 +1,6 @@
 services:
   web:
+    image: docker.io/corbettzhang/zhitoubaofront:latest
     build: .
     restart: unless-stopped
     ports:
