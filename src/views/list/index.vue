@@ -86,7 +86,7 @@
         <nut-col span="24">
           <div
             style="font-family: 'PingFang HK', Avenir, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: bold; color: whitesmoke"
-            >智投宝</div
+            >bitpongo</div
           >
         </nut-col>
       </nut-row>

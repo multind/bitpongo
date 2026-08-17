@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <h5 style="font-family: 'PingFang SC', serif; font-size: 26px; font-weight: bold; color: #101010">欢迎来到智投宝</h5>
+    <h5 style="font-family: 'PingFang SC', serif; font-size: 26px; font-weight: bold; color: #101010">欢迎来到bitpongo</h5>
     <nut-form ref="ruleForm" :model-value="formData" style="margin: 40px 0">
       <nut-form-item label="" required prop="name" :rules="[{ required: true, message: '请输入用户名' }]">
         <nut-input v-model="formData.name" placeholder="请输入用户名" type="text">

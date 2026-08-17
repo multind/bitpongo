@@ -1,7 +1,7 @@
 import type { langType } from './lang-base';
 
 export const lang: langType = {
-  title: '智投宝',
+  title: 'bitpongo',
   tabbar: {
     home: '首页',
     list: '列表',
