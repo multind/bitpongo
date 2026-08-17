@@ -18,12 +18,12 @@ docker compose up -d --build
 
 Nginx 通过 Docker 服务名 `api:8000` 反向代理 `/api/`（含 WebSocket `/api/ws/`），使用 Docker 内置 DNS 运行时解析，后端重启不影响前端容器。要求：
 
-1. 先启动 `zhitoubao` 的 Compose（会创建共享网络 `zhitoubao-net`）；
+1. 先启动 后端 Compose（会创建共享网络 `bitpongo-net`）；
 2. 前端 Compose 加入该外部网络，对外只暴露 `80`（可用 `WEB_PORT` 覆盖）。
 
 页面 SPA 路由回退到 `index.html`；浏览器与 API 同源访问，不依赖 CORS。
 
-镜像推送到 Docker Hub（`docker.io/corbettzhang/zhitoubaofront:latest`）：
+镜像推送到 Docker Hub（`docker.io/corbettzhang/bitpongofront:latest`）：
 
 ```bash
 docker login

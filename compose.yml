@@ -1,13 +1,13 @@
 services:
   web:
-    image: docker.io/corbettzhang/zhitoubaofront:latest
+    image: docker.io/corbettzhang/bitpongofront:latest
     build: .
     restart: unless-stopped
     ports:
       - "${WEB_PORT:-80}:80"
     networks:
-      - zhitoubao-net
+      - bitpongo-net
 
 networks:
-  zhitoubao-net:
+  bitpongo-net:
     external: true
