@@ -271,7 +271,7 @@ export const lang: langType = {
     monthly: '每月',
     mostChosen: '最多選擇',
     every: '每',
-    weekDays: ['週一', '週二', '週三', '週四', '週五', '週六', '週日'],
+    weekDays: '週一,週二,週三,週四,週五,週六,週日',
     dayOfMonth: '{day} 號',
     hourInterval: '{interval} 小時',
     dailyPattern: '每天 {time}',

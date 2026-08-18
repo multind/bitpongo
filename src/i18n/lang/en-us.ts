@@ -273,7 +273,7 @@ export const lang: langType = {
     monthly: 'Monthly',
     mostChosen: 'Most chosen',
     every: 'Every',
-    weekDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    weekDays: 'Mon,Tue,Wed,Thu,Fri,Sat,Sun',
     dayOfMonth: 'Day {day}',
     hourInterval: '{interval} hours',
     dailyPattern: 'Daily at {time}',

@@ -265,7 +265,7 @@ export type langType = {
     monthly: string;
     mostChosen: string;
     every: string;
-    weekDays: string[];
+    weekDays: string;
     dayOfMonth: string;
     hourInterval: string;
     dailyPattern: string;

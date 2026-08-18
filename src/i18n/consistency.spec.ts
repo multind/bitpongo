@@ -27,8 +27,8 @@ describe('i18n language packs', () => {
   });
 
   it('keeps weekday arrays the same length in every locale', () => {
-    expect(zhCn.frequency.weekDays).toHaveLength(7);
-    expect(zhTw.frequency.weekDays).toHaveLength(7);
-    expect(enUs.frequency.weekDays).toHaveLength(7);
+    expect(zhCn.frequency.weekDays.split(',')).toHaveLength(7);
+    expect(zhTw.frequency.weekDays.split(',')).toHaveLength(7);
+    expect(enUs.frequency.weekDays.split(',')).toHaveLength(7);
   });
 });

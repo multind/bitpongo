@@ -270,7 +270,7 @@ export const lang: langType = {
     monthly: '每月',
     mostChosen: '最多选择',
     every: '每',
-    weekDays: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    weekDays: '周一,周二,周三,周四,周五,周六,周日',
     dayOfMonth: '{day} 号',
     hourInterval: '{interval} 小时',
     dailyPattern: '每天 {time}',

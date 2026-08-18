@@ -58,7 +58,8 @@
   const everyWeek = ref(false);
   const everyMonth = ref(false);
   const everyHour = ref(false);
-  const valueWeekly = ref([t('frequency.weekDays')[0], '08:00']);
+  const weekDays = t('frequency.weekDays').split(',');
+  const valueWeekly = ref([weekDays[0], '08:00']);
 
   const menuItems = [
     {
@@ -110,10 +111,7 @@
 
   const columnsDaily = ref(dateChoose);
 
-  const columnsWeekly = ref([
-    (t('frequency.weekDays') as unknown as string[]).map((name, index) => ({ text: name, value: String(index + 1) })),
-    dateChoose,
-  ]);
+  const columnsWeekly = ref([weekDays.map((name, index) => ({ text: name, value: String(index + 1) })), dateChoose]);
 
   const columnsMonthly = ref([
     Array.from({ length: 28 }, (_, index) => ({
