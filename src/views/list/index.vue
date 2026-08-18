@@ -1,5 +1,5 @@
 <template>
-  <nut-tabs v-model="value" align="left" size="large" swipeable background="#fff" title-gutter="10" :ellipsis="false">
+  <nut-tabs v-model="value" align="left" size="large" swipeable background="#fff" title-gutter="32" :ellipsis="false">
     <nut-tab-pane :title="t('list.strategyTab')" pane-key="1">
       <nut-cell center :sub-title="t('list.costSubtitle')" is-link @click="() => toCreate(1)">
         <template #title>
@@ -86,7 +86,7 @@
         <nut-col span="24">
           <div
             style="font-family: 'PingFang HK', Avenir, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: bold; color: whitesmoke"
-            >bitpongo</div
+            >Bitpongo</div
           >
         </nut-col>
       </nut-row>
@@ -247,6 +247,7 @@
   const saveFile = () => {
     const options = { useCORS: true, scale: 6 };
     const element = document.querySelector('#capture');
+    if (!element) return;
     html2canvas(<HTMLElement>element, options).then((canvas) => {
       canvas.toBlob(function (blob) {
         if (!blob) return;
@@ -255,9 +256,12 @@
         const filename = 'poster.png';
         a.href = url;
         a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         // 当图片文件加载完成释放这个url
-        window.URL.revokeObjectURL(url);
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
       });
     });
   };

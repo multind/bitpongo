@@ -1,3 +1,5 @@
+import { i18n } from '@/i18n';
+
 /**
  * 计算从创建时间到当前时间的运行时长
  * @param createdAt 创建时间字符串
@@ -5,7 +7,7 @@
  */
 export function calculateRunTime(createdAt?: string): string {
   if (!createdAt) {
-    return '已运行 0 天 0 时 0 分';
+    return i18n.global.t('common.runningFor', { days: 0, hours: 0, minutes: 0 });
   }
 
   try {
@@ -14,7 +16,7 @@ export function calculateRunTime(createdAt?: string): string {
     const diffMs = currentTime - createdTime;
 
     if (diffMs < 0) {
-      return '已运行 0 天 0 时 0 分';
+      return i18n.global.t('common.runningFor', { days: 0, hours: 0, minutes: 0 });
     }
 
     // 计算天数、小时数、分钟数
@@ -22,10 +24,10 @@ export function calculateRunTime(createdAt?: string): string {
     const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-    return `已运行 ${days} 天 ${hours} 时 ${minutes} 分`;
+    return i18n.global.t('common.runningFor', { days, hours, minutes });
   } catch (error) {
     console.error('计算运行时间出错:', error);
-    return '已运行 0 天 0 时 0 分';
+    return i18n.global.t('common.runningFor', { days: 0, hours: 0, minutes: 0 });
   }
 }
 

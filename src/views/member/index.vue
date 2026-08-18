@@ -22,13 +22,21 @@
           <Notice />
         </template>
       </nut-cell>
-      <nut-cell :title="`&nbsp;${t('member.account')}`" is-link @click="goAccountSettings" />
+      <nut-cell :title="`&nbsp;${t('member.account')}`" is-link @click="goAccountSettings">
+        <template #icon>
+          <Setting />
+        </template>
+      </nut-cell>
       <nut-cell :title="`&nbsp;${t('member.about')}`" is-link @click="goAbout">
         <template #icon>
           <Issue />
         </template>
       </nut-cell>
-      <nut-cell :title="`&nbsp;${t('language.label')}`" is-link @click="languagePopup = true" />
+      <nut-cell :title="`&nbsp;${t('language.label')}`" is-link @click="languagePopup = true">
+        <template #icon>
+          <Message />
+        </template>
+      </nut-cell>
     </nut-cell-group>
     <nut-cell is-link @click="goLogout">
       <template #title>
@@ -70,7 +78,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
   import { useI18n } from 'vue-i18n';
-  import { Issue, Link, Notice } from '@nutui/icons-vue';
+  import { Issue, Link, Message, Notice, Setting } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
   import { ref } from 'vue';
   import { switchLang, type LocaleKey } from '@/i18n';

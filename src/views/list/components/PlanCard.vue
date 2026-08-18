@@ -23,7 +23,7 @@
         </nut-row>
       </nut-col>
       <nut-col align="right" :span="8">
-        <nut-button size="small" @click="handleCoinClick('shareButton')">
+        <nut-button class="plan-action-btn" size="small" @click="handleCoinClick('shareButton')">
           <template #icon>
             <Share />
           </template>
@@ -96,7 +96,7 @@
 
     <nut-row style="margin-top: 5px" type="flex" justify="end" flex-wrap="wrap">
       <nut-col align="right" :span="6">
-        <nut-button size="small" @click="handleClick(plan.status === 'active' ? 'stop' : 'active')">
+        <nut-button class="plan-action-btn" size="small" @click="handleClick(plan.status === 'active' ? 'stop' : 'active')">
           <template #icon>
             <PlayStop v-if="plan.status === 'active'" />
             <PlayStart v-else />
@@ -105,7 +105,7 @@
         </nut-button>
       </nut-col>
       <nut-col align="right" :span="6">
-        <nut-button size="small" @click="handleClick('close')">
+        <nut-button class="plan-action-btn" size="small" @click="handleClick('close')">
           <template #icon>
             <CheckDisabled />
           </template>
@@ -113,7 +113,7 @@
         </nut-button>
       </nut-col>
       <nut-col align="right" :span="6">
-        <nut-button size="small" @click="goToDetails">
+        <nut-button class="plan-action-btn" size="small" @click="goToDetails">
           <template #icon>
             <Order />
           </template>
@@ -316,6 +316,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .plan-action-btn {
+    min-width: 76px;
+  }
+
   .plan-container {
     padding: 20px;
     margin-bottom: 20px;

@@ -56,6 +56,7 @@ export type langType = {
     queryFailed: string;
     fetchDetailsFailed: string;
     loadDataFailed: string;
+    runningFor: string;
   };
   home: {
     details: string;

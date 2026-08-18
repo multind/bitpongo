@@ -7,7 +7,7 @@
 
   <nut-row type="flex" justify="space-evenly">
     <nut-col align="center" span="12">
-      <text>bitpongo</text>
+      <text>Bitpongo</text>
     </nut-col>
   </nut-row>
 

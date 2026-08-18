@@ -1,7 +1,7 @@
 import type { langType } from './lang-base';
 
 export const lang: langType = {
-  title: 'bitpongo',
+  title: 'Bitpongo',
   tabbar: {
     home: 'Home',
     list: 'Plans',
@@ -58,6 +58,7 @@ export const lang: langType = {
     queryFailed: 'Verification failed',
     fetchDetailsFailed: 'Failed to load details',
     loadDataFailed: 'Failed to load data',
+    runningFor: 'Running for {days}d {hours}h {minutes}min',
   },
   home: {
     details: 'Use strategy',
@@ -144,7 +145,7 @@ export const lang: langType = {
     signOutConfirmContent: 'Are you sure you want to sign out?',
   },
   login: {
-    welcome: 'Welcome to bitpongo',
+    welcome: 'Welcome to Bitpongo',
     usernamePlaceholder: 'Enter your email',
     passwordPlaceholder: 'Enter your password',
     usernameRequired: 'Please enter your email',

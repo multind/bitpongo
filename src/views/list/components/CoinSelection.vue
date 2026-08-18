@@ -8,7 +8,7 @@
       </nut-avatar-group>
     </nut-col>
     <nut-col :span="6">
-      <nut-button size="small" @click="coinChoice = true">{{ t('strategy.buyCoins') }}</nut-button>
+      <nut-button size="normal" @click="coinChoice = true">{{ t('strategy.buyCoins') }}</nut-button>
       <CoinPicker v-model:visible="coinChoice" @confirm="handleCoinConfirm" />
     </nut-col>
   </nut-row>

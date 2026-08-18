@@ -1,7 +1,7 @@
 import type { langType } from './lang-base';
 
 export const lang: langType = {
-  title: 'bitpongo',
+  title: 'Bitpongo',
   tabbar: {
     home: '首頁',
     list: '列表',
@@ -58,6 +58,7 @@ export const lang: langType = {
     queryFailed: '查詢失敗',
     fetchDetailsFailed: '取得詳情失敗',
     loadDataFailed: '資料載入失敗',
+    runningFor: '已執行 {days} 天 {hours} 時 {minutes} 分',
   },
   home: {
     details: '使用策略',
@@ -143,7 +144,7 @@ export const lang: langType = {
     signOutConfirmContent: '您確定要登出嗎？',
   },
   login: {
-    welcome: '歡迎來到bitpongo',
+    welcome: '歡迎來到Bitpongo',
     usernamePlaceholder: '請輸入使用者名稱',
     passwordPlaceholder: '請輸入密碼',
     usernameRequired: '請輸入使用者名稱',
