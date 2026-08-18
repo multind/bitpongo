@@ -220,8 +220,8 @@ export const lang: langType = {
     deleteConfirmContent: 'Your account cannot be recovered once deleted. Continue?',
   },
   about: {
-    version: 'Version: 1.0.0',
-    publishTime: 'Released: 2025-11-30 21:39:02',
+    version: 'Version: {version}',
+    publishTime: 'Released: {time}',
     developer: 'Developer',
     contact: 'Contact us',
     copyright: 'Copyright',

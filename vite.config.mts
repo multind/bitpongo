@@ -5,6 +5,9 @@ import { wrapperEnv } from './build/utils.ts';
 import { fileURLToPath, URL } from 'node:url';
 import { readdirSync, statSync } from 'node:fs';
 import { dirname } from 'node:path';
+import { readFileSync } from 'node:fs';
+
+const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8'));
 
 // https://vitejs.dev/config/
 export default function ({ command, mode }: ConfigEnv): UserConfig {
@@ -54,6 +57,10 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
 
   return {
     base: '/',
+    define: {
+      __APP_VERSION__: JSON.stringify(packageJson.version),
+      __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    },
     root,
     resolve: {
       alias: { '@': fileURLToPath(new URL('./src', import.meta.url)), '#': fileURLToPath(new URL('./types', import.meta.url)) },

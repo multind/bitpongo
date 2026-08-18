@@ -13,20 +13,20 @@
 
   <nut-row type="flex" justify="space-evenly" style="margin-top: 10px">
     <nut-col align="center" span="12">
-      <text style="font-size: 14px; color: #999">{{ t('about.version') }}</text>
+      <text style="font-size: 14px; color: #999">{{ t('about.version', { version: appVersion }) }}</text>
     </nut-col>
   </nut-row>
 
   <nut-row type="flex" justify="space-evenly" style="margin-top: 10px; margin-bottom: 30px">
     <nut-col align="center" span="16">
-      <text style="font-size: 14px; color: #999">{{ t('about.publishTime') }}</text>
+      <text style="font-size: 14px; color: #999">{{ t('about.publishTime', { time: buildTime }) }}</text>
     </nut-col>
   </nut-row>
 
   <nut-cell-group>
     <nut-cell :title="t('about.developer')" sub-title="Designed with ❤ by Multind.com"></nut-cell>
     <nut-cell :title="t('about.contact')" sub-title="https://multind.com"></nut-cell>
-    <nut-cell :title="t('about.copyright')" sub-title="Copyright © 2025 Zhitoubao. All rights reserved."></nut-cell>
+    <nut-cell :title="t('about.copyright')" sub-title="Copyright © 2026 Bitpongo. All rights reserved."></nut-cell>
   </nut-cell-group>
 </template>
 
@@ -34,6 +34,8 @@
   import { useI18n } from 'vue-i18n';
 
   const { t } = useI18n();
+  const appVersion = __APP_VERSION__;
+  const buildTime = new Date(__BUILD_TIME__).toLocaleString();
 </script>
 
 <style scoped lang="scss"></style>

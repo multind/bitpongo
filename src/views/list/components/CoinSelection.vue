@@ -8,7 +8,7 @@
       </nut-avatar-group>
     </nut-col>
     <nut-col :span="6">
-      <nut-button size="normal" @click="coinChoice = true">{{ t('strategy.buyCoins') }}</nut-button>
+      <nut-button class="coin-select-btn" size="normal" @click="coinChoice = true">{{ t('strategy.buyCoins') }}</nut-button>
       <CoinPicker v-model:visible="coinChoice" @confirm="handleCoinConfirm" />
     </nut-col>
   </nut-row>
@@ -40,6 +40,15 @@
 </script>
 
 <style scoped>
+  .coin-select-btn {
+    min-width: 120px;
+    white-space: nowrap;
+  }
+
+  ::v-deep(.coin-select-btn .nut-button__warp) {
+    white-space: nowrap;
+  }
+
   .row-content {
     align-items: center;
     margin-top: 15px;

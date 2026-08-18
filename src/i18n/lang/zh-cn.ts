@@ -218,8 +218,8 @@ export const lang: langType = {
     deleteConfirmContent: '账号注销后无法恢复，是否继续？',
   },
   about: {
-    version: '版本：1.0.0',
-    publishTime: '发布时间：2025-11-30 21:39:02',
+    version: '版本：{version}',
+    publishTime: '发布时间：{time}',
     developer: '开发者',
     contact: '联系我们',
     copyright: '版权信息',

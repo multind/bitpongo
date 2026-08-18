@@ -219,8 +219,8 @@ export const lang: langType = {
     deleteConfirmContent: '帳號刪除後無法復原，是否繼續？',
   },
   about: {
-    version: '版本：1.0.0',
-    publishTime: '發佈時間：2025-11-30 21:39:02',
+    version: '版本：{version}',
+    publishTime: '發佈時間：{time}',
     developer: '開發者',
     contact: '聯絡我們',
     copyright: '版權資訊',

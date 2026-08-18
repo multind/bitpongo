@@ -318,6 +318,11 @@
 <style lang="scss" scoped>
   .plan-action-btn {
     min-width: 76px;
+    white-space: nowrap;
+  }
+
+  ::v-deep(.plan-action-btn .nut-button__warp) {
+    white-space: nowrap;
   }
 
   .plan-container {
