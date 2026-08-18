@@ -60,7 +60,7 @@
         </text>
       </template>
     </nut-cell>
-    <nut-cell :title="t('common.status')" :sub-title="`${t('common.updateTime')}：2025-12-07`">
+    <nut-cell :title="t('common.status')">
       <template #desc>
         <nut-tag :color="currentItem.status === 'active' ? 'green' : 'grey'">
           <text
@@ -176,8 +176,10 @@
       if (result) {
         currentItem.value.status = 'active';
         ff.value = result.free + ' USDT';
+        showToast.success(t('common.querySuccess'));
       } else {
         currentItem.value.status = 'inactive';
+        showToast.fail(t('common.queryFailed'));
       }
     } catch (error) {
       currentItem.value.status = 'inactive';
@@ -190,4 +192,17 @@
   };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  ::v-deep(.nut-cell__value) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  ::v-deep(.nut-cell__desc) {
+    min-width: 0;
+    text-align: right;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+</style>
