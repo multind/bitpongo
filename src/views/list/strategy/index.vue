@@ -118,8 +118,32 @@
 
   // 创建策略
   const onCreateStrategy = async () => {
+    if (!strategy.value.exchange_id || Number.isNaN(strategy.value.exchange_id)) {
+      showToast.fail('请先选择交易所');
+      return;
+    }
+    const instalment = Number(strategy.value.instalment);
+    if (!Number.isFinite(instalment) || instalment <= 0) {
+      showToast.fail('请输入每期投入金额');
+      return;
+    }
+    if (!strategy.value.cron) {
+      showToast.fail('请设置定投频率');
+      return;
+    }
+    if (strategy.value.coins.length === 0) {
+      showToast.fail('请选择币种');
+      return;
+    }
+    const totalProportion = strategy.value.coins.reduce((sum, coin) => sum + (Number(coin.proportion) || 0), 0);
+    if (totalProportion !== 100) {
+      showToast.fail('币种比例合计必须为100');
+      return;
+    }
+
     const validatedStrategy = {
       ...strategy.value,
+      instalment,
       coins: strategy.value.coins.map((coin) => {
         // 确保 min 和 max 是字符串类型再进行比较
         const minValue = coin.min?.toString() || '';
@@ -127,6 +151,8 @@
 
         return {
           symbol: coin.symbol,
+          icon: coin.icon || '',
+          checked: coin.checked ?? true,
           min: minValue === '' ? null : Number(minValue),
           max: maxValue === '' ? null : Number(maxValue),
           proportion: coin.proportion,
@@ -136,7 +162,7 @@
     };
     console.log('创建策略', validatedStrategy);
     try {
-      await createStrategy(validatedStrategy as Strategy);
+      await createStrategy(validatedStrategy as unknown as Strategy);
       showToast.success('创建成功');
       router.push('/list');
     } catch (error) {
