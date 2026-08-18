@@ -151,7 +151,6 @@
 
         return {
           symbol: coin.symbol,
-          icon: coin.icon || '',
           checked: coin.checked ?? true,
           min: minValue === '' ? null : Number(minValue),
           max: maxValue === '' ? null : Number(maxValue),
