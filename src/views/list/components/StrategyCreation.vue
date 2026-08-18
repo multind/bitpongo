@@ -96,9 +96,9 @@
 
 <script setup lang="ts">
   import { computed, ref } from 'vue';
-  import { showDialog, showToast } from '@nutui/nutui';
+  import { showDialog } from '@nutui/nutui';
   import type { Coin, Strategy } from '@/views/list/types/strategy.ts';
-  import cronParser from 'cron-parser';
+  import { CronExpressionParser } from 'cron-parser';
 
   interface Props {
     strategy: Strategy;
@@ -126,7 +126,6 @@
     emit('update:strategy', updatedStrategy);
     showPopup.value = false;
     emit('create');
-    showToast.success('创建成功');
   };
 
   // 当输入框为空时显示计算出的名称作为占位符
@@ -232,7 +231,7 @@
   const nextBuyTime = computed(() => {
     try {
       if (props.strategy.cron) {
-        const interval = cronParser.parse(props.strategy.cron);
+        const interval = CronExpressionParser.parse(props.strategy.cron, {});
         const nextDate = interval.next().toDate();
         return formatDate(nextDate);
       }

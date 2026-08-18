@@ -35,6 +35,8 @@
 
 <script setup lang="ts">
   import { onMounted, ref } from 'vue';
+  import { useRouter } from 'vue-router';
+  import { showToast } from '@nutui/nutui';
   import { checkExchange, createStrategy } from '@/api';
   import CoinSelection from '../components/CoinSelection.vue';
   import StrategyBasicInfo from '../components/StrategyBasicInfo.vue';
@@ -58,6 +60,8 @@
     cron: '',
     coins: [],
   });
+
+  const router = useRouter();
 
   // 更新选中的币种
   const updateSelectedCoins = (coins: Coin[]) => {
@@ -113,7 +117,7 @@
   };
 
   // 创建策略
-  const onCreateStrategy = () => {
+  const onCreateStrategy = async () => {
     const validatedStrategy = {
       ...strategy.value,
       coins: strategy.value.coins.map((coin) => {
@@ -131,7 +135,13 @@
       }),
     };
     console.log('创建策略', validatedStrategy);
-    createStrategy(validatedStrategy as Strategy);
+    try {
+      await createStrategy(validatedStrategy as Strategy);
+      showToast.success('创建成功');
+      router.push('/list');
+    } catch (error) {
+      showToast.fail(error instanceof Error ? error.message : '创建失败');
+    }
   };
 
   // 初始化默认币种
