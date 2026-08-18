@@ -15,9 +15,9 @@ const app = createApp(App);
 // 路由
 app.use(router);
 
-// 国际化（恢复上次选择的语言）
-setLang();
+// 国际化（安装插件后恢复上次选择的语言）
 app.use(i18n);
+setLang();
 
 // 状态管理
 app.use(store);

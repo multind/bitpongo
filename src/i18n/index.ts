@@ -21,7 +21,10 @@ export function loadLang() {
 
   for (const path in modules) {
     const name = path.replace(/(\.\/lang\/|\.ts)/g, '');
-    langs[name] = modules[path].lang;
+    const lang = modules[path].lang;
+    if (lang) {
+      langs[name] = lang;
+    }
   }
   return langs;
 }
