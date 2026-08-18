@@ -1,69 +1,69 @@
 <template>
   <nut-row v-if="loading" type="flex" justify="center">
     <nut-col span="24">
-      <text>{{ t('common.loading') }}</text>
+      <span>{{ t('common.loading') }}</span>
     </nut-col>
   </nut-row>
   <nut-row v-else-if="error" type="flex" justify="center">
     <nut-col span="24">
-      <text style="color: red">{{ error }}</text>
+      <span style="color: red">{{ error }}</span>
     </nut-col>
   </nut-row>
   <nut-cell-group :span="10">
     <nut-cell :title="t('exchange.name')">
       <template #desc>
-        <text style="color: #2c3e50">
+        <span style="color: #2c3e50">
           {{ currentItem.name }}
-        </text>
+        </span>
       </template>
     </nut-cell>
     <nut-cell :title="t('common.exchange')">
       <template #desc>
-        <text style="color: #2c3e50">
+        <span style="color: #2c3e50">
           {{ getExchangeName(currentItem.exchange) }}
-        </text>
+        </span>
       </template>
     </nut-cell>
     <nut-cell title="AccessKey">
       <template #desc>
-        <text style="color: #2c3e50">
+        <span style="color: #2c3e50">
           {{ currentItem.access_key }}
-        </text>
+        </span>
       </template>
     </nut-cell>
     <nut-cell title="SecretKey">
       <template #desc>
-        <text style="color: #2c3e50">
+        <span style="color: #2c3e50">
           {{ currentItem.secret_key }}
-        </text>
+        </span>
       </template>
     </nut-cell>
     <nut-cell v-show="currentItem.exchange === 'okx'" title="Password">
       <template #desc>
-        <text style="color: #2c3e50">
+        <span style="color: #2c3e50">
           {{ currentItem.password }}
-        </text>
+        </span>
       </template>
     </nut-cell>
     <nut-cell :title="t('common.createTime')">
       <template #desc>
-        <text style="color: #2c3e50">
+        <span style="color: #2c3e50">
           {{ formatDate(currentItem.created_at) }}
-        </text>
+        </span>
       </template>
     </nut-cell>
 
     <nut-cell :title="t('exchange.availableBalance')">
       <template #desc>
-        <text style="color: #2c3e50">
+        <span style="color: #2c3e50">
           {{ ff }}
-        </text>
+        </span>
       </template>
     </nut-cell>
     <nut-cell :title="t('common.status')">
       <template #desc>
         <nut-tag :color="currentItem.status === 'active' ? 'green' : 'grey'">
-          <text
+          <span
             :style="{
               fontWeight: 'bold',
               fontSize: '12px',
@@ -73,7 +73,7 @@
             }"
           >
             {{ getStatusText(currentItem.status) }}
-          </text>
+          </span>
         </nut-tag>
       </template>
     </nut-cell>
@@ -86,7 +86,7 @@
           <template #icon>
             <Refresh color="white" />
           </template>
-          <text style="color: whitesmoke"> {{ t('common.check') }} </text>
+          <span style="color: whitesmoke"> {{ t('common.check') }} </span>
         </nut-button>
       </nut-col>
     </nut-row>
@@ -167,12 +167,16 @@
     });
 
     try {
-      if (currentItem.value.id === null) return;
+      if (currentItem.value.id === null) {
+        toast.hide();
+        return;
+      }
       const result = await checkExchange(<CheckExchangeData>{
         exchange: currentItem.value.exchange,
         id: currentItem.value.id,
       });
       console.log(result);
+      toast.hide();
       if (result) {
         currentItem.value.status = 'active';
         ff.value = result.free + ' USDT';
@@ -182,12 +186,10 @@
         showToast.fail(t('common.queryFailed'));
       }
     } catch (error) {
+      toast.hide();
       currentItem.value.status = 'inactive';
       ff.value = '-';
       showToast.fail(error instanceof Error ? error.message : t('common.queryFailed'));
-    } finally {
-      // 接口调用完成后隐藏toast
-      toast.hide();
     }
   };
 </script>
