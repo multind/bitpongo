@@ -11,7 +11,7 @@
               <circle cx="17" cy="17" r="5" />
             </g>
           </svg>
-          <text style="margin-left: 2px; font-size: 14px">定投策略</text>
+          <text style="margin-left: 2px; font-size: 14px">{{ t('list.dcaStrategy') }}</text>
         </div>
       </nut-col>
     </nut-row>
@@ -25,7 +25,7 @@
         </nut-row>
         <nut-row type="flex" justify="start" style="">
           <nut-col span="24">
-            <text style="font-size: 12px; color: #c8c8c8">策略来源：cor***@gmail.com</text>
+            <text style="font-size: 12px; color: #c8c8c8">{{ t('home.strategySource') }}：cor***@gmail.com</text>
           </nut-col>
         </nut-row>
       </nut-col>
@@ -42,7 +42,7 @@
       <nut-col span="12" style="background-color: slategray; border-radius: 5px">
         <nut-row>
           <nut-col style="padding: 5px">
-            <text style="font-size: 14px; color: #eee">使用人数</text>
+            <text style="font-size: 14px; color: #eee">{{ t('home.userCount') }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -55,7 +55,7 @@
       <nut-col span="12" style="background-color: slategray; border-radius: 5px">
         <nut-row>
           <nut-col style="padding: 5px">
-            <text style="font-size: 14px; color: #eee">带单规模（USDT）</text>
+            <text style="font-size: 14px; color: #eee">{{ t('home.copyScale') }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -69,7 +69,7 @@
 
   <nut-row>
     <nut-col span="24">
-      <text>收益表现</text>
+      <text>{{ t('home.performance') }}</text>
     </nut-col>
   </nut-row>
   <nut-divider :hairline="true" dashed />
@@ -78,7 +78,7 @@
     <nut-col span="12" style="">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 12px; color: #c8c8c8">收益率</text>
+          <text style="font-size: 12px; color: #c8c8c8">{{ t('home.returnRate') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -90,7 +90,7 @@
     <nut-col span="12" style="" align="right">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 12px; color: #c8c8c8">7 日最大回撤率</text>
+          <text style="font-size: 12px; color: #c8c8c8">{{ t('home.maxDrawdown7d') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -107,7 +107,7 @@
     <nut-col :span="8" style="border: 1px solid #999; border-radius: 5px">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 14px; color: #c8c8c8">近 3 天</text>
+          <text style="font-size: 14px; color: #c8c8c8">{{ t('home.last3d') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -120,7 +120,7 @@
     <nut-col :span="8" style="border: 1px solid #999; border-radius: 5px">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 12px; color: #c8c8c8">近 7 天</text>
+          <text style="font-size: 12px; color: #c8c8c8">{{ t('home.last7d') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -132,7 +132,7 @@
     <nut-col :span="8" style="border: 1px solid #999; border-radius: 5px">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 12px; color: #c8c8c8">近 30 天</text>
+          <text style="font-size: 12px; color: #c8c8c8">{{ t('home.last30d') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -145,13 +145,13 @@
 
   <nut-row>
     <nut-col span="24">
-      <text>详细参数</text>
+      <text>{{ t('home.detailParams') }}</text>
     </nut-col>
   </nut-row>
 
   <nut-row type="flex" justify="space-around">
     <nut-col style="padding: 5px">
-      <text style="font-size: 14px; color: #c8c8c8">定投频率</text>
+      <text style="font-size: 14px; color: #c8c8c8">{{ t('home.frequency') }}</text>
     </nut-col>
     <nut-col align="right" style="padding: 5px">
       <text style="font-size: 14px; font-weight: bold; color: green">+121%</text>
@@ -160,7 +160,7 @@
 
   <nut-row type="flex" justify="space-around">
     <nut-col style="padding: 5px">
-      <text style="font-size: 14px; color: #c8c8c8">时间</text>
+      <text style="font-size: 14px; color: #c8c8c8">{{ t('common.time') }}</text>
     </nut-col>
     <nut-col align="right" style="padding: 5px">
       <text style="font-size: 14px; font-weight: bold; color: green">+121%</text>
@@ -169,7 +169,7 @@
 
   <nut-row type="flex" justify="space-around">
     <nut-col style="padding: 5px">
-      <text style="font-size: 14px; color: #c8c8c8">币种 | 目标比例</text>
+      <text style="font-size: 14px; color: #c8c8c8">{{ t('list.coinProportionPopup') }}</text>
     </nut-col>
   </nut-row>
 
@@ -192,49 +192,47 @@
 
   <nut-row>
     <nut-col span="24">
-      <text style="font-size: 18px">什么是定投策略？</text>
+      <text style="font-size: 18px">{{ t('home.whatIsDca') }}</text>
     </nut-col>
   </nut-row>
   <nut-row>
     <nut-col span="24">
-      <text style="font-size: 16px">分批买入摊薄成本</text>
+      <text style="font-size: 16px">{{ t('home.dcaDesc1') }}</text>
     </nut-col>
   </nut-row>
   <nut-row>
     <nut-col span="24">
-      <text style="font-size: 14px"
-        >通过周期性的买入来降低总体持仓成本。在市场波动较为剧烈时，运用适当的定投策略，以同样的投资额在最低点可以购入更多的筹码。</text
-      >
+      <text style="font-size: 14px">{{ t('home.dcaDesc2') }}</text>
     </nut-col>
   </nut-row>
   <nut-row>
     <nut-col span="24">
-      <text style="font-size: 16px">操作简单易上手</text>
+      <text style="font-size: 16px">{{ t('home.dcaDesc3') }}</text>
     </nut-col>
   </nut-row>
   <nut-row>
     <nut-col span="24">
-      <text style="font-size: 14px">可灵活设置定投时间，支持多币对</text>
+      <text style="font-size: 14px">{{ t('home.dcaDesc4') }}</text>
     </nut-col>
   </nut-row>
 
-  <nut-button block size="small" @click="ha"> 使用策略</nut-button>
+  <nut-button block size="small" @click="ha"> {{ t('home.useStrategy') }}</nut-button>
 
   <nut-popup v-model:visible="visible" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '60%' }">
     <div style="margin: 15px">
       <nut-row style="margin-top: 18px; text-align: center" type="flex">
         <nut-col span="24">
-          <div style="font-size: 18px">投资额</div>
+          <div style="font-size: 18px">{{ t('home.investmentAmount') }}</div>
         </nut-col>
       </nut-row>
       <nut-divider :hairline="true" dashed />
 
       <nut-row type="flex" justify="space-around">
         <nut-col :span="12" style="padding: 5px">
-          <text style="font-size: 12px; color: slategray"> 投入金额（> 2 USDT） </text>
+          <text style="font-size: 12px; color: slategray"> {{ t('home.inputAmount') }} </text>
         </nut-col>
         <nut-col align="right" :span="12" style="padding: 5px">
-          <text style="font-size: 12px; color: slategray">可用：</text>
+          <text style="font-size: 12px; color: slategray">{{ t('home.available') }}</text>
           <text style="font-size: 12px; color: black">{{ availableBalance }} USDT</text>
         </nut-col>
       </nut-row>
@@ -243,7 +241,7 @@
         <nut-col :span="24">
           <nut-input
             v-model="value"
-            placeholder=" 请输入金额 "
+            :placeholder="t('home.inputAmountPlaceholder')"
             type="number"
             style="padding: 1vw; margin-bottom: 10px; border: 1px solid #eee; border-radius: 5px"
           >
@@ -281,14 +279,14 @@
 
       <nut-row type="flex" justify="space-around">
         <nut-col :span="24" style="margin: 15px 5px">
-          <text style="font-size: 12px; color: grey"> 第一次的买入时间为：2022-12-16 09:00:00 </text>
+          <text style="font-size: 12px; color: grey"> {{ t('home.firstBuyTime') }}2022-12-16 09:00:00 </text>
         </nut-col>
       </nut-row>
       <nut-divider :hairline="true" dashed />
 
       <nut-row type="flex" justify="start" style="">
         <nut-col style="padding: 5px" span="12">
-          <text style="font-size: 14px; color: grey">策略来源</text>
+          <text style="font-size: 14px; color: grey">{{ t('home.strategySource') }}</text>
         </nut-col>
 
         <nut-col align="right" span="12">
@@ -301,16 +299,16 @@
 
       <nut-row type="flex" justify="space-around">
         <nut-col style="padding: 5px">
-          <text style="font-size: 14px; color: grey">定投频率</text>
+          <text style="font-size: 14px; color: grey">{{ t('home.frequency') }}</text>
         </nut-col>
         <nut-col align="right" style="padding: 5px">
-          <text style="font-size: 14px; font-weight: bold; color: #000">每天</text>
+          <text style="font-size: 14px; font-weight: bold; color: #000">{{ t('frequency.daily') }}</text>
         </nut-col>
       </nut-row>
 
       <nut-row type="flex" justify="space-around">
         <nut-col style="padding: 5px">
-          <text style="font-size: 14px; color: grey">时间</text>
+          <text style="font-size: 14px; color: grey">{{ t('common.time') }}</text>
         </nut-col>
         <nut-col align="right" style="padding: 5px">
           <text style="font-size: 14px; font-weight: bold; color: #000">15：00</text>
@@ -319,18 +317,20 @@
       <nut-divider :hairline="true" dashed />
       <nut-row type="flex" justify="space-around">
         <nut-col span="24" style="padding: 5px">
-          <text style="font-size: 14px; color: grey">相同的策略参数并不能保证获得相同的收益，实际收益需要根据实际行情而定</text>
+          <text style="font-size: 14px; color: grey">{{ t('home.sameParamsDisclaimer') }}</text>
         </nut-col>
       </nut-row>
-      <nut-button block size="small" color="black"> 使用策略 </nut-button>
+      <nut-button block size="small" color="black"> {{ t('home.useStrategy') }} </nut-button>
     </div>
   </nut-popup>
 </template>
 
 <script setup lang="ts">
   import { onMounted, ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { Chart, type ChartConfiguration } from 'chart.js/auto';
 
+  const { t } = useI18n();
   const availableBalance = ref(485.37);
   const val = ref(0);
   const value = ref(0);

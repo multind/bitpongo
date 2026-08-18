@@ -8,30 +8,31 @@
         <div class="nickname">
           <span> {{ getUserInfo }} </span>
         </div>
-        <div class="info"> 智慧投资，轻松理财 </div>
+        <div class="info"> {{ t('member.slogan') }} </div>
       </div>
     </div>
     <nut-cell-group>
-      <nut-cell title="&nbsp;API管理" is-link @click="goExchangeInfo">
+      <nut-cell :title="`&nbsp;${t('member.exchangeInfo')}`" is-link @click="goExchangeInfo">
         <template #icon>
           <Link />
         </template>
       </nut-cell>
-      <nut-cell title="&nbsp;通知" is-link @click="goNoticeInfo">
+      <nut-cell :title="`&nbsp;${t('member.noticeInfo')}`" is-link @click="goNoticeInfo">
         <template #icon>
           <Notice />
         </template>
       </nut-cell>
-      <nut-cell title="&nbsp;账号设置" is-link @click="goAccountSettings" />
-      <nut-cell title="&nbsp;关于" is-link @click="goAbout">
+      <nut-cell :title="`&nbsp;${t('member.account')}`" is-link @click="goAccountSettings" />
+      <nut-cell :title="`&nbsp;${t('member.about')}`" is-link @click="goAbout">
         <template #icon>
           <Issue />
         </template>
       </nut-cell>
+      <nut-cell :title="`&nbsp;${t('language.label')}`" is-link @click="languagePopup = true" />
     </nut-cell-group>
     <nut-cell is-link @click="goLogout">
       <template #title>
-        <text style="color: red">退出</text>
+        <text style="color: red">{{ t('member.signOut') }}</text>
       </template>
       <template #icon>
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 1024 1024" color="red">
@@ -45,18 +46,40 @@
   </div>
   <div v-else class="not-login-center">
     <img src="../../assets/not_login.png" height="350" width="350" alt="not login" />
-    <nut-button color="linear-gradient(to right, #101010, #112233)" size="small" @click="goLogin"> 去登录 </nut-button>
+    <nut-button color="linear-gradient(to right, #101010, #112233)" size="small" @click="goLogin"> {{ t('member.goLogin') }} </nut-button>
+    <div style="margin-top: 16px">
+      <nut-button size="small" @click="languagePopup = true">{{ t('language.label') }}</nut-button>
+    </div>
   </div>
+
+  <nut-popup v-model:visible="languagePopup" position="bottom" round :style="{ height: '30%' }">
+    <nut-row style="margin-top: 23px; text-align: center" type="flex">
+      <nut-col span="24">
+        <div style="font-size: 18px">{{ t('language.label') }}</div>
+      </nut-col>
+    </nut-row>
+    <nut-cell-group style="margin-top: 10px">
+      <nut-cell :title="t('language.zhCn')" @click="switchLanguage('zh-cn')" />
+      <nut-cell :title="t('language.zhTw')" @click="switchLanguage('zh-tw')" />
+      <nut-cell :title="t('language.enUs')" @click="switchLanguage('en-us')" />
+    </nut-cell-group>
+  </nut-popup>
 </template>
 
 <script setup lang="ts">
   import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
+  import { useI18n } from 'vue-i18n';
   import { Issue, Link, Notice } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
+  import { ref } from 'vue';
+  import { switchLang, type LocaleKey } from '@/i18n';
 
+  const { t } = useI18n();
   const router = useRouter();
   const userStore = useUserStore();
+  const languagePopup = ref(false);
+
   const getUserInfo = computed(() => {
     const { email = '', name = '' } = userStore.getUserInfo || {};
     console.log('getUserInfo', email, name);
@@ -77,13 +100,17 @@
   const goAbout = () => {
     router.push('/member/about');
   };
+  const switchLanguage = (locale: LocaleKey) => {
+    languagePopup.value = false;
+    switchLang(locale);
+  };
   const goLogout = async () => {
     // 显示确认退出弹窗
     // 可以在这里添加跳转到币种详情页或其他交互逻辑
     showDialog({
       textAlign: 'center',
-      title: '确认退出',
-      content: '您确定要退出登录吗？',
+      title: t('member.signOutConfirmTitle'),
+      content: t('member.signOutConfirmContent'),
       onOk: async () => {
         // 用户确认退出时执行登出操作
         userStore.logout();
@@ -118,15 +145,8 @@
       .info {
         margin-top: 10px;
         font-size: 24px;
+        color: #999;
       }
     }
-  }
-
-  .not-login-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
   }
 </style>

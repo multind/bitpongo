@@ -1,7 +1,7 @@
 <template>
   <nut-row>
     <nut-col span="24">
-      <nut-cell title="买入价格区间" :desc="priceRangeDesc" is-link @click="showPopup = true">
+      <nut-cell :title="t('priceRange.title')" :desc="priceRangeDesc" is-link @click="showPopup = true">
         <template #desc>
           <span style="color: black">{{ priceRangeDesc }}</span>
         </template>
@@ -28,7 +28,7 @@
             <nut-col :span="9">
               <nut-input
                 :model-value="coin.min ?? undefined"
-                placeholder="最低价"
+                :placeholder="t('priceRange.lowest')"
                 type="number"
                 :border="true"
                 style="background-color: #eee; border: #999 1px solid; border-radius: 5px"
@@ -41,7 +41,7 @@
             <nut-col :span="9">
               <nut-input
                 :model-value="coin.max ?? undefined"
-                placeholder="最高价"
+                :placeholder="t('priceRange.highest')"
                 input-align="right"
                 type="number"
                 :border="true"
@@ -59,7 +59,7 @@
             <div v-if="percentageError" style="margin-bottom: 10px; color: red; text-align: center">
               {{ percentageError }}
             </div>
-            <nut-button size="large" color="black" @click="confirm"> 确 认 </nut-button>
+            <nut-button size="large" color="black" @click="confirm"> {{ t('priceRange.confirm') }} </nut-button>
           </nut-col>
         </nut-row>
       </view>
@@ -69,12 +69,14 @@
 
 <script setup lang="ts">
   import { ref, watch } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import type { Strategy } from '@/views/list/types/strategy.ts';
   import { useWebSocketBase } from '@/utils/useWebSocket.ts';
 
   interface Props {
     strategy: Strategy;
   }
+  const { t } = useI18n();
   const props = defineProps<Props>();
 
   const showPopup = ref(false);
@@ -101,7 +103,7 @@
 
   const confirm = () => {
     showPopup.value = false;
-    priceRangeDesc.value = `已设置 ${props.strategy.coins.length} 个币种`;
+    priceRangeDesc.value = t('priceRange.setCount', { count: props.strategy.coins.length });
   };
 
   // 监听币种变化，当币种发生变化时清空描述

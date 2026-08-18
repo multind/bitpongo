@@ -2,13 +2,13 @@
   <nut-row type="flex" justify="center" flex-wrap="nowrap" style="margin: 10px 0">
     <nut-col span="22">
       <text style="font-size: 12px; color: grey">
-        通知方式是您获取应用程序中发生事件的通知渠道。在设置通知方式完成后，应用程序将会实时推送发生事件到已设置的通知方式渠道，从而帮助您及时获取最新动态。
+        {{ t('notice.intro') }}
       </text>
     </nut-col>
   </nut-row>
   <nut-row type="flex" justify="center" flex-wrap="nowrap" style="margin: 20px 0">
     <nut-col span="22">
-      <text style="font-size: 13px; color: black; border-bottom: 1px dashed #999"> 查看如何创建通知方式 </text>
+      <text style="font-size: 13px; color: black; border-bottom: 1px dashed #999"> {{ t('notice.howTo') }} </text>
     </nut-col>
   </nut-row>
   <nut-cell-group>
@@ -54,14 +54,14 @@
   <nut-popup v-model:visible="telegramPopup" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '60%' }">
     <nut-row style="margin-top: 18px; text-align: center" type="flex">
       <nut-col span="24">
-        <div style="font-size: 18px">Telegram 设置</div>
+        <div style="font-size: 18px">{{ t('notice.telegramSettings') }}</div>
       </nut-col>
     </nut-row>
     <nut-row type="flex" justify="end" style="margin-top: 20px">
       <nut-col span="20">
-        <nut-input placeholder="请输入 Bot token" type="text" :border="false" style="max-width: 85vw">
+        <nut-input placeholder="{{ t('notice.botTokenPlaceholder') }}" type="text" :border="false" style="max-width: 85vw">
           <template #left>
-            <text>Bot Token:</text>
+            <text>{{ t('notice.botToken') }}</text>
           </template>
         </nut-input>
       </nut-col>
@@ -69,9 +69,9 @@
     </nut-row>
     <nut-row type="flex" justify="end">
       <nut-col span="20">
-        <nut-input placeholder="请输入 Chat ID" type="text" :border="false" style="max-width: 85vw">
+        <nut-input placeholder="{{ t('notice.chatIdPlaceholder') }}" type="text" :border="false" style="max-width: 85vw">
           <template #left>
-            <text>&nbsp;&nbsp;&nbsp;&nbsp; Chat ID:</text>
+            <text>&nbsp;&nbsp;&nbsp;&nbsp; {{ t('notice.chatId') }}</text>
           </template>
         </nut-input>
       </nut-col>
@@ -84,7 +84,7 @@
             <Tips v-if="!testSuccess" />
             <Success v-if="testSuccess" />
           </template>
-          {{ testSuccess ? '发送成功' : '测试' }}
+          {{ testSuccess ? t('notice.sent') : t('notice.test') }}
         </nut-button>
       </nut-col>
     </nut-row>
@@ -93,7 +93,7 @@
   <nut-popup v-model:visible="dingDingPopup" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '60%' }">
     <nut-row style="margin-top: 18px; text-align: center" type="flex">
       <nut-col span="24">
-        <div style="font-size: 18px">钉钉设置</div>
+        <div style="font-size: 18px">{{ t('notice.dingTalkSettings') }}</div>
       </nut-col>
     </nut-row>
     <nut-row type="flex" justify="start" style="padding-left: 13px; margin-top: 20px">
@@ -105,7 +105,7 @@
       <nut-col span="22">
         <nut-input
           v-model="notices.dingTalkParam.webhook"
-          placeholder="请输入 Webhook"
+          placeholder="{{ t('notice.webhookPlaceholder') }}"
           type="text"
           :border="false"
           style="padding: 1vh; border: 1px solid #eee; border-radius: 5px"
@@ -114,14 +114,14 @@
     </nut-row>
     <nut-row type="flex" justify="start" style="padding-left: 13px; margin-top: 20px">
       <nut-col>
-        <text style="font-family: 'Apple SD Gothic Neo', serif; font-size: 14px; color: black"> 加 签 </text>
+        <text style="font-family: 'Apple SD Gothic Neo', serif; font-size: 14px; color: black"> {{ t('notice.signed') }} </text>
       </nut-col>
     </nut-row>
     <nut-row type="flex" justify="start" style="margin: 0 10px">
       <nut-col span="22">
         <nut-input
           v-model="notices.dingTalkParam.secret"
-          placeholder="请输入加签"
+          placeholder="{{ t('notice.signedPlaceholder') }}"
           type="text"
           :border="false"
           style="padding: 1vh; border: 1px solid #eee; border-radius: 5px"
@@ -137,7 +137,7 @@
             <Tips v-if="!testSuccess" />
             <Success v-if="testSuccess" />
           </template>
-          {{ testSuccess ? '发送成功' : ' 测 试 ' }}
+          {{ testSuccess ? t('notice.sent') : ' ' + t('notice.test') + ' ' }}
         </nut-button>
       </nut-col>
     </nut-row>
@@ -146,14 +146,14 @@
   <nut-popup v-model:visible="emailPopup" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '60%' }">
     <nut-row style="margin-top: 18px; text-align: center" type="flex">
       <nut-col span="24">
-        <div style="font-size: 18px">Email 设置</div>
+        <div style="font-size: 18px">{{ t('notice.emailSettings') }}</div>
       </nut-col>
     </nut-row>
     <nut-row type="flex" justify="end" style="margin-top: 20px">
       <nut-col span="20">
-        <nut-input placeholder="请输入接收邮件的电子邮箱地址" type="text" :border="false" style="max-width: 85vw">
+        <nut-input placeholder="{{ t('notice.emailPlaceholder') }}" type="text" :border="false" style="max-width: 85vw">
           <template #left>
-            <text>电子邮箱:</text>
+            <text>{{ t('notice.emailLabel') }}</text>
           </template>
         </nut-input>
       </nut-col>
@@ -166,7 +166,7 @@
             <Tips v-if="!testSuccess" />
             <Success v-if="testSuccess" />
           </template>
-          {{ testSuccess ? '发送成功' : ' 测 试 ' }}
+          {{ testSuccess ? t('notice.sent') : ' ' + t('notice.test') + ' ' }}
         </nut-button>
       </nut-col>
     </nut-row>
@@ -175,9 +175,11 @@
 
 <script setup lang="ts">
   import { ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { Success, Tips } from '@nutui/icons-vue';
   import { ding, noticeInfo } from '@/api';
 
+  const { t } = useI18n();
   const loading = ref(false);
   const notices = ref({
     dingTalkParam: {

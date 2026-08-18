@@ -1,9 +1,9 @@
 <template>
   <nut-tabs v-model="value" align="left" size="large" swipeable background="#fff" title-gutter="10" :ellipsis="false">
-    <nut-tab-pane title="策略" pane-key="1">
-      <nut-cell center sub-title="择机买入，控制成本" is-link @click="() => toCreate(1)">
+    <nut-tab-pane :title="t('list.strategyTab')" pane-key="1">
+      <nut-cell center :sub-title="t('list.costSubtitle')" is-link @click="() => toCreate(1)">
         <template #title>
-          <text style="font-size: 15px; color: #101010">定投策略</text>
+          <text style="font-size: 15px; color: #101010">{{ t('list.dcaStrategy') }}</text>
         </template>
         <template #icon>
           <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
@@ -15,13 +15,13 @@
         </template>
       </nut-cell>
     </nut-tab-pane>
-    <nut-tab-pane :title="`运行(${plans.length})`" pane-key="2">
+    <nut-tab-pane :title="t('list.runningTab', { count: plans.length })" pane-key="2">
       <div v-if="plans.length">
         <PlanCard v-for="plan in plans" :key="plan.id" :plan="plan" @show-popup="handleShowPopup" @update-status="updateStatus" />
       </div>
       <nut-empty v-else>
         <template #image>
-          <img src="@/assets/empty.svg" alt="暂无数据" />
+          <img src="@/assets/empty.svg" :alt="t('list.emptyAlt')" />
         </template>
       </nut-empty>
     </nut-tab-pane>
@@ -29,7 +29,7 @@
   <nut-popup v-model:visible="show" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '30%' }">
     <nut-row style="margin-top: 20px; text-align: center" type="flex">
       <nut-col span="24">
-        <div style="font-size: 18px">{{ popupType === 'coinAverage' ? '定投均价（USDT）' : '币种 | 目标比例' }}</div>
+        <div style="font-size: 18px">{{ popupType === 'coinAverage' ? t('list.avgPricePopup') : t('list.coinProportionPopup') }}</div>
       </nut-col>
     </nut-row>
     <div v-if="currentPlan" style="margin-top: 20px">
@@ -44,14 +44,14 @@
       </nut-row>
     </div>
     <div v-else>
-      <text>加载中...</text>
+      <text>{{ t('common.loading') }}</text>
     </div>
   </nut-popup>
 
   <nut-popup v-model:visible="sharePopup" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '75%' }">
     <nut-row style="margin-top: 23px; text-align: center" type="flex">
       <nut-col span="24">
-        <div style="font-size: 18px">分享页面</div>
+        <div style="font-size: 18px">{{ t('list.sharePage') }}</div>
       </nut-col>
     </nut-row>
     <div id="capture" style="height: 460px; padding: 20px; margin: 15px; background-color: black; border: #999 solid 2px">
@@ -93,7 +93,7 @@
 
       <nut-row style="margin-top: 10px" type="flex" wrap="nowrap">
         <nut-col span="24">
-          <div style="font-size: 15px; color: #999">总收益率</div>
+          <div style="font-size: 15px; color: #999">{{ t('list.totalReturnRate') }}</div>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -119,7 +119,7 @@
           <nut-row>
             <nut-col span="8">
               <text style="font-size: 12px; color: white" :style="{ color: currentPlan?.status === 'stop' ? '#FFA900' : 'white' }">
-                {{ currentPlan?.status === 'stop' ? '已暂停' : '运行中' }}
+                {{ currentPlan?.status === 'stop' ? t('list.paused') : t('list.active') }}
               </text>
             </nut-col>
           </nut-row>
@@ -128,7 +128,7 @@
 
       <nut-row style="margin-top: 20px" type="flex" justify="space-around" wrap>
         <nut-col span="12">
-          <div style="font-size: 15px; color: #999">定投均价</div>
+          <div style="font-size: 15px; color: #999">{{ t('planCard.avgPrice') }}</div>
         </nut-col>
         <nut-col align="right" span="12">
           <div style="font-size: 16px; color: white">{{ coinAverageText }}</div>
@@ -136,7 +136,7 @@
       </nut-row>
       <nut-row style="margin-top: 5px" type="flex" justify="space-around" wrap>
         <nut-col span="12">
-          <div style="font-size: 15px; color: #999">定投频率</div>
+          <div style="font-size: 15px; color: #999">{{ t('planCard.frequencyTriggered') }}</div>
         </nut-col>
         <nut-col align="right" span="12">
           <div style="font-size: 16px; color: white">{{ currentPlan?.strategy.frequency }}</div>
@@ -144,7 +144,7 @@
       </nut-row>
       <nut-row style="margin-top: 5px" type="flex" justify="space-around" wrap>
         <nut-col span="12">
-          <div style="font-size: 15px; color: #999">总收益</div>
+          <div style="font-size: 15px; color: #999">{{ t('planCard.totalReturn') }}</div>
         </nut-col>
         <nut-col align="right" span="12">
           <div style="font-size: 16px; color: greenyellow">{{ currentPlan?.total_revenue }} USDT</div>
@@ -167,7 +167,7 @@
           >
             <Download width="20px" height="20px" />
           </div>
-          <text style="font-size: 13px">下载</text>
+          <text style="font-size: 13px">{{ t('common.download') }}</text>
         </nut-space>
       </nut-col>
     </nut-row>
@@ -176,12 +176,14 @@
 
 <script setup lang="ts">
   import { Download } from '@nutui/icons-vue';
+  import { useI18n } from 'vue-i18n';
   import PlanCard from './components/PlanCard.vue';
   import { activePlanList } from '@/api';
   import { ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import html2canvas from 'html2canvas';
 
+  const { t } = useI18n();
   const userStore = useUserStore();
   const router = useRouter();
   const value = ref('1');

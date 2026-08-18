@@ -7,7 +7,7 @@
 
   <nut-row>
     <nut-col span="24">
-      <nut-cell title="可用金额 (USDT)">
+      <nut-cell :title="t('exchange.availableBalance')">
         <template #link>
           <span v-if="isLoading">
             <Loading color="red" />
@@ -35,6 +35,7 @@
 
 <script setup lang="ts">
   import { onMounted, ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { useRouter } from 'vue-router';
   import { showToast } from '@nutui/nutui';
   import { checkExchange, createStrategy } from '@/api';
@@ -50,6 +51,7 @@
   import type { CheckExchangeData } from '@/views/list/types/exchange.ts';
   import { Loading } from '@nutui/icons-vue';
 
+  const { t } = useI18n();
   const strategy = ref<Strategy>({
     id: NaN,
     name: '',
@@ -119,25 +121,25 @@
   // 创建策略
   const onCreateStrategy = async () => {
     if (!strategy.value.exchange_id || Number.isNaN(strategy.value.exchange_id)) {
-      showToast.fail('请先选择交易所');
+      showToast.fail(t('strategy.selectExchangeFirst'));
       return;
     }
     const instalment = Number(strategy.value.instalment);
     if (!Number.isFinite(instalment) || instalment <= 0) {
-      showToast.fail('请输入每期投入金额');
+      showToast.fail(t('strategy.instalmentRequired'));
       return;
     }
     if (!strategy.value.cron) {
-      showToast.fail('请设置定投频率');
+      showToast.fail(t('strategy.frequencyRequired'));
       return;
     }
     if (strategy.value.coins.length === 0) {
-      showToast.fail('请选择币种');
+      showToast.fail(t('strategy.coinsRequired'));
       return;
     }
     const totalProportion = strategy.value.coins.reduce((sum, coin) => sum + (Number(coin.proportion) || 0), 0);
     if (totalProportion !== 100) {
-      showToast.fail('币种比例合计必须为100');
+      showToast.fail(t('strategy.proportionTotal'));
       return;
     }
 
@@ -162,10 +164,10 @@
     console.log('创建策略', validatedStrategy);
     try {
       await createStrategy(validatedStrategy as unknown as Strategy);
-      showToast.success('创建成功');
+      showToast.success(t('common.createSuccess'));
       router.push('/list');
     } catch (error) {
-      showToast.fail(error instanceof Error ? error.message : '创建失败');
+      showToast.fail(error instanceof Error ? error.message : t('common.createFailed'));
     }
   };
 

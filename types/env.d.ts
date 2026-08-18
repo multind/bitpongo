@@ -13,3 +13,18 @@ interface Window {
   };
   __ZHITOUBAO_NATIVE_RESOLVE__?: (requestId: string, result: unknown) => void;
 }
+
+declare module '@nutui/nutui/dist/packages/locale/lang/en-US.js' {
+  const lang: Record<string, any>;
+  export default lang;
+}
+
+declare module '@nutui/nutui/dist/packages/locale/lang/zh-CN.js' {
+  const lang: Record<string, any>;
+  export default lang;
+}
+
+declare module '@nutui/nutui/dist/packages/locale/lang/zh-TW.js' {
+  const lang: Record<string, any>;
+  export default lang;
+}

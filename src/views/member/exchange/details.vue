@@ -1,7 +1,7 @@
 <template>
   <nut-row v-if="loading" type="flex" justify="center">
     <nut-col span="24">
-      <text>加载中...</text>
+      <text>{{ t('common.loading') }}</text>
     </nut-col>
   </nut-row>
   <nut-row v-else-if="error" type="flex" justify="center">
@@ -10,14 +10,14 @@
     </nut-col>
   </nut-row>
   <nut-cell-group :span="10">
-    <nut-cell title="名称">
+    <nut-cell :title="t('exchange.name')">
       <template #desc>
         <text style="color: #2c3e50">
           {{ currentItem.name }}
         </text>
       </template>
     </nut-cell>
-    <nut-cell title="交易所">
+    <nut-cell :title="t('common.exchange')">
       <template #desc>
         <text style="color: #2c3e50">
           {{ getExchangeName(currentItem.exchange) }}
@@ -45,7 +45,7 @@
         </text>
       </template>
     </nut-cell>
-    <nut-cell title="创建时间">
+    <nut-cell :title="t('common.createTime')">
       <template #desc>
         <text style="color: #2c3e50">
           {{ formatDate(currentItem.created_at) }}
@@ -53,14 +53,14 @@
       </template>
     </nut-cell>
 
-    <nut-cell title="可用余额">
+    <nut-cell :title="t('exchange.availableBalance')">
       <template #desc>
         <text style="color: #2c3e50">
           {{ ff }}
         </text>
       </template>
     </nut-cell>
-    <nut-cell title="状态" subTitle="更新时间：2025-12-07">
+    <nut-cell :title="t('common.status')" :sub-title="`${t('common.updateTime')}：2025-12-07`">
       <template #desc>
         <nut-tag :color="currentItem.status === 'active' ? 'green' : 'grey'">
           <text
@@ -86,7 +86,7 @@
           <template #icon>
             <Refresh color="white" />
           </template>
-          <text style="color: whitesmoke"> 检 查 </text>
+          <text style="color: whitesmoke"> {{ t('common.check') }} </text>
         </nut-button>
       </nut-col>
     </nut-row>
@@ -96,11 +96,13 @@
 <script setup lang="ts">
   import { useRoute } from 'vue-router';
   import { onMounted, ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { checkExchange, exchangeDetails } from '@/api';
   import { Refresh } from '@nutui/icons-vue';
   import { showToast } from '@nutui/nutui';
   import type { CheckExchangeData } from '@/views/list/types/exchange';
 
+  const { t } = useI18n();
   const route = useRoute();
   // 获取当前项数据
   const loading = ref(false);
@@ -126,7 +128,7 @@
       currentItem.value = await exchangeDetails(id);
     } catch (err) {
       console.error('获取详情失败:', err);
-      error.value = '获取详情失败';
+      error.value = t('common.fetchDetailsFailed');
     } finally {
       loading.value = false;
     }
@@ -138,17 +140,17 @@
       binance: 'Binance',
       okx: 'OKX',
     };
-    return exchangeMap[exchangeId] || '未知交易所';
+    return exchangeMap[exchangeId] || t('common.exchangeName');
   }
 
   // 获取状态文本
   function getStatusText(status: string): string {
     const statusMap: Record<string, string> = {
-      active: '生 效',
-      inactive: '失 效',
-      pending: '待审核',
+      active: t('common.active'),
+      inactive: t('common.inactive'),
+      pending: t('common.pending'),
     };
-    return statusMap[status] || '未知';
+    return statusMap[status] || t('common.unknown');
   }
 
   // 格式化日期
@@ -158,7 +160,7 @@
   }
 
   const apiStatusCheck = async () => {
-    const toast = showToast.loading('加载中...', {
+    const toast = showToast.loading(t('common.loading'), {
       'cover-color': 'rgba(0, 0, 0, 0.5)',
       duration: 0,
       cover: true,
@@ -180,7 +182,7 @@
     } catch (error) {
       currentItem.value.status = 'inactive';
       ff.value = '-';
-      showToast.fail(error instanceof Error ? error.message : '查询失败');
+      showToast.fail(error instanceof Error ? error.message : t('common.queryFailed'));
     } finally {
       // 接口调用完成后隐藏toast
       toast.hide();

@@ -16,7 +16,7 @@
       <nut-col :span="2"></nut-col>
     </nut-row>
 
-    <view class="tips">支持选择 1 至 20 个币种</view>
+    <view class="tips">{{ t('coinPicker.tips') }}</view>
 
     <div class="coin-scroll">
       <nut-cell-group>
@@ -44,25 +44,29 @@
     </div>
 
     <view class="btn-bar">
-      <nut-button type="default" style="width: 150px" @click="cancel"> 取 消 </nut-button>
-      <nut-button color="black" style="width: 150px" @click="confirm"> 确 定 ( {{ selectedCount }} ) </nut-button>
+      <nut-button type="default" style="width: 150px" @click="cancel"> {{ t('common.cancel') }} </nut-button>
+      <nut-button color="black" style="width: 150px" @click="confirm">
+        {{ t('coinPicker.confirmWithCount', { count: selectedCount }) }}
+      </nut-button>
     </view>
   </nut-popup>
 </template>
 
 <script setup lang="ts">
   import { computed, ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { Checked, CheckNormal, Search2 } from '@nutui/icons-vue';
   import { showToast } from '@nutui/nutui';
   import type { Coin } from '@/views/list/types/strategy.ts';
 
+  const { t } = useI18n();
   const emit = defineEmits<{ 'update:visible': [v: boolean]; confirm: [coins: Coin[]] }>();
   const cancel = () => emit('update:visible', false);
   const confirm = () => {
     // 获取选中的币种
     const selectedCoins = coins.value.filter((c) => c.checked);
     if (selectedCoins.length < 1) {
-      showToast.warn('请选择至少一个币种');
+      showToast.warn(t('coinPicker.selectAtLeastOne'));
       // 先检查数组是否为空
       if (coins.value.length > 0 && coins.value[0]) {
         coins.value[0].checked = true;

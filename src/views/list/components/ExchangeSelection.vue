@@ -1,7 +1,7 @@
 <template>
   <nut-row>
     <nut-col span="24">
-      <nut-cell title="选择 API" is-link @click="showPopup = true">
+      <nut-cell :title="t('exchangeSelection.title')" is-link @click="showPopup = true">
         <template #desc>
           <span style="color: black">{{ exchangeDesc }}</span>
         </template>
@@ -38,13 +38,13 @@
         <nut-row type="flex" flex-wrap="nowrap" style="border: #999">
           <nut-col span="12">
             <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-              <text style="font-size: 10px; color: #999">交易所</text>
+              <text style="font-size: 10px; color: #999">{{ t('exchangeSelection.exchangeLabel') }}</text>
               <text style="font-size: 13px">{{ getExchangeName(item.exchange) }}</text>
             </nut-space>
           </nut-col>
           <nut-col span="12">
             <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-              <text style="font-size: 10px; color: #999">Api Key</text>
+              <text style="font-size: 10px; color: #999">{{ t('exchangeSelection.apiKeyLabel') }}</text>
               <text style="font-size: 13px">{{ maskApiKey(item.access_key) }}</text>
             </nut-space>
           </nut-col>
@@ -56,6 +56,7 @@
 
 <script setup lang="ts">
   import { ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { useListStore } from '@/store/modules/list.ts';
   import type { Strategy } from '@/views/list/types/strategy.ts';
   import type { Exchange } from '@/views/list/types/exchange.ts';
@@ -67,6 +68,7 @@
   interface Emits {
     (e: 'update:strategy', value: Strategy): void;
   }
+  const { t } = useI18n();
   const emit = defineEmits<Emits>();
   const props = defineProps<Props>();
 
@@ -86,7 +88,7 @@
       okx: 'OKX',
       // 可以根据实际需求添加更多交易所
     };
-    return exchangeMap[exchangeId] || '未知交易所';
+    return exchangeMap[exchangeId] || t('common.exchangeName');
   }
 
   // 掩码API Key
@@ -97,7 +99,7 @@
   const currentItem = ref<any>(null);
   const exchangeClicked = (item: any) => {
     if (item.status !== 'active') {
-      showToast.fail('API 状态错误');
+      showToast.fail(t('exchange.apiStatusError'));
       return;
     }
     showPopup.value = false;
@@ -111,10 +113,10 @@
   // 获取状态文本
   function getStatusText(status: string): string {
     const statusMap: Record<string, string> = {
-      active: '生 效',
-      inactive: '失 效',
-      pending: '待审核',
+      active: t('common.active'),
+      inactive: t('common.inactive'),
+      pending: t('common.pending'),
     };
-    return statusMap[status] || '未知';
+    return statusMap[status] || t('common.unknown');
   }
 </script>

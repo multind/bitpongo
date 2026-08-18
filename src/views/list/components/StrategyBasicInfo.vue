@@ -10,7 +10,7 @@
         class="custom-input"
       >
         <template #left>
-          <text style="color: #666">名称</text>
+          <text style="color: #666">{{ t('basicInfo.name') }}</text>
         </template>
       </nut-input>
     </nut-col>
@@ -21,13 +21,13 @@
       <nut-input
         :model-value="props.strategy.instalment"
         @update:model-value="(value) => emit('update:strategy', { ...props.strategy, instalment: value })"
-        :placeholder="`输入定投金额${instalmentPlaceholder}`"
+        :placeholder="`${t('basicInfo.inputPlaceholder').replace('（> 0 USDT）', '')}${instalmentPlaceholder}`"
         type="number"
         input-align="right"
         class="custom-input"
       >
         <template #left>
-          <text style="color: #666">每期投入金额</text>
+          <text style="color: #666">{{ t('basicInfo.perCycleAmount') }}</text>
         </template>
       </nut-input>
     </nut-col>
@@ -36,9 +36,11 @@
 
 <script setup lang="ts">
   import { computed } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import type { Coin, Strategy } from '@/views/list/types/strategy.ts';
   import { minimumAmount } from '@/api';
 
+  const { t } = useI18n();
   const instalmentPlaceholder = ref('（> 0 USDT）');
 
   interface Props {
@@ -55,22 +57,26 @@
   // 实时计算基于币种的策略名称
   const computedName = computed(() => {
     if (props.strategy.coins.length > 3) {
-      return `${props.strategy.coins
-        .slice(0, 3)
-        .map((coin: any) => coin.symbol)
-        .join('/')}... 组合策略`;
+      return t('basicInfo.comboName', {
+        symbols: `${props.strategy.coins
+          .slice(0, 3)
+          .map((coin: any) => coin.symbol)
+          .join('/')}...`,
+      });
     } else if (props.strategy.coins.length > 1 && props.strategy.coins.length <= 3) {
-      return `${props.strategy.coins
-        .slice(0, props.strategy.coins.length)
-        .map((coin: any) => coin.symbol)
-        .join('/')} 组合策略`;
+      return t('basicInfo.comboName', {
+        symbols: props.strategy.coins
+          .slice(0, props.strategy.coins.length)
+          .map((coin: any) => coin.symbol)
+          .join('/'),
+      });
     } else if (props.strategy.coins.length > 0) {
       const coin0: Coin | undefined = props.strategy.coins[0];
       if (coin0) {
-        return `${coin0.symbol} 定投策略`;
+        return t('basicInfo.singleName', { symbol: coin0.symbol });
       }
     }
-    return '定投策略';
+    return t('basicInfo.defaultName');
   });
 
   watch(

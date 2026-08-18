@@ -1,13 +1,13 @@
 <template>
   <nut-row type="flex" justify="space-evenly" style="margin-top: 10px">
     <nut-col span="23">
-      <nut-button size="large" color="black" @click="showPopup = true"> 创建策略 </nut-button>
+      <nut-button size="large" color="black" @click="showPopup = true"> {{ t('strategy.createButton') }} </nut-button>
     </nut-col>
   </nut-row>
   <nut-popup v-model:visible="showPopup" position="bottom" round :style="{ height: '92%', paddingTop: '6%' }">
     <nut-row style="margin-top: 30px" id="strategyCreationPopup" type="flex" justify="center">
       <nut-col :span="22">
-        <div class="content">投资额</div>
+        <div class="content">{{ t('strategy.investmentAmount') }}</div>
       </nut-col>
     </nut-row>
     <nut-row type="flex" justify="center" style="margin-top: 10px; margin-bottom: 60px">
@@ -21,7 +21,7 @@
 
     <nut-row type="flex" justify="space-around">
       <nut-col :span="10">
-        <div>定投频率</div>
+        <div>{{ t('strategy.frequency') }}</div>
       </nut-col>
       <nut-col align="right" :span="10">
         <div>{{ props.strategy.frequency }}</div>
@@ -30,7 +30,7 @@
 
     <nut-row type="flex" justify="space-around" style="margin-top: 20px">
       <nut-col :span="10">
-        <div>下次买入时间</div>
+        <div>{{ t('strategy.nextBuyTime') }}</div>
       </nut-col>
       <nut-col align="right" :span="10">
         <div>{{ nextBuyTime }}</div>
@@ -39,7 +39,7 @@
 
     <nut-row type="flex" justify="space-around" style="margin-top: 20px">
       <nut-col :span="10">
-        <div>买入币种</div>
+        <div>{{ t('strategy.buyCoins') }}</div>
       </nut-col>
       <nut-col style="text-align: right" :span="10">
         <nut-avatar-group size="25" max-count="3" z-index="left" style="display: inline-flex">
@@ -52,20 +52,20 @@
 
     <nut-row type="flex" justify="space-around" style="margin-top: 20px">
       <nut-col :span="10">
-        <div>买入价格区间</div>
+        <div>{{ t('strategy.buyPriceRange') }}</div>
       </nut-col>
       <nut-col align="right" :span="10">
         <div>
-          <text style="border-bottom: 1px dashed #999" @click="handleIntervalClick('#strategyCreationPopup')"
-            >已设置{{ strategy.coins.length }}个币种</text
-          >
+          <text style="border-bottom: 1px dashed #999" @click="handleIntervalClick('#strategyCreationPopup')">{{
+            t('strategy.setCoinsCount', { count: strategy.coins.length })
+          }}</text>
         </div>
       </nut-col>
     </nut-row>
 
     <nut-row type="flex" justify="space-around" style="margin-top: 20px">
       <nut-col :span="8">
-        <div>名称</div>
+        <div>{{ t('strategy.name') }}</div>
       </nut-col>
       <nut-col align="right" :span="12">
         <div>{{ strategyNamePlaceholder }}</div>
@@ -81,14 +81,14 @@
     <nut-row type="flex" justify="space-around">
       <nut-col :span="22">
         <text style="font-size: 13px; color: #999">
-          风险提示：定投买入时会使用您的交易账户中的资产买入目标币种，请确认您的账户余额充足。
+          {{ t('strategy.riskNotice') }}
         </text>
       </nut-col>
     </nut-row>
 
     <nut-row type="flex" justify="space-evenly" style="margin-top: 40px">
       <nut-col span="22">
-        <nut-button size="large" color="black" @click="confirmCreation"> 确 认 </nut-button>
+        <nut-button size="large" color="black" @click="confirmCreation"> {{ t('common.confirm') }} </nut-button>
       </nut-col>
     </nut-row>
   </nut-popup>
@@ -96,6 +96,7 @@
 
 <script setup lang="ts">
   import { computed, ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { showDialog } from '@nutui/nutui';
   import type { Coin, Strategy } from '@/views/list/types/strategy.ts';
   import { CronExpressionParser } from 'cron-parser';
@@ -109,6 +110,7 @@
     (e: 'update:strategy', strategy: Strategy): void;
   }
 
+  const { t } = useI18n();
   const props = defineProps<Props>();
 
   const emit = defineEmits<Emits>();
@@ -151,14 +153,14 @@
       });
       coinsContent += '</div>';
     } else {
-      coinsContent = '<p>暂无币种配置</p>';
+      coinsContent = `<p>${t('strategy.noCoins')}</p>`;
     }
 
     // 可以在这里添加跳转到币种详情页或其他交互逻辑
     showDialog({
       textAlign: 'center',
       teleport,
-      title: '币种 | 目标比例',
+      title: t('strategy.coinProportionTitle'),
       content: coinsContent,
       noCancelBtn: true,
       onCancel: () => {
@@ -188,13 +190,13 @@
       });
       coinsContent += '</div>';
     } else {
-      coinsContent = '<p>暂无币种区间配置</p>';
+      coinsContent = `<p>${t('strategy.noRange')}</p>`;
     }
     // 可以在这里添加跳转到币种详情页或其他交互逻辑
     showDialog({
       textAlign: 'center',
       teleport,
-      title: '币种 | 价格区间',
+      title: t('strategy.priceRangeTitle'),
       content: coinsContent,
       noCancelBtn: true,
       onCancel: () => {
@@ -209,22 +211,26 @@
   const computedDefaultName = () => {
     if (props.strategy.coins.length > 3) {
       // 修改条件为大于3
-      return `${props.strategy.coins
-        .slice(0, 3)
-        .map((coin: any) => coin.symbol)
-        .join('/')}... 组合策略`;
+      return t('strategy.comboName', {
+        symbols: `${props.strategy.coins
+          .slice(0, 3)
+          .map((coin: any) => coin.symbol)
+          .join('/')}...`,
+      });
     } else if (props.strategy.coins.length > 0) {
       if (props.strategy.coins.length === 1) {
         const coin0: Coin | undefined = props.strategy.coins[0];
         if (coin0) {
-          return `${coin0.symbol} 定投策略`;
+          return t('strategy.singleName', { symbol: coin0.symbol });
         }
       } else {
         // 2-3个币种的情况：直接列出所有币种，不加...
-        return `${props.strategy.coins.map((coin: any) => coin.symbol).join('/')} 组合策略`;
+        return t('strategy.comboName', {
+          symbols: props.strategy.coins.map((coin: any) => coin.symbol).join('/'),
+        });
       }
     }
-    return '定投策略';
+    return t('strategy.defaultName');
   };
 
   // 计算下次买入时间
@@ -235,10 +241,10 @@
         const nextDate = interval.next().toDate();
         return formatDate(nextDate);
       }
-      return '未设置';
+      return t('common.notSet');
     } catch (error) {
       console.error('解析 cron 表达式失败:', error);
-      return '解析失败';
+      return t('common.parseFailed');
     }
   });
 

@@ -1,7 +1,7 @@
 <template>
   <nut-row>
     <nut-col span="24">
-      <nut-cell title="逢低买入" is-link @click="showPopup = true">
+      <nut-cell :title="t('coinAverageDown.title')" is-link @click="showPopup = true">
         <template #desc>
           <span style="color: black">{{ coinAverageDownDesc }}</span>
         </template>
@@ -21,13 +21,13 @@
 
       <nut-row type="flex" justify="space-evenly" style="margin-top: 20px">
         <nut-col span="22">
-          <text style="font-size: 13px"> 在您设定的定投频率的基础上，当价格低于平均价格时，才按比例买入数字货币。 </text>
+          <text style="font-size: 13px"> {{ t('coinAverageDown.description') }} </text>
         </nut-col>
       </nut-row>
 
       <nut-row type="flex" justify="space-evenly" style="margin-top: 40px">
         <nut-col span="22">
-          <text style="font-size: 13px">设置平均价格</text>
+          <text style="font-size: 13px">{{ t('coinAverageDown.setAveragePrice') }}</text>
         </nut-col>
       </nut-row>
 
@@ -35,15 +35,15 @@
         <nut-col span="22">
           <!-- 使用本地副本 localCondition 替代 props.strategy.condition -->
           <nut-radio-group v-model="localCondition" direction="horizontal">
-            <nut-radio label="total_average" shape="button">按币对持仓的平均价格</nut-radio>
-            <nut-radio label="last_average" shape="button">按最近订单的成交均价</nut-radio>
+            <nut-radio label="total_average" shape="button">{{ t('coinAverageDown.byPositionAverage') }}</nut-radio>
+            <nut-radio label="last_average" shape="button">{{ t('coinAverageDown.byLastOrderAverage') }}</nut-radio>
           </nut-radio-group>
         </nut-col>
       </nut-row>
 
       <nut-row type="flex" justify="space-evenly" style="margin-top: 40px">
         <nut-col span="22">
-          <nut-button size="large" color="black" @click="confirmDistribution">确认</nut-button>
+          <nut-button size="large" color="black" @click="confirmDistribution">{{ t('coinAverageDown.confirm') }}</nut-button>
         </nut-col>
       </nut-row>
     </nut-popup>
@@ -52,12 +52,14 @@
 
 <script setup lang="ts">
   import { ref, watch } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import type { Strategy } from '@/views/list/types/strategy.ts';
 
   interface Props {
     strategy: Strategy;
   }
 
+  const { t } = useI18n();
   const props = defineProps<Props>();
 
   // 创建本地副本避免直接修改 prop
@@ -76,7 +78,7 @@
   // 确认分配比例
   const confirmDistribution = () => {
     showPopup.value = false;
-    coinAverageDownDesc.value = `已设置 ${localCoins.value.length} 个币种`;
+    coinAverageDownDesc.value = t('coinAverageDown.setCount', { count: localCoins.value.length });
     // 将本地修改后的数据通过事件传递给父组件
     emit('confirm', {
       ...props.strategy,

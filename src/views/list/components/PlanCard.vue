@@ -17,7 +17,7 @@
         <nut-row>
           <nut-col span="8">
             <text style="font-size: 12px; color: #999" :style="{ color: plan.status === 'stop' ? '#FFA900' : '' }">
-              {{ plan.status === 'stop' ? '已暂停' : runTimeText }}
+              {{ plan.status === 'stop' ? t('planCard.paused') : runTimeText }}
             </text>
           </nut-col>
         </nut-row>
@@ -27,7 +27,7 @@
           <template #icon>
             <Share />
           </template>
-          分享
+          {{ t('planCard.share') }}
         </nut-button>
       </nut-col>
     </nut-row>
@@ -35,13 +35,13 @@
     <nut-row align="flex-start" type="flex" justify="space-around" wrap>
       <nut-col :span="12">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">累计投入 (USDT)</text>
+          <text style="font-size: 12px; color: #999">{{ t('planCard.totalInvested') }}</text>
           <text style="font-size: 15px">{{ plan.total_funds }}</text>
         </nut-space>
       </nut-col>
       <nut-col align="right" :span="12">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">总收益 (USDT)</text>
+          <text style="font-size: 12px; color: #999">{{ t('planCard.totalReturn') }}</text>
           <text style="font-size: 15px">{{ plan.total_revenue }} ({{ plan.total_ratio }}%)</text>
         </nut-space>
       </nut-col>
@@ -50,7 +50,7 @@
     <nut-row align="flex-start" type="flex" justify="flex-start" flex-wrap="wrap">
       <nut-col align="left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">币种 | 目标比例</text>
+          <text style="font-size: 12px; color: #999">{{ t('planCard.coinProportion') }}</text>
           <text style="font-size: 15px; border-bottom: 1px dashed #999" @click="handleCoinClick('coinProportion')">
             {{ coinProportionText }}
           </text>
@@ -58,31 +58,31 @@
       </nut-col>
       <nut-col align="center-left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">定投频率 / 已触发次数</text>
+          <text style="font-size: 12px; color: #999">{{ t('planCard.frequencyTriggered') }}</text>
           <text style="font-size: 15px">{{ plan.strategy.frequency }} / {{ plan.triggered_count }}</text>
         </nut-space>
       </nut-col>
       <nut-col align="left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">每期金额 (USDT)</text>
+          <text style="font-size: 12px; color: #999">{{ t('planCard.perCycleAmount') }}</text>
           <text style="font-size: 15px">{{ plan.strategy.instalment }}</text>
         </nut-space>
       </nut-col>
       <nut-col align="center-left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">交易所</text>
+          <text style="font-size: 12px; color: #999">{{ t('common.exchange') }}</text>
           <text style="font-size: 15px">Binance</text>
         </nut-space>
       </nut-col>
       <nut-col align="left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">定投均价 (USDT)</text>
+          <text style="font-size: 12px; color: #999">{{ t('planCard.avgPrice') }}</text>
           <text style="font-size: 15px; border-bottom: 1px dashed #999" @click="handleCoinClick('coinAverage')">{{ coinAverageText }}</text>
         </nut-space>
       </nut-col>
       <nut-col align="center-left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">下次买入时间</text>
+          <text style="font-size: 12px; color: #999">{{ t('planCard.nextBuyTime') }}</text>
           <text style="font-size: 15px">{{ nextBuyTimeText }}</text>
         </nut-space>
       </nut-col>
@@ -101,7 +101,7 @@
             <PlayStop v-if="plan.status === 'active'" />
             <PlayStart v-else />
           </template>
-          {{ plan.status === 'active' ? '暂停' : '启动' }}
+          {{ plan.status === 'active' ? t('planCard.pause') : t('planCard.start') }}
         </nut-button>
       </nut-col>
       <nut-col align="right" :span="6">
@@ -109,7 +109,7 @@
           <template #icon>
             <CheckDisabled />
           </template>
-          停止
+          {{ t('planCard.stop') }}
         </nut-button>
       </nut-col>
       <nut-col align="right" :span="6">
@@ -117,7 +117,7 @@
           <template #icon>
             <Order />
           </template>
-          详情
+          {{ t('planCard.details') }}
         </nut-button>
       </nut-col>
     </nut-row>
@@ -126,6 +126,7 @@
 
 <script setup lang="ts">
   import { computed, onMounted } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { CheckDisabled, Order, PlayStart, PlayStop, Share } from '@nutui/icons-vue';
   import { Chart } from 'chart.js/auto';
   import { useRouter } from 'vue-router';
@@ -143,6 +144,7 @@
     (e: 'update-status'): void;
   }
 
+  const { t } = useI18n();
   const emit = defineEmits<Emits>(); // 添加 emit 定义
 
   const props = defineProps<Props>();

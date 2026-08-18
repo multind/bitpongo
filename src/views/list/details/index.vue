@@ -1,6 +1,6 @@
 <template>
   <div v-if="loading" class="loading-container">
-    <text style="margin-left: 10px">加载中...</text>
+    <text style="margin-left: 10px">{{ t('common.loading') }}</text>
   </div>
 
   <div v-else-if="plan">
@@ -10,14 +10,14 @@
         >&nbsp;<Edit width="13px" height="13px" @click="strategyNameHandler(plan.strategy.name)" />
       </nut-col>
       <nut-col align="right" span="6">
-        <text style="font-size: 15px">{{ plan.status === 'active' ? '运行中' : '已暂停' }}</text>
+        <text style="font-size: 15px">{{ plan.status === 'active' ? t('details.running') : t('details.paused') }}</text>
       </nut-col>
     </nut-row>
 
     <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 5px">
       <nut-col align="left" span="24">
         <nut-space>
-          <nut-tag style="font-size: 11px">定投策略</nut-tag>
+          <nut-tag style="font-size: 11px">{{ t('details.dcaStrategyTag') }}</nut-tag>
           <nut-tag style="font-size: 11px">Binance</nut-tag>
         </nut-space>
       </nut-col>
@@ -30,7 +30,8 @@
         </nut-space>
       </nut-col>
       <nut-col align="right" span="12">
-        <text style="font-size: 13px; color: #999">创建</text>&nbsp;
+        <text style="font-size: 13px; color: #999">{{ t('details.created') }}</text
+        >&nbsp;
         <text style="font-size: 13px; color: #999">{{ formatDateTime(plan.created_at) }}</text>
       </nut-col>
     </nut-row>
@@ -60,7 +61,7 @@
       <nut-tab-pane pane-key="c1">
         <nut-row>
           <nut-col>
-            <text>总收益（USDT）</text>
+            <text>{{ t('details.totalReturn') }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -73,7 +74,7 @@
         <nut-divider :hairline="true" style="margin-top: 10px; margin-bottom: 10px" />
         <nut-row type="flex" justify="space-between" wrap="nowrap">
           <nut-col span="12">
-            <text>金额</text>
+            <text>{{ t('details.amount') }}</text>
           </nut-col>
           <nut-col align="right" span="12">
             <text>{{ plan.total_value }} USDT</text>
@@ -82,7 +83,7 @@
 
         <nut-row type="flex" justify="space-between" wrap="nowrap">
           <nut-col span="18">
-            <text>累计定投</text>
+            <text>{{ t('details.totalInvested') }}</text>
           </nut-col>
 
           <nut-col align="right" span="6">
@@ -92,7 +93,7 @@
 
         <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 40px">
           <nut-col span="24">
-            <text style="font-size: 16px">收益变化</text>
+            <text style="font-size: 16px">{{ t('details.returnTrend') }}</text>
           </nut-col>
         </nut-row>
 
@@ -106,7 +107,7 @@
       <nut-tab-pane pane-key="c2">
         <nut-row type="flex">
           <nut-col span="12">
-            <text>买入币对的计价</text>
+            <text>{{ t('details.quoteCurrency') }}</text>
           </nut-col>
           <nut-col align="right" span="12">
             <text>USDT</text>
@@ -114,7 +115,7 @@
         </nut-row>
         <nut-row type="flex" style="margin-top: 10px">
           <nut-col span="12">
-            <text>定投频率</text>
+            <text>{{ t('details.frequency') }}</text>
           </nut-col>
           <nut-col align="right" span="12">
             <text>{{ plan.strategy.frequency }}</text>
@@ -122,7 +123,7 @@
         </nut-row>
         <nut-row type="flex" style="margin-top: 10px">
           <nut-col span="12">
-            <text>下次买入时间</text>
+            <text>{{ t('details.nextBuyTime') }}</text>
           </nut-col>
           <nut-col align="right" span="12">
             <text>{{ formatDateTime(plan.next_time) }}</text>
@@ -130,7 +131,7 @@
         </nut-row>
         <nut-row type="flex" style="margin-top: 10px">
           <nut-col span="12">
-            <text>每期金额</text>
+            <text>{{ t('details.perCycleAmount') }}</text>
           </nut-col>
           <nut-col align="right" span="12">
             <text>{{ plan.strategy.instalment }} USDT</text>
@@ -138,7 +139,7 @@
         </nut-row>
         <nut-row type="flex" style="margin-top: 10px">
           <nut-col span="12">
-            <text>已触发定投期数</text>
+            <text>{{ t('details.triggeredCycles') }}</text>
           </nut-col>
           <nut-col align="right" span="12">
             <text>{{ plan.triggered_count }}</text>
@@ -146,7 +147,7 @@
         </nut-row>
         <nut-row type="flex" style="margin-top: 10px">
           <nut-col span="12">
-            <text>交易币种</text>
+            <text>{{ t('details.tradeCurrency') }}</text>
           </nut-col>
           <nut-col align="right" span="12">
             <text>USDT</text>
@@ -156,7 +157,7 @@
         <nut-divider :hairline="true" style="margin-top: 20px; margin-bottom: 20px" />
         <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-bottom: 10px">
           <nut-col>
-            <text style="font-size: 18px">币种配置</text>
+            <text style="font-size: 18px">{{ t('details.coinConfig') }}</text>
           </nut-col>
         </nut-row>
 
@@ -167,13 +168,13 @@
               <text> {{ coin.symbol }} </text>&nbsp;|&nbsp;<text>{{ coin.proportion }}%</text>
             </nut-col>
             <nut-col align="right">
-              <text>{{ currentPrices[coin.symbol] || '加载中...' }}</text>
+              <text>{{ currentPrices[coin.symbol] || t('common.loading') }}</text>
             </nut-col>
           </nut-row>
 
           <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-bottom: 10px">
             <nut-col>
-              <text>价格区间</text>
+              <text>{{ t('details.priceRange') }}</text>
             </nut-col>
             <nut-col align="right">
               <text>{{ coin.min || '' }} - {{ coin.max || '' }}</text>
@@ -182,7 +183,7 @@
 
           <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-bottom: 10px">
             <nut-col>
-              <text>累计购入数量</text>
+              <text>{{ t('details.totalPurchased') }}</text>
             </nut-col>
             <nut-col align="right">
               <text>{{ coin.total_amount || '' }}</text>
@@ -191,7 +192,7 @@
 
           <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-bottom: 10px">
             <nut-col>
-              <text>定投收益（USDT）</text>
+              <text>{{ t('details.dcaReturn') }}</text>
             </nut-col>
             <nut-col align="right">
               <text>{{ coin.income || '' }}</text>
@@ -200,7 +201,7 @@
 
           <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-bottom: 10px">
             <nut-col>
-              <text>定投均价（USDT)</text>
+              <text>{{ t('details.dcaAvgPrice') }}</text>
             </nut-col>
             <nut-col align="right">
               <text>{{ coin.average }}</text>
@@ -224,7 +225,7 @@
                     </nut-row>
                     <nut-row type="flex" justify="start" wrap="nowrap">
                       <nut-col span="4">
-                        <nut-tag style="font-size: 12px">买入</nut-tag>
+                        <nut-tag style="font-size: 12px">{{ t('common.buy') }}</nut-tag>
                       </nut-col>
                       <nut-col span="12">
                         <text>{{ formatDateTime(order.created_at) }}</text>
@@ -238,7 +239,7 @@
                 </nut-row>
                 <nut-row type="flex" justify="start" wrap="nowrap" style="margin-top: 10px">
                   <nut-col span="12">
-                    <text style="color: #999">成交均价</text>
+                    <text style="color: #999">{{ t('details.filledAvgPrice') }}</text>
                   </nut-col>
                   <nut-col align="right" span="12">
                     <text>{{ order.average_price }} USDT</text>
@@ -246,7 +247,7 @@
                 </nut-row>
                 <nut-row type="flex" justify="start" wrap="nowrap" style="margin-top: 10px">
                   <nut-col span="12">
-                    <text style="color: #999">已成交</text>
+                    <text style="color: #999">{{ t('details.tradeDetailsTitle') }}</text>
                   </nut-col>
                   <nut-col align="right" span="12">
                     <text>{{ order.total_amount }} USDT</text>
@@ -262,7 +263,7 @@
             </div>
             <nut-empty v-else>
               <template #image>
-                <img src="@/assets/empty.svg" alt="暂无数据" />
+                <img src="@/assets/empty.svg" :alt="t('list.emptyAlt')" />
               </template>
             </nut-empty>
           </nut-infinite-loading>
@@ -277,13 +278,13 @@
             <template #icon>
               <PlayStop />
             </template>
-            暂停
+            {{ t('planCard.pause') }}
           </nut-button>
           <nut-button v-else @click="handleClick('active')">
             <template #icon>
               <PlayStart />
             </template>
-            重启
+            {{ t('planCard.resume') }}
           </nut-button>
         </nut-col>
         <nut-col align="center" :span="12">
@@ -291,7 +292,7 @@
             <template #icon>
               <CheckDisabled />
             </template>
-            停止
+            {{ t('planCard.stop') }}
           </nut-button>
         </nut-col>
       </nut-row>
@@ -299,9 +300,9 @@
   </div>
 
   <div v-else class="empty-container">
-    <nut-empty description="数据加载失败">
+    <nut-empty :description="t('common.loadDataFailed')">
       <template #image>
-        <img src="@/assets/empty.svg" alt="数据加载失败" />
+        <img src="@/assets/empty.svg" :alt="t('common.loadDataFailed')" />
       </template>
     </nut-empty>
   </div>
@@ -316,7 +317,7 @@
   >
     <nut-row style="margin-top: 23px; text-align: center" type="flex">
       <nut-col span="24">
-        <div style="font-size: 18px">成交明细</div>
+        <div style="font-size: 18px">{{ t('details.tradeDetailsTitle') }}</div>
       </nut-col>
     </nut-row>
     <nut-row type="flex" justify="space-around" style="margin-top: 20px">
@@ -328,7 +329,7 @@
         </nut-row>
         <nut-row type="flex" justify="start" wrap="nowrap">
           <nut-col span="3">
-            <nut-tag style="font-size: 12px">买入</nut-tag>
+            <nut-tag style="font-size: 12px">{{ t('common.buy') }}</nut-tag>
           </nut-col>
           <nut-col span="12">
             <text>{{ formatDateTime(currentOrder?.created_at) }}</text>
@@ -340,7 +341,7 @@
       <nut-col span="10">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 14px; color: #999">成交总额（USDT）</text>
+            <text style="font-size: 14px; color: #999">{{ t('details.filledTotal') }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -350,7 +351,7 @@
       <nut-col span="10">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 14px; color: #999">成交均价（USDT）</text>
+            <text style="font-size: 14px; color: #999">{{ t('details.filledAvgPrice') }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -362,7 +363,9 @@
       <nut-col span="10">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 14px; color: #999">成交数量（{{ currentOrder?.symbol.split('/')[0] }}）</text>
+            <text style="font-size: 14px; color: #999">{{
+              t('details.filledQuantity', { symbol: currentOrder?.symbol.split('/')[0] })
+            }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -372,7 +375,7 @@
       <nut-col span="10">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 14px; color: #999">手续费（{{ currentOrder?.symbol.split('/')[0] }}）</text>
+            <text style="font-size: 14px; color: #999">{{ t('details.fee', { symbol: currentOrder?.symbol.split('/')[0] }) }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -392,13 +395,13 @@
   >
     <nut-row style="margin-top: 23px; text-align: center" type="flex">
       <nut-col span="24">
-        <div style="font-size: 18px">修改策略名称</div>
+        <div style="font-size: 18px">{{ t('details.editStrategyName') }}</div>
       </nut-col>
     </nut-row>
 
     <nut-row type="flex" justify="space-around" style="margin-top: 20px">
       <nut-col span="22">
-        <text style="font-size: 15px; font-weight: bold">策略名称</text>
+        <text style="font-size: 15px; font-weight: bold">{{ t('details.strategyName') }}</text>
       </nut-col>
     </nut-row>
 
@@ -406,7 +409,7 @@
       <nut-col span="22">
         <nut-input
           v-model="strategyName"
-          placeholder="请输入策略名称"
+          :placeholder="t('details.strategyNamePlaceholder')"
           :border="true"
           style="background-color: #eee; border: #999 1px solid; border-radius: 5px"
         />
@@ -416,7 +419,7 @@
       <nut-row type="flex" justify="center" :gutter="10" style="margin-top: 20px">
         <nut-col :span="22">
           <nut-button size="large" style="background-color: #101010" @click="strategyNameUpdateHandler">
-            <text style="color: whitesmoke"> 保 存 </text>
+            <text style="color: whitesmoke"> {{ t('common.save') }} </text>
           </nut-button>
         </nut-col>
       </nut-row>
@@ -426,6 +429,7 @@
 
 <script setup lang="ts">
   import { useRoute } from 'vue-router';
+  import { useI18n } from 'vue-i18n';
   import { CheckDisabled, Edit, MoreX, PlayStart, PlayStop } from '@nutui/icons-vue';
   import { computed, onMounted, ref } from 'vue';
 
@@ -434,6 +438,7 @@
   import { calculateRunTime, formatDateTime } from '@/utils/timeUtils';
   import { useWebSocketBase } from '@/utils/useWebSocket';
 
+  const { t } = useI18n();
   const route = useRoute();
   const planIdQuery = route.query.planId;
   const planId = Array.isArray(planIdQuery) ? planIdQuery[0] : planIdQuery;
@@ -446,15 +451,15 @@
   const value = ref('c1');
   const list = ref([
     {
-      title: '收益详情',
+      title: t('details.tabs.returns'),
       paneKey: 'c1',
     },
     {
-      title: '策略信息',
+      title: t('details.tabs.strategyInfo'),
       paneKey: 'c2',
     },
     {
-      title: '成交记录',
+      title: t('details.tabs.trades'),
       paneKey: 'c3',
     },
   ]);
@@ -470,7 +475,7 @@
 
   const strategyNameUpdateHandler = () => {
     plan.value.strategy.name = strategyName.value;
-    console.log('保存成功');
+    console.log(t('details.saveSuccess'));
     // updatePlanName(plan.value.id, strategyName.value)
     //   .then(() => {
     //     emit('update-name');

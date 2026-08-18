@@ -2,14 +2,14 @@
   <nut-row type="flex" justify="center" flex-wrap="nowrap" style="margin: 10px 0">
     <nut-col span="22">
       <text style="font-size: 12px; color: grey">
-        “API密钥”是API用于验证和授权调用用户或应用程序的唯一代码或一组唯一代码。有些代码用于验证，有些则用于创建加密签名以证明请求的合法性。
+        {{ t('exchange.apiIntro') }}
       </text>
     </nut-col>
   </nut-row>
 
   <nut-row type="flex" justify="center" flex-wrap="nowrap" style="margin: 20px 0">
     <nut-col span="22">
-      <text style="font-size: 13px; color: black; border-bottom: 1px dashed #999"> 查看如何创建API密钥 </text>
+      <text style="font-size: 13px; color: black; border-bottom: 1px dashed #999"> {{ t('exchange.howTo') }} </text>
     </nut-col>
   </nut-row>
 
@@ -35,7 +35,7 @@
     <nut-row type="flex" flex-wrap="nowrap">
       <nut-col span="12">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 10px; color: grey">交易所</text>
+          <text style="font-size: 10px; color: grey">{{ t('common.exchange') }}</text>
           <text style="font-size: 13px">{{ getExchangeName(item.exchange) }}</text>
         </nut-space>
       </nut-col>
@@ -49,7 +49,7 @@
     <nut-row type="flex" flex-wrap="nowrap" style="border: #999">
       <nut-col span="12">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 10px; color: gray">状态</text>
+          <text style="font-size: 10px; color: gray">{{ t('common.status') }}</text>
           <nut-tag
             :color="item.status === 'active' ? 'green' : 'grey'"
             :style="{ fontWeight: 'bold', fontSize: '12px', textAlign: 'center', lineHeight: '20px', fontFamily: 'Arial' }"
@@ -60,7 +60,7 @@
       </nut-col>
       <nut-col span="12">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 10px; color: #999">创建时间</text>
+          <text style="font-size: 10px; color: #999">{{ t('common.createTime') }}</text>
           <text style="font-size: 13px">{{ formatDate(item.created_at) }}</text>
         </nut-space>
       </nut-col>
@@ -69,10 +69,10 @@
 
   <nut-row type="flex" justify="center" flex-wrap="nowrap">
     <nut-col span="22">
-      <nut-button color="#101010" block size="large" @click="goCreate">创建 API</nut-button>
+      <nut-button color="#101010" block size="large" @click="goCreate">{{ t('exchange.createButton') }}</nut-button>
     </nut-col>
   </nut-row>
-  <nut-action-sheet v-model:visible="more" :menu-items="menuItems" cancel-txt="取消" @choose="choose" />
+  <nut-action-sheet v-model:visible="more" :menu-items="menuItems" :cancel-txt="t('common.cancel')" @choose="choose" />
 </template>
 
 <script setup lang="ts">
@@ -80,9 +80,12 @@
   import { useRouter } from 'vue-router';
   import { MoreX } from '@nutui/icons-vue';
   import { onMounted, ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { deleteExchange } from '@/api';
+  import { showToast } from '@nutui/nutui';
   import type { Exchange } from '@/views/list/types/exchange';
 
+  const { t } = useI18n();
   const listStore = useListStore();
   const listData = ref<Exchange[]>([]);
 
@@ -98,7 +101,7 @@
       binance: 'Binance',
       okx: 'OKX',
     };
-    return exchangeMap[exchangeId] || '未知交易所';
+    return exchangeMap[exchangeId] || t('common.exchangeName');
   }
 
   // 掩码API Key
@@ -110,11 +113,11 @@
   // 获取状态文本
   function getStatusText(status: string): string {
     const statusMap: Record<string, string> = {
-      active: '生效',
-      inactive: '失效',
-      pending: '待审核',
+      active: t('common.active'),
+      inactive: t('common.inactive'),
+      pending: t('common.pending'),
     };
-    return statusMap[status] || '未知';
+    return statusMap[status] || t('common.unknown');
   }
 
   // 格式化日期
@@ -129,11 +132,11 @@
   const router = useRouter();
   const menuItems = [
     {
-      name: '查看',
+      name: t('common.view'),
       value: 'view',
     },
     {
-      name: '删除',
+      name: t('common.delete'),
       value: 'delete',
     },
   ];
@@ -151,10 +154,10 @@
       more.value = false;
 
       // 显示删除成功提示
-      showToast('删除成功');
+      showToast.text(t('common.deleteSuccess'));
     } catch (error) {
       console.error('删除失败:', error);
-      showToast('删除失败');
+      showToast.text(t('common.deleteFailed'));
     }
   };
 

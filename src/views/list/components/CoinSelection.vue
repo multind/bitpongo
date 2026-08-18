@@ -8,7 +8,7 @@
       </nut-avatar-group>
     </nut-col>
     <nut-col :span="6">
-      <nut-button size="small" @click="coinChoice = true">选择币种</nut-button>
+      <nut-button size="small" @click="coinChoice = true">{{ t('strategy.buyCoins') }}</nut-button>
       <CoinPicker v-model:visible="coinChoice" @confirm="handleCoinConfirm" />
     </nut-col>
   </nut-row>
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
   import { ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import type { Coin, Strategy } from '@/views/list/types/strategy.ts';
   import CoinPicker from '../components/CoinPicker.vue';
 
@@ -27,6 +28,7 @@
     (e: 'update:selectedCoins', value: Coin[]): void;
   }
 
+  const { t } = useI18n();
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
 

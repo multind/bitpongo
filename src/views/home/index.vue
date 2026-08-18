@@ -4,7 +4,7 @@
       <nut-col span="12">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 12px; color: #999">总资产估值</text>
+            <text style="font-size: 12px; color: #999">{{ t('home.totalValue') }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -21,10 +21,10 @@
       </nut-col>
     </nut-row>
     <nut-tabs align="left" size="normal" swipeable :ellipsis="false" style="font-size: 14px">
-      <nut-tab-pane title="策略" pane-key="1">
+      <nut-tab-pane :title="t('home.strategy')" pane-key="1">
         <nut-row type="flex" justify="space-around" style="margin-top: 10px; border-bottom: 1px dashed #ccc">
           <nut-col span="12">
-            <text>策略广场</text>
+            <text>{{ t('home.strategySquare') }}</text>
           </nut-col>
           <nut-col align="right" span="12">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" @click="showTips">
@@ -51,7 +51,7 @@
                   "
                   @click="showSortList"
                 >
-                  <text style="font-size: 12px">收益额</text>
+                  <text style="font-size: 12px">{{ t('home.revenueAmount') }}</text>
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
                     <path fill="currentColor" stroke="currentColor" stroke-linejoin="round" stroke-width="4" d="M36 19L24 31L12 19z" />
                   </svg>
@@ -111,7 +111,9 @@
                 <nut-row type="flex" justify="start" style="padding: 5px 0">
                   <nut-col align="left" span="5">
                     <nut-tag>
-                      <template #default> <text style="font-size: 12px; color: whitesmoke">定投策略</text> </template>
+                      <template #default>
+                        <text style="font-size: 12px; color: whitesmoke">{{ t('list.dcaStrategy') }}</text>
+                      </template>
                     </nut-tag>
                   </nut-col>
                   <nut-col align="left" span="17">
@@ -122,7 +124,7 @@
               <nut-col align="right" span="4" style="padding: 5px 0">
                 <nut-button size="small" color="linear-gradient(to right, #101010, #112233)" @click="useHandler">
                   <template #default>
-                    <text style="font-size: 12px; color: white">使用</text>
+                    <text style="font-size: 12px; color: white">{{ t('home.use') }}</text>
                   </template>
                 </nut-button>
               </nut-col>
@@ -132,7 +134,7 @@
               <nut-col span="12" align="center-left" style="padding: 10px 0">
                 <nut-row type="flex" style="margin: 3px 0">
                   <nut-col span="24">
-                    <text style="font-size: 10px; color: #999">收益</text>
+                    <text style="font-size: 10px; color: #999">{{ t('home.revenue') }}</text>
                   </nut-col>
                 </nut-row>
                 <nut-row type="flex" style="margin: 3px 0">
@@ -151,7 +153,9 @@
 
             <nut-row>
               <nut-col span="12">
-                <text style="font-size: 10px; color: #999">运行时长 560 日 18 小时 39 分</text>
+                <text style="font-size: 10px; color: #999"
+                  >{{ t('home.runtime') }} 560 {{ t('common.dayUnit') }} 18 {{ t('common.hourUnit') }} 39 {{ t('common.minuteUnit') }}</text
+                >
               </nut-col>
               <nut-col align="right" span="12" style="display: flex; align-items: center; justify-content: end">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -168,7 +172,7 @@
 
             <nut-row>
               <nut-col span="12">
-                <text style="font-size: 10px; color: #999">七日最大回撤率 14.00%</text>
+                <text style="font-size: 10px; color: #999">{{ t('home.maxDrawdown7d') }} 14.00%</text>
               </nut-col>
               <nut-col align="right" span="12">
                 <nut-avatar-group size="15" max-count="3" max-content="..." z-index="left" style="display: inline-flex">
@@ -183,71 +187,69 @@
       </nut-tab-pane>
     </nut-tabs>
     <nut-popup v-model:visible="searchPopup" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '60%' }">
-      搜索名称
+      {{ t('home.searchName') }}
     </nut-popup>
     <nut-popup v-model:visible="filterPopup" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '60%' }">
-      <text>币种</text>
-      <text>运行时长</text>
-      <text>收益率</text>
-      <nut-button type="primary">重置</nut-button>
-      <nut-button type="primary">确定</nut-button>
+      <text>{{ t('home.coin') }}</text>
+      <text>{{ t('home.runtime') }}</text>
+      <text>{{ t('home.returnRate') }}</text>
+      <nut-button type="primary">{{ t('common.reset') }}</nut-button>
+      <nut-button type="primary">{{ t('common.confirm') }}</nut-button>
     </nut-popup>
 
     <nut-popup v-model:visible="tipsPopup" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '60%' }">
-      <p>策略广场</p>
-      <p>策略广场策略展示规则:</p>
+      <p>{{ t('home.strategySquare') }}</p>
+      <p>{{ t('home.squareRulesTitle') }}</p>
       <ul>
-        <li>运行时长>10 分钟</li>
-        <li>收益率≥0%(带单策略不受此规则限制)</li>
-        <li>策略投资额>50 USDT(仅带单策略受此规则限制)</li>
-        <li>合约类策略的杠杆倍数≤20</li>
-        <li>排名每小时刷新1次</li>
+        <li>{{ t('home.squareRules.line1') }}</li>
+        <li>{{ t('home.squareRules.line2') }}</li>
+        <li>{{ t('home.squareRules.line3') }}</li>
+        <li>{{ t('home.squareRules.line4') }}</li>
+        <li>{{ t('home.squareRules.line5') }}</li>
       </ul>
-      <p
-        >综合排序是根据策略的收益率、投资额、风险、跟单者收益等多个维度综合加权计算后的排名情况。其中，策略跟单的排序还会考虑到分润比例。</p
-      >
-      <p>您的所有策略将默认参与策略广场排名，您可在交易设置中关闭展示;复制而来的策略不参与策略广场排名。</p>
+      <p>{{ t('home.rankingDesc') }}</p>
+      <p>{{ t('home.rankingPrivacy') }}</p>
     </nut-popup>
 
     <nut-popup v-model:visible="sortPopup" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '50%' }">
       <nut-row>
         <nut-col span="12">
-          <text>综合排序</text>
+          <text>{{ t('home.sortComposite') }}</text>
         </nut-col>
         <nut-col align="right" span="12">
-          <text>默认</text>
+          <text>{{ t('home.default') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
         <nut-col span="12">
-          <text>收益额从高到低</text>
+          <text>{{ t('home.sortByRevenue') }}</text>
         </nut-col>
         <nut-col align="right" span="12">
-          <text>默认</text>
+          <text>{{ t('home.default') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
         <nut-col span="12">
-          <text>收益率从高到低</text>
+          <text>{{ t('home.sortByReturnRate') }}</text>
         </nut-col>
         <nut-col align="right" span="12">
-          <text>默认</text>
+          <text>{{ t('home.default') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
         <nut-col span="12">
-          <text>使用人数从高到低</text>
+          <text>{{ t('home.sortByUsers') }}</text>
         </nut-col>
         <nut-col align="right" span="12">
-          <text>默认</text>
+          <text>{{ t('home.default') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
         <nut-col span="12">
-          <text>7日最大回撤率从低到高</text>
+          <text>{{ t('home.sortByDrawdown') }}</text>
         </nut-col>
         <nut-col align="right" span="12">
-          <text>默认</text>
+          <text>{{ t('home.default') }}</text>
         </nut-col>
       </nut-row>
     </nut-popup>
@@ -256,10 +258,12 @@
 
 <script setup lang="ts">
   import { onMounted, ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import type { ChartConfiguration } from 'chart.js/auto';
   import { Chart } from 'chart.js/auto';
   import router from '@/router';
 
+  const { t } = useI18n();
   const tipsPopup = ref(false);
   const sortPopup = ref(false);
   const filterPopup = ref(false);

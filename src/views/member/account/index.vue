@@ -1,27 +1,29 @@
 <template>
   <main class="account-settings">
     <section class="warning-card">
-      <h1>注销账号</h1>
-      <p>注销后无法恢复，请确认你已了解以下影响：</p>
+      <h1>{{ t('account.deleteTitle') }}</h1>
+      <p>{{ t('account.deleteWarning') }}</p>
       <nut-cell-group>
-        <nut-cell title="停止全部运行中的策略" />
-        <nut-cell title="删除交易所 API 密钥" />
-        <nut-cell title="匿名保留历史记录（不再关联个人身份）" />
+        <nut-cell :title="t('account.stopPlans')" />
+        <nut-cell :title="t('account.removeApiKeys')" />
+        <nut-cell :title="t('account.anonymizeHistory')" />
       </nut-cell-group>
     </section>
 
     <section class="confirmation-card">
-      <label class="field-label" for="account-password">请输入当前账号密码</label>
+      <label class="field-label" for="account-password">{{ t('account.passwordLabel') }}</label>
       <nut-input
         id="account-password"
         v-model="password"
         data-test="account-password"
         type="password"
         autocomplete="current-password"
-        placeholder="当前密码"
+        :placeholder="t('account.passwordPlaceholder')"
         :disabled="loading"
       />
-      <nut-checkbox v-model="acknowledged" data-test="account-confirmation" :disabled="loading"> 我已了解注销结果不可恢复 </nut-checkbox>
+      <nut-checkbox v-model="acknowledged" data-test="account-confirmation" :disabled="loading">
+        {{ t('account.acknowledge') }}
+      </nut-checkbox>
       <nut-button
         block
         color="#d93025"
@@ -31,7 +33,7 @@
         :loading="loading"
         @click="requestConfirmation"
       >
-        注销账号
+        {{ t('account.deleteButton') }}
       </nut-button>
     </section>
   </main>
@@ -40,9 +42,11 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue';
   import { useRouter } from 'vue-router';
+  import { useI18n } from 'vue-i18n';
   import { showDialog, showToast } from '@nutui/nutui';
   import { useUserStore } from '@/store/modules/user';
 
+  const { t } = useI18n();
   const router = useRouter();
   const userStore = useUserStore();
   const password = ref('');
@@ -53,7 +57,7 @@
   function safeErrorMessage(error: unknown): string {
     if (typeof error === 'string' && error.trim()) return error;
     if (error instanceof Error && error.message.trim()) return error.message;
-    return '注销失败，请稍后重试';
+    return t('account.deleteFailed');
   }
 
   async function deleteAccount() {
@@ -73,8 +77,8 @@
     if (!canSubmit.value || loading.value) return;
     showDialog({
       textAlign: 'center',
-      title: '确认注销账号',
-      content: '账号注销后无法恢复，是否继续？',
+      title: t('account.deleteConfirmTitle'),
+      content: t('account.deleteConfirmContent'),
       onOk: deleteAccount,
     });
   }

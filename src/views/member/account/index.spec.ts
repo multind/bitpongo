@@ -2,6 +2,7 @@ import { defineComponent } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
+import { i18n } from '@/i18n';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useUserStore } from '@/store/modules/user';
@@ -50,7 +51,7 @@ function mountView() {
   const store = useUserStore();
   const wrapper = mount(AccountView, {
     global: {
-      plugins: [pinia],
+      plugins: [pinia, i18n],
       stubs: {
         'nut-cell': { props: ['title'], template: '<div>{{ title }}<slot name="title" /><slot /></div>' },
         'nut-cell-group': { template: '<div><slot /></div>' },

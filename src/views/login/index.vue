@@ -1,9 +1,9 @@
 <template>
   <div class="login">
-    <h5 style="font-family: 'PingFang SC', serif; font-size: 26px; font-weight: bold; color: #101010">欢迎来到bitpongo</h5>
+    <h5 style="font-family: 'PingFang SC', serif; font-size: 26px; font-weight: bold; color: #101010">{{ t('login.welcome') }}</h5>
     <nut-form ref="ruleForm" :model-value="formData" style="margin: 40px 0">
-      <nut-form-item label="" required prop="name" :rules="[{ required: true, message: '请输入用户名' }]">
-        <nut-input v-model="formData.name" placeholder="请输入用户名" type="text">
+      <nut-form-item label="" required prop="name" :rules="[{ required: true, message: t('login.usernameRequired') }]">
+        <nut-input v-model="formData.name" :placeholder="t('login.usernamePlaceholder')" type="text">
           <template #left>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <g fill="none">
@@ -31,8 +31,8 @@
           </template>
         </nut-input>
       </nut-form-item>
-      <nut-form-item label="" required prop="pwd" :rules="[{ required: true, message: '请输入密码' }]">
-        <nut-input v-model="formData.pwd" placeholder="请输入密码" type="password">
+      <nut-form-item label="" required prop="pwd" :rules="[{ required: true, message: t('login.passwordRequired') }]">
+        <nut-input v-model="formData.pwd" :placeholder="t('login.passwordPlaceholder')" type="password">
           <template #left>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 56 56">
               <path
@@ -53,14 +53,14 @@
     </div>
 
     <nut-space fill style="margin: 20px 10px">
-      <text style="font-family: 'PingFang SC', serif; font-size: 13px; color: #c8c8c8">登录即表示同意</text>
-      <text style="font-family: 'PingFang SC', serif; font-size: 13px; color: #101010; text-decoration: underline" @click="agreement"
-        >用户协议</text
-      >
+      <text style="font-family: 'PingFang SC', serif; font-size: 13px; color: #c8c8c8">{{ t('login.agreePrefix') }}</text>
+      <text style="font-family: 'PingFang SC', serif; font-size: 13px; color: #101010; text-decoration: underline" @click="agreement">{{
+        t('login.agreement')
+      }}</text>
     </nut-space>
     <nut-button block size="large" type="info" @click="submit" color="#101010">
       <template #default>
-        <text style="font-size: 16px; font-weight: bold; color: whitesmoke"> 登 录 </text>
+        <text style="font-size: 16px; font-weight: bold; color: whitesmoke"> {{ t('login.submit') }} </text>
       </template>
     </nut-button>
   </div>
@@ -70,8 +70,10 @@
   import router from '@/router';
   import { reactive, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
+  import { useI18n } from 'vue-i18n';
   import { showToast } from '@nutui/nutui';
 
+  const { t } = useI18n();
   const userStore = useUserStore();
   const formData = reactive({
     name: '',
@@ -86,7 +88,7 @@
 
     ruleForm.value.validate().then(async ({ valid, errors }: any) => {
       if (valid) {
-        const toast = showToast.loading('登录中...', {
+        const toast = showToast.loading(t('login.submitting'), {
           'cover-color': 'rgba(0, 0, 0, 0.5)',
           duration: 0,
           cover: true,
@@ -99,7 +101,7 @@
           }
         } catch (error: any) {
           // 处理登录失败，将错误信息添加到 errorMessages
-          let errorMessage = '登录失败，请检查用户名和密码';
+          let errorMessage = t('login.failed');
 
           // 尝试从错误对象中获取详细错误信息
           if (error?.response?.data?.message) {

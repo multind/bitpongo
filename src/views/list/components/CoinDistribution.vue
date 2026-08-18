@@ -1,7 +1,7 @@
 <template>
   <nut-row>
     <nut-col span="24">
-      <nut-cell title="币种配置" is-link @click="showPopup = true">
+      <nut-cell :title="t('coinDistribution.title')" is-link @click="showPopup = true">
         <template #desc>
           <span style="color: black">{{ coinDistributionDesc }}</span>
         </template>
@@ -40,7 +40,7 @@
       </nut-row>
       <nut-row type="flex" justify="space-evenly" wrap="nowrap" style="margin-top: 20px">
         <nut-col span="8">
-          <text style="font-size: 13px">每期金额</text>
+          <text style="font-size: 13px">{{ t('coinDistribution.perCycleAmount') }}</text>
         </nut-col>
         <nut-col span="4"></nut-col>
         <nut-col span="8" style="text-align: right">
@@ -50,16 +50,16 @@
 
       <nut-row type="flex" justify="space-evenly" style="margin-top: 20px">
         <nut-col span="22">
-          <text style="font-size: 13px">根据您设定的定投频率，每期金额将按比例买入数字货币。</text>
+          <text style="font-size: 13px">{{ t('coinDistribution.description') }}</text>
         </nut-col>
       </nut-row>
 
       <nut-row type="flex" justify="space-evenly" style="margin-top: 40px">
         <nut-col span="10">
-          <nut-button size="large" type="default" @click="resetDistribution">重置比例</nut-button>
+          <nut-button size="large" type="default" @click="resetDistribution">{{ t('coinDistribution.resetProportion') }}</nut-button>
         </nut-col>
         <nut-col span="10">
-          <nut-button size="large" color="black" @click="confirmDistribution">确认</nut-button>
+          <nut-button size="large" color="black" @click="confirmDistribution">{{ t('coinDistribution.confirm') }}</nut-button>
         </nut-col>
       </nut-row>
     </nut-popup>
@@ -68,6 +68,7 @@
 
 <script setup lang="ts">
   import { ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import type { Strategy } from '@/views/list/types/strategy.ts';
 
   interface Props {
@@ -78,6 +79,7 @@
     (e: 'confirm'): void;
   }
 
+  const { t } = useI18n();
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
 
@@ -105,12 +107,12 @@
     }, 0);
 
     if (total !== 100) {
-      percentageError.value = `总比例必须等于100%，当前为${total}%`;
+      percentageError.value = t('coinDistribution.totalError', { total });
       return;
     }
     percentageError.value = '';
     showPopup.value = false;
-    coinDistributionDesc.value = `已设置 ${props.strategy.coins.length} 个币种`;
+    coinDistributionDesc.value = t('coinDistribution.setCount', { count: props.strategy.coins.length });
     // Emit confirm event
     emit('confirm');
   };
