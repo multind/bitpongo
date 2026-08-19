@@ -182,7 +182,7 @@
   import { ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import html2canvas from 'html2canvas';
-  import { saveCanvasImage } from '@/mobile/bridge';
+  import { hasNativeChannel, saveCanvasImage } from '@/mobile/bridge';
   import { showToast } from '@nutui/nutui';
 
   const { t } = useI18n();
@@ -249,11 +249,17 @@
   const saveFile = async () => {
     const element = document.querySelector('#capture');
     if (!element) return;
+    const toast = showToast.loading(t('common.loading'), {
+      'cover-color': 'rgba(0, 0, 0, 0.5)',
+      duration: 0,
+      cover: true,
+    });
     try {
       const canvas = await html2canvas(<HTMLElement>element, { useCORS: true, scale: 2 });
       const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-      if (window.ZhitoubaoBridge) {
+      if (hasNativeChannel()) {
         const saved = await saveCanvasImage(dataUrl);
+        toast.hide();
         if (saved) {
           showToast.success(t('common.querySuccess'));
         } else {
@@ -261,6 +267,7 @@
         }
         return;
       }
+      toast.hide();
       canvas.toBlob(function (blob) {
         if (!blob) return;
         const a = document.createElement('a');
@@ -277,6 +284,7 @@
       });
     } catch (error) {
       console.error('保存海报失败:', error);
+      toast.hide();
       showToast.fail(t('common.queryFailed'));
     }
   };

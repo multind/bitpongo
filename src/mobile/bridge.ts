@@ -88,6 +88,10 @@ function validateImageRequest(request: ImageRequest): ImageRequest {
   return { ...request, url: url.toString() };
 }
 
+export function hasNativeChannel(): boolean {
+  return findChannel() !== null;
+}
+
 export function getNativeContext(): Promise<NativeContext | null> {
   return invokeNative('getContext', {}, null);
 }
