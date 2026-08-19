@@ -261,9 +261,9 @@
         const saved = await saveCanvasImage(dataUrl);
         toast.hide();
         if (saved) {
-          showToast.success(t('common.querySuccess'));
+          showToast.success(t('common.saveSuccess'));
         } else {
-          showToast.fail(t('common.queryFailed'));
+          showToast.fail(t('common.saveFailed'));
         }
         return;
       }
@@ -285,7 +285,7 @@
     } catch (error) {
       console.error('保存海报失败:', error);
       toast.hide();
-      showToast.fail(t('common.queryFailed'));
+      showToast.fail(t('common.saveFailed'));
     }
   };
 

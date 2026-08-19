@@ -59,6 +59,8 @@ export const lang: langType = {
     fetchDetailsFailed: 'Failed to load details',
     loadDataFailed: 'Failed to load data',
     runningFor: 'Running for {days}d {hours}h {minutes}min',
+    saveSuccess: 'Saved successfully',
+    saveFailed: 'Failed to save',
   },
   home: {
     details: 'Use strategy',

@@ -59,6 +59,8 @@ export const lang: langType = {
     fetchDetailsFailed: '获取详情失败',
     loadDataFailed: '数据加载失败',
     runningFor: '已运行 {days} 天 {hours} 时 {minutes} 分',
+    saveSuccess: '保存成功',
+    saveFailed: '保存失败',
   },
   home: {
     details: '使用策略',
