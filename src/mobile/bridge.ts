@@ -10,7 +10,7 @@ export interface ImageRequest {
   title?: string;
 }
 
-type NativeCommand = 'getContext' | 'saveImage' | 'shareImage';
+type NativeCommand = 'getContext' | 'saveImage' | 'shareImage' | 'saveCanvasImage';
 
 interface PendingRequest {
   resolve: (result: unknown) => void;
@@ -76,4 +76,8 @@ export async function saveImage(request: ImageRequest): Promise<boolean> {
 
 export async function shareImage(request: ImageRequest): Promise<boolean> {
   return invokeNative('shareImage', validateImageRequest(request), false);
+}
+
+export async function saveCanvasImage(dataUrl: string): Promise<boolean> {
+  return invokeNative('saveCanvasImage', { dataUrl }, false);
 }

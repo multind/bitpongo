@@ -182,6 +182,8 @@
   import { ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import html2canvas from 'html2canvas';
+  import { saveCanvasImage } from '@/mobile/bridge';
+  import { showToast } from '@nutui/nutui';
 
   const { t } = useI18n();
   const userStore = useUserStore();
@@ -244,11 +246,21 @@
   };
 
   // 保存海报
-  const saveFile = () => {
-    const options = { useCORS: true, scale: 6 };
+  const saveFile = async () => {
     const element = document.querySelector('#capture');
     if (!element) return;
-    html2canvas(<HTMLElement>element, options).then((canvas) => {
+    try {
+      const canvas = await html2canvas(<HTMLElement>element, { useCORS: true, scale: 2 });
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      if (window.ZhitoubaoBridge) {
+        const saved = await saveCanvasImage(dataUrl);
+        if (saved) {
+          showToast.success(t('common.querySuccess'));
+        } else {
+          showToast.fail(t('common.queryFailed'));
+        }
+        return;
+      }
       canvas.toBlob(function (blob) {
         if (!blob) return;
         const a = document.createElement('a');
@@ -263,7 +275,10 @@
         // 当图片文件加载完成释放这个url
         setTimeout(() => window.URL.revokeObjectURL(url), 1000);
       });
-    });
+    } catch (error) {
+      console.error('保存海报失败:', error);
+      showToast.fail(t('common.queryFailed'));
+    }
   };
 
   // 币种 | 均价
