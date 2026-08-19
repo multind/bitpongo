@@ -26,13 +26,13 @@
     <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 5px">
       <nut-col align="left" span="12">
         <nut-space>
-          <text style="font-size: 13px; color: #555">{{ runTimeText }}</text>
+          <text style="font-size: 13px; color: #2f2f2f">{{ runTimeText }}</text>
         </nut-space>
       </nut-col>
       <nut-col align="right" span="12">
-        <text style="font-size: 13px; color: #555">{{ t('details.created') }}</text
+        <text style="font-size: 13px; color: #2f2f2f">{{ t('details.created') }}</text
         >&nbsp;
-        <text style="font-size: 13px; color: #555">{{ formatDateTime(plan.created_at) }}</text>
+        <text style="font-size: 13px; color: #2f2f2f">{{ formatDateTime(plan.created_at) }}</text>
       </nut-col>
     </nut-row>
 
@@ -239,7 +239,7 @@
                 </nut-row>
                 <nut-row type="flex" justify="start" wrap="nowrap" style="margin-top: 10px">
                   <nut-col span="12">
-                    <text style="color: #555">{{ t('details.filledAvgPrice') }}</text>
+                    <text style="color: #2f2f2f">{{ t('details.filledAvgPrice') }}</text>
                   </nut-col>
                   <nut-col align="right" span="12">
                     <text>{{ order.average_price }} USDT</text>
@@ -247,7 +247,7 @@
                 </nut-row>
                 <nut-row type="flex" justify="start" wrap="nowrap" style="margin-top: 10px">
                   <nut-col span="12">
-                    <text style="color: #555">{{ t('details.tradeDetailsTitle') }}</text>
+                    <text style="color: #2f2f2f">{{ t('details.tradeDetailsTitle') }}</text>
                   </nut-col>
                   <nut-col align="right" span="12">
                     <text>{{ order.total_amount }} USDT</text>
@@ -341,7 +341,7 @@
       <nut-col span="10">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 14px; color: #555">{{ t('details.filledTotal') }}</text>
+            <text style="font-size: 14px; color: #2f2f2f">{{ t('details.filledTotal') }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -351,7 +351,7 @@
       <nut-col span="10">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 14px; color: #555">{{ t('details.filledAvgPrice') }}</text>
+            <text style="font-size: 14px; color: #2f2f2f">{{ t('details.filledAvgPrice') }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -363,7 +363,7 @@
       <nut-col span="10">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 14px; color: #555">{{
+            <text style="font-size: 14px; color: #2f2f2f">{{
               t('details.filledQuantity', { symbol: currentOrder?.symbol.split('/')[0] })
             }}</text>
           </nut-col>
@@ -375,7 +375,7 @@
       <nut-col span="10">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 14px; color: #555">{{ t('details.fee', { symbol: currentOrder?.symbol.split('/')[0] }) }}</text>
+            <text style="font-size: 14px; color: #2f2f2f">{{ t('details.fee', { symbol: currentOrder?.symbol.split('/')[0] }) }}</text>
           </nut-col>
         </nut-row>
         <nut-row>

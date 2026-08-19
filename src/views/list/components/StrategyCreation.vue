@@ -80,7 +80,7 @@
 
     <nut-row type="flex" justify="space-around">
       <nut-col :span="22">
-        <text style="font-size: 13px; color: #555">
+        <text style="font-size: 13px; color: #2f2f2f">
           {{ t('strategy.riskNotice') }}
         </text>
       </nut-col>

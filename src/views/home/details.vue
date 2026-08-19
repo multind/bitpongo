@@ -78,7 +78,7 @@
     <nut-col span="12" style="">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 12px; color: #8c8c8c">{{ t('home.returnRate') }}</text>
+          <text style="font-size: 12px; color: #5f5f5f">{{ t('home.returnRate') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -90,7 +90,7 @@
     <nut-col span="12" style="" align="right">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 12px; color: #8c8c8c">{{ t('home.maxDrawdown7d') }}</text>
+          <text style="font-size: 12px; color: #5f5f5f">{{ t('home.maxDrawdown7d') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -107,7 +107,7 @@
     <nut-col :span="8" style="border: 1px solid #999; border-radius: 5px">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 14px; color: #8c8c8c">{{ t('home.last3d') }}</text>
+          <text style="font-size: 14px; color: #5f5f5f">{{ t('home.last3d') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -120,7 +120,7 @@
     <nut-col :span="8" style="border: 1px solid #999; border-radius: 5px">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 12px; color: #8c8c8c">{{ t('home.last7d') }}</text>
+          <text style="font-size: 12px; color: #5f5f5f">{{ t('home.last7d') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -132,7 +132,7 @@
     <nut-col :span="8" style="border: 1px solid #999; border-radius: 5px">
       <nut-row>
         <nut-col style="padding: 5px">
-          <text style="font-size: 12px; color: #8c8c8c">{{ t('home.last30d') }}</text>
+          <text style="font-size: 12px; color: #5f5f5f">{{ t('home.last30d') }}</text>
         </nut-col>
       </nut-row>
       <nut-row>
@@ -151,7 +151,7 @@
 
   <nut-row type="flex" justify="space-around">
     <nut-col style="padding: 5px">
-      <text style="font-size: 14px; color: #8c8c8c">{{ t('home.frequency') }}</text>
+      <text style="font-size: 14px; color: #5f5f5f">{{ t('home.frequency') }}</text>
     </nut-col>
     <nut-col align="right" style="padding: 5px">
       <text style="font-size: 14px; font-weight: bold; color: green">+121%</text>
@@ -160,7 +160,7 @@
 
   <nut-row type="flex" justify="space-around">
     <nut-col style="padding: 5px">
-      <text style="font-size: 14px; color: #8c8c8c">{{ t('common.time') }}</text>
+      <text style="font-size: 14px; color: #5f5f5f">{{ t('common.time') }}</text>
     </nut-col>
     <nut-col align="right" style="padding: 5px">
       <text style="font-size: 14px; font-weight: bold; color: green">+121%</text>
@@ -169,7 +169,7 @@
 
   <nut-row type="flex" justify="space-around">
     <nut-col style="padding: 5px">
-      <text style="font-size: 14px; color: #8c8c8c">{{ t('list.coinProportionPopup') }}</text>
+      <text style="font-size: 14px; color: #5f5f5f">{{ t('list.coinProportionPopup') }}</text>
     </nut-col>
   </nut-row>
 

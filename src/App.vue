@@ -6,6 +6,7 @@
 <style>
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-weight: 500;
     color: #101010;
     text-rendering: optimizelegibility;
     -webkit-font-smoothing: antialiased;
@@ -13,6 +14,7 @@
   }
 
   body {
+    font-weight: 500;
     color: #101010;
   }
 </style>

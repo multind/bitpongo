@@ -486,7 +486,7 @@
   .tips {
     padding: 0 16px 8px;
     font-size: 20px;
-    color: #555;
+    color: #2f2f2f;
   }
 
   .symbol {

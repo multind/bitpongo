@@ -13,13 +13,13 @@
 
   <nut-row type="flex" justify="space-evenly" style="margin-top: 10px">
     <nut-col align="center" span="12">
-      <text style="font-size: 14px; color: #555">{{ t('about.version', { version: appVersion }) }}</text>
+      <text style="font-size: 14px; color: #2f2f2f">{{ t('about.version', { version: appVersion }) }}</text>
     </nut-col>
   </nut-row>
 
   <nut-row type="flex" justify="space-evenly" style="margin-top: 10px; margin-bottom: 30px">
     <nut-col align="center" span="16">
-      <text style="font-size: 14px; color: #555">{{ t('about.publishTime', { time: buildTime }) }}</text>
+      <text style="font-size: 14px; color: #2f2f2f">{{ t('about.publishTime', { time: buildTime }) }}</text>
     </nut-col>
   </nut-row>
 
