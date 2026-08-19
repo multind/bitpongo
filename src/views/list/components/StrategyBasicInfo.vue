@@ -10,7 +10,7 @@
         class="custom-input"
       >
         <template #left>
-          <text style="color: #666">{{ t('basicInfo.name') }}</text>
+          <text style="color: #404040">{{ t('basicInfo.name') }}</text>
         </template>
       </nut-input>
     </nut-col>
@@ -27,7 +27,7 @@
         class="custom-input"
       >
         <template #left>
-          <text style="color: #666">{{ t('basicInfo.perCycleAmount') }}</text>
+          <text style="color: #404040">{{ t('basicInfo.perCycleAmount') }}</text>
         </template>
       </nut-input>
     </nut-col>

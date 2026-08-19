@@ -106,7 +106,7 @@
   p,
   .field-label {
     font-size: 14px;
-    color: #666;
+    color: #404040;
   }
 
   .field-label {

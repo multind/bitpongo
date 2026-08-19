@@ -16,7 +16,7 @@
         </nut-row>
         <nut-row>
           <nut-col span="8">
-            <text style="font-size: 12px; color: #999" :style="{ color: plan.status === 'stop' ? '#FFA900' : '' }">
+            <text style="font-size: 12px; color: #555" :style="{ color: plan.status === 'stop' ? '#FFA900' : '' }">
               {{ plan.status === 'stop' ? t('planCard.paused') : runTimeText }}
             </text>
           </nut-col>
@@ -35,13 +35,13 @@
     <nut-row align="flex-start" type="flex" justify="space-around" wrap>
       <nut-col :span="12">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">{{ t('planCard.totalInvested') }}</text>
+          <text style="font-size: 12px; color: #555">{{ t('planCard.totalInvested') }}</text>
           <text style="font-size: 15px">{{ plan.total_funds }}</text>
         </nut-space>
       </nut-col>
       <nut-col align="right" :span="12">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">{{ t('planCard.totalReturn') }}</text>
+          <text style="font-size: 12px; color: #555">{{ t('planCard.totalReturn') }}</text>
           <text style="font-size: 15px">{{ plan.total_revenue }} ({{ plan.total_ratio }}%)</text>
         </nut-space>
       </nut-col>
@@ -50,7 +50,7 @@
     <nut-row align="flex-start" type="flex" justify="flex-start" flex-wrap="wrap">
       <nut-col align="left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">{{ t('planCard.coinProportion') }}</text>
+          <text style="font-size: 12px; color: #555">{{ t('planCard.coinProportion') }}</text>
           <text style="font-size: 15px; border-bottom: 1px dashed #999" @click="handleCoinClick('coinProportion')">
             {{ coinProportionText }}
           </text>
@@ -58,31 +58,31 @@
       </nut-col>
       <nut-col align="center-left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">{{ t('planCard.frequencyTriggered') }}</text>
+          <text style="font-size: 12px; color: #555">{{ t('planCard.frequencyTriggered') }}</text>
           <text style="font-size: 15px">{{ plan.strategy.frequency }} / {{ plan.triggered_count }}</text>
         </nut-space>
       </nut-col>
       <nut-col align="left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">{{ t('planCard.perCycleAmount') }}</text>
+          <text style="font-size: 12px; color: #555">{{ t('planCard.perCycleAmount') }}</text>
           <text style="font-size: 15px">{{ plan.strategy.instalment }}</text>
         </nut-space>
       </nut-col>
       <nut-col align="center-left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">{{ t('common.exchange') }}</text>
+          <text style="font-size: 12px; color: #555">{{ t('common.exchange') }}</text>
           <text style="font-size: 15px">Binance</text>
         </nut-space>
       </nut-col>
       <nut-col align="left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">{{ t('planCard.avgPrice') }}</text>
+          <text style="font-size: 12px; color: #555">{{ t('planCard.avgPrice') }}</text>
           <text style="font-size: 15px; border-bottom: 1px dashed #999" @click="handleCoinClick('coinAverage')">{{ coinAverageText }}</text>
         </nut-space>
       </nut-col>
       <nut-col align="center-left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #999">{{ t('planCard.nextBuyTime') }}</text>
+          <text style="font-size: 12px; color: #555">{{ t('planCard.nextBuyTime') }}</text>
           <text style="font-size: 15px">{{ nextBuyTimeText }}</text>
         </nut-space>
       </nut-col>

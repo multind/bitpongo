@@ -60,7 +60,7 @@
       </nut-col>
       <nut-col span="12">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 10px; color: #999">{{ t('common.createTime') }}</text>
+          <text style="font-size: 10px; color: #555">{{ t('common.createTime') }}</text>
           <text style="font-size: 13px">{{ formatDate(item.created_at) }}</text>
         </nut-space>
       </nut-col>

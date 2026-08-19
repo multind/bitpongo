@@ -4,7 +4,7 @@
       <nut-col span="12">
         <nut-row>
           <nut-col span="24">
-            <text style="font-size: 12px; color: #999">{{ t('home.totalValue') }}</text>
+            <text style="font-size: 12px; color: #555">{{ t('home.totalValue') }}</text>
           </nut-col>
         </nut-row>
         <nut-row>
@@ -46,7 +46,7 @@
                     justify-content: center;
                     padding: 2px;
                     text-align: center;
-                    background-color: #c8c8c8;
+                    background-color: #8c8c8c;
                     border-radius: 10px;
                   "
                   @click="showSortList"
@@ -134,7 +134,7 @@
               <nut-col span="12" align="center-left" style="padding: 10px 0">
                 <nut-row type="flex" style="margin: 3px 0">
                   <nut-col span="24">
-                    <text style="font-size: 10px; color: #999">{{ t('home.revenue') }}</text>
+                    <text style="font-size: 10px; color: #555">{{ t('home.revenue') }}</text>
                   </nut-col>
                 </nut-row>
                 <nut-row type="flex" style="margin: 3px 0">
@@ -153,7 +153,7 @@
 
             <nut-row>
               <nut-col span="12">
-                <text style="font-size: 10px; color: #999"
+                <text style="font-size: 10px; color: #555"
                   >{{ t('home.runtime') }} 560 {{ t('common.dayUnit') }} 18 {{ t('common.hourUnit') }} 39 {{ t('common.minuteUnit') }}</text
                 >
               </nut-col>
@@ -172,7 +172,7 @@
 
             <nut-row>
               <nut-col span="12">
-                <text style="font-size: 10px; color: #999">{{ t('home.maxDrawdown7d') }} 14.00%</text>
+                <text style="font-size: 10px; color: #555">{{ t('home.maxDrawdown7d') }} 14.00%</text>
               </nut-col>
               <nut-col align="right" span="12">
                 <nut-avatar-group size="15" max-count="3" max-content="..." z-index="left" style="display: inline-flex">

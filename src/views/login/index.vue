@@ -53,7 +53,7 @@
     </div>
 
     <nut-space fill style="margin: 20px 10px">
-      <text style="font-family: 'PingFang SC', serif; font-size: 13px; color: #c8c8c8">{{ t('login.agreePrefix') }}</text>
+      <text style="font-family: 'PingFang SC', serif; font-size: 13px; color: #8c8c8c">{{ t('login.agreePrefix') }}</text>
       <text style="font-family: 'PingFang SC', serif; font-size: 13px; color: #101010; text-decoration: underline" @click="agreement">{{
         t('login.agreement')
       }}</text>

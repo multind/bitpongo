@@ -38,13 +38,13 @@
         <nut-row type="flex" flex-wrap="nowrap" style="border: #999">
           <nut-col span="12">
             <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-              <text style="font-size: 10px; color: #999">{{ t('exchangeSelection.exchangeLabel') }}</text>
+              <text style="font-size: 10px; color: #555">{{ t('exchangeSelection.exchangeLabel') }}</text>
               <text style="font-size: 13px">{{ getExchangeName(item.exchange) }}</text>
             </nut-space>
           </nut-col>
           <nut-col span="12">
             <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-              <text style="font-size: 10px; color: #999">{{ t('exchangeSelection.apiKeyLabel') }}</text>
+              <text style="font-size: 10px; color: #555">{{ t('exchangeSelection.apiKeyLabel') }}</text>
               <text style="font-size: 13px">{{ maskApiKey(item.access_key) }}</text>
             </nut-space>
           </nut-col>

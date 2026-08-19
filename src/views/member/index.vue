@@ -153,7 +153,7 @@
       .info {
         margin-top: 10px;
         font-size: 24px;
-        color: #999;
+        color: #555;
       }
     }
   }
