@@ -14,6 +14,9 @@ interface Window {
   ZhitoubaoBridge?: {
     postMessage(message: string): void;
   };
+  flutter_inappwebview?: {
+    callHandler?: (name: string, ...args: unknown[]) => void;
+  };
   __ZHITOUBAO_NATIVE_RESOLVE__?: (requestId: string, result: unknown) => void;
 }
 

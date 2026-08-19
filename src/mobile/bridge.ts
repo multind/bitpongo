@@ -17,6 +17,10 @@ interface PendingRequest {
   timeoutId: ReturnType<typeof setTimeout>;
 }
 
+interface NativeChannel {
+  send(message: string): void;
+}
+
 const pendingRequests = new Map<string, PendingRequest>();
 const requestTimeoutMs = 10_000;
 
@@ -29,8 +33,26 @@ window.__ZHITOUBAO_NATIVE_RESOLVE__ = (requestId, result) => {
   pending.resolve(result);
 };
 
+function findChannel(): NativeChannel | null {
+  const flutter = window.flutter_inappwebview;
+  if (flutter?.callHandler) {
+    return {
+      send: (message) => {
+        void flutter.callHandler?.('ZhitoubaoBridge', message);
+      },
+    };
+  }
+  const bridge = window.ZhitoubaoBridge;
+  if (bridge) {
+    return {
+      send: (message) => bridge.postMessage(message),
+    };
+  }
+  return null;
+}
+
 function invokeNative<T>(command: NativeCommand, payload: object, fallback: T): Promise<T> {
-  const channel = window.ZhitoubaoBridge;
+  const channel = findChannel();
   if (!channel) return Promise.resolve(fallback);
 
   const requestId = crypto.randomUUID();
@@ -46,7 +68,7 @@ function invokeNative<T>(command: NativeCommand, payload: object, fallback: T): 
     });
 
     try {
-      channel.postMessage(JSON.stringify({ version: 1, command, requestId, payload }));
+      channel.send(JSON.stringify({ version: 1, command, requestId, payload }));
     } catch (error) {
       clearTimeout(timeoutId);
       pendingRequests.delete(requestId);

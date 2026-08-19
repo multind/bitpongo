@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { getNativeContext, saveImage, shareImage } from './bridge';
+import { getNativeContext, saveCanvasImage, saveImage, shareImage } from './bridge';
 
 const nativeContext = {
   appVersion: '1.0.0',
@@ -11,6 +11,7 @@ const nativeContext = {
 
 afterEach(() => {
   delete window.ZhitoubaoBridge;
+  delete window.flutter_inappwebview;
   vi.restoreAllMocks();
 });
 
@@ -40,6 +41,17 @@ describe('native bridge', () => {
 
     await expect(command({ url: 'file:///private/poster.png' })).rejects.toThrow('图片地址无效');
     expect(postMessage).not.toHaveBeenCalled();
+  });
+
+  it('sends through the flutter_inappwebview handler when available', async () => {
+    const callHandler = vi.fn((_name: string, message: string) => {
+      const request = JSON.parse(message);
+      window.__ZHITOUBAO_NATIVE_RESOLVE__?.(request.requestId, true);
+    });
+    window.flutter_inappwebview = { callHandler: callHandler as unknown as (name: string, ...args: unknown[]) => void };
+
+    await expect(saveCanvasImage('data:image/jpeg;base64,/9j/4AAQ')).resolves.toBe(true);
+    expect(callHandler).toHaveBeenCalledWith('ZhitoubaoBridge', expect.stringContaining('"command":"saveCanvasImage"'));
   });
 
   it('expires an unanswered request after ten seconds', async () => {
