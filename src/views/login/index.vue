@@ -63,6 +63,10 @@
         <text style="font-size: 16px; font-weight: bold; color: whitesmoke"> {{ t('login.submit') }} </text>
       </template>
     </nut-button>
+    <p class="register-link">
+      {{ t('login.noAccount') }}
+      <button type="button" @click="router.push('/register')">{{ t('login.goRegister') }}</button>
+    </p>
   </div>
 </template>
 
@@ -167,5 +171,19 @@
 
   ::v-deep(.nut-form-item.error.line::before) {
     border-color: white;
+  }
+
+  .register-link {
+    margin-top: 20px;
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+
+    button {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      text-decoration: underline;
+    }
   }
 </style>

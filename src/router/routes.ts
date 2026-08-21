@@ -128,6 +128,15 @@ export const routes = [
           keepAlive: true,
         },
       },
+      {
+        name: 'register',
+        path: '/register',
+        component: () => import('@/views/register/index.vue'),
+        meta: {
+          title: 'register.title',
+          keepAlive: true,
+        },
+      },
     ],
   },
   // 匹配不到重定向会主页

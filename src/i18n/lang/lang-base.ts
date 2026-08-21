@@ -152,6 +152,25 @@ export type langType = {
     submit: string;
     submitting: string;
     failed: string;
+    noAccount: string;
+    goRegister: string;
+  };
+  register: {
+    title: string;
+    subtitle: string;
+    namePlaceholder: string;
+    emailPlaceholder: string;
+    passwordPlaceholder: string;
+    passwordHint: string;
+    confirmPasswordPlaceholder: string;
+    passwordMismatch: string;
+    agreePrefix: string;
+    agreement: string;
+    submit: string;
+    submitting: string;
+    failed: string;
+    haveAccount: string;
+    goLogin: string;
   };
   notice: {
     intro: string;
