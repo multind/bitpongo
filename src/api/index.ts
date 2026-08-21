@@ -2,12 +2,27 @@ import { http } from '@/utils/request';
 import type { CheckExchangeData, CreateExchangeData, Exchange } from '@/views/list/types/exchange.ts';
 import type { Strategy } from '@/views/list/types/strategy.ts';
 
+export interface UserInfo {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface AuthSession {
+  token: string;
+  info: UserInfo;
+}
+
 /**
  * 账号密码登录
  * @returns UseAxiosReturn
  */
-export function loginPassword(data: { username: string; password: string }) {
-  return http.post('/users/login', data);
+export function loginPassword(data: { username: string; password: string }): Promise<AuthSession> {
+  return http.post<AuthSession>('/users/login', data);
+}
+
+export function registerAccount(data: { name: string; email: string; password: string }): Promise<AuthSession> {
+  return http.post<AuthSession>('/users/register', data);
 }
 
 export function deleteAccount(data: { password: string }): Promise<void> {

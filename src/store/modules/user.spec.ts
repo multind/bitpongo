@@ -7,6 +7,7 @@ import { useUserStore } from './user';
 vi.mock('@/api', () => ({
   deleteAccount: vi.fn(),
   loginPassword: vi.fn(),
+  registerAccount: vi.fn(),
 }));
 
 vi.mock('@vueuse/integrations/useCookies', () => ({
@@ -42,5 +43,43 @@ describe('user account deletion', () => {
 
     expect(store.token).toBe('access-token');
     expect(store.info).toEqual({ name: '用户' });
+  });
+});
+
+describe('user registration', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.mocked(api.registerAccount).mockReset();
+  });
+
+  it('stores the session returned by registration', async () => {
+    const session = {
+      token: 'new-access-token',
+      info: { id: 8, name: '新用户', email: 'new@example.com' },
+    };
+    vi.mocked(api.registerAccount).mockResolvedValue(session);
+    const store = useUserStore();
+
+    await expect(store.register('新用户', 'new@example.com', 'abc12345')).resolves.toEqual(session);
+
+    expect(api.registerAccount).toHaveBeenCalledWith({
+      name: '新用户',
+      email: 'new@example.com',
+      password: 'abc12345',
+    });
+    expect(store.token).toBe('new-access-token');
+    expect(store.info).toEqual(session.info);
+  });
+
+  it('keeps the current session when registration fails', async () => {
+    vi.mocked(api.registerAccount).mockRejectedValue(new Error('邮箱已注册'));
+    const store = useUserStore();
+    store.token = 'current-token';
+    store.info = { id: 1, name: '当前用户', email: 'current@example.com' };
+
+    await expect(store.register('新用户', 'new@example.com', 'abc12345')).rejects.toThrow('邮箱已注册');
+
+    expect(store.token).toBe('current-token');
+    expect(store.info).toEqual({ id: 1, name: '当前用户', email: 'current@example.com' });
   });
 });

@@ -1,4 +1,5 @@
-import { deleteAccount as deleteAccountRequest, loginPassword } from '@/api';
+import { deleteAccount as deleteAccountRequest, loginPassword, registerAccount } from '@/api';
+import type { AuthSession, UserInfo } from '@/api';
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { defineStore } from 'pinia';
 
@@ -7,7 +8,7 @@ const { VITE_TOKEN_KEY } = import.meta.env;
 
 interface StoreUser {
   token: string;
-  info: Record<any, any>;
+  info: Partial<UserInfo>;
 }
 
 export const useUserStore = defineStore('user', {
@@ -21,19 +22,27 @@ export const useUserStore = defineStore('user', {
     },
   },
   actions: {
+    setSession(session: AuthSession) {
+      this.info = session.info;
+      this.token = session.token;
+    },
     setInfo(info: any) {
-      this.info = info ?? '';
+      this.info = info ?? {};
     },
     async login(username: string, password: string) {
       try {
         const res = await loginPassword({ username, password });
-        this.setInfo(res.info);
-        this.token = res.token;
+        this.setSession(res);
         return res;
       } catch (error) {
         console.error('Login failed', error);
         throw error;
       }
+    },
+    async register(name: string, email: string, password: string) {
+      const session = await registerAccount({ name, email, password });
+      this.setSession(session);
+      return session;
     },
     logout() {
       // 清除用户状态
