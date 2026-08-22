@@ -31,16 +31,14 @@ const NutInputStub = defineComponent({
   inheritAttrs: false,
   props: { modelValue: { type: String, default: '' }, type: { type: String, default: 'text' } },
   emits: ['update:modelValue'],
-  template:
-    '<input v-bind="$attrs" :type="type" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+  template: '<input v-bind="$attrs" :type="type" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
 });
 
 const NutCheckboxStub = defineComponent({
   inheritAttrs: false,
   props: { modelValue: { type: Boolean, default: false } },
   emits: ['update:modelValue'],
-  template:
-    '<input v-bind="$attrs" type="checkbox" :checked="modelValue" @change="$emit(\'update:modelValue\', $event.target.checked)" />',
+  template: '<input v-bind="$attrs" type="checkbox" :checked="modelValue" @change="$emit(\'update:modelValue\', $event.target.checked)" />',
 });
 
 const NutButtonStub = defineComponent({
@@ -48,6 +46,12 @@ const NutButtonStub = defineComponent({
   props: { disabled: Boolean, loading: Boolean },
   emits: ['click'],
   template: '<button v-bind="$attrs" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+});
+
+const NutFormItemStub = defineComponent({
+  inheritAttrs: false,
+  props: { label: { type: String, default: '' } },
+  template: '<div v-bind="$attrs"><span v-if="label" class="stub-label">{{ label }}</span><slot /></div>',
 });
 
 function mountView() {
@@ -58,10 +62,11 @@ function mountView() {
     global: {
       plugins: [pinia, i18n],
       stubs: {
+        'nut-form': { template: '<form><slot /></form>' },
         'nut-input': NutInputStub,
         'nut-checkbox': NutCheckboxStub,
         'nut-button': NutButtonStub,
-        'nut-form-item': { template: '<div><slot /></div>' },
+        'nut-form-item': NutFormItemStub,
       },
     },
   });
@@ -81,6 +86,14 @@ describe('registration view', () => {
     mocks.replace.mockReset();
     mocks.push.mockReset();
     mocks.showToastLoading.mockClear();
+  });
+
+  it('renders four visible localized field labels', () => {
+    const { wrapper } = mountView();
+    const fields = wrapper.findAll('.register-field');
+
+    expect(fields).toHaveLength(4);
+    expect(fields.map((field) => field.find('.stub-label').text())).toEqual(['昵称', '邮箱', '密码', '确认密码']);
   });
 
   it('requires a matching strong password and agreement', async () => {

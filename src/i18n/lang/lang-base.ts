@@ -158,10 +158,14 @@ export type langType = {
   register: {
     title: string;
     subtitle: string;
+    nameLabel: string;
     namePlaceholder: string;
+    emailLabel: string;
     emailPlaceholder: string;
+    passwordLabel: string;
     passwordPlaceholder: string;
     passwordHint: string;
+    confirmPasswordLabel: string;
     confirmPasswordPlaceholder: string;
     passwordMismatch: string;
     agreePrefix: string;

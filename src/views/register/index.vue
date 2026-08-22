@@ -3,33 +3,18 @@
     <h1>{{ t('register.title') }}</h1>
     <p class="subtitle">{{ t('register.subtitle') }}</p>
 
-    <div class="form">
-      <nut-form-item>
-        <nut-input
-          v-model="form.name"
-          data-test="register-name"
-          :placeholder="t('register.namePlaceholder')"
-          type="text"
-        />
+    <nut-form class="form" :model-value="form" label-position="top">
+      <nut-form-item class="register-field" :label="t('register.nameLabel')">
+        <nut-input v-model="form.name" data-test="register-name" :placeholder="t('register.namePlaceholder')" type="text" />
       </nut-form-item>
-      <nut-form-item>
-        <nut-input
-          v-model="form.email"
-          data-test="register-email"
-          :placeholder="t('register.emailPlaceholder')"
-          type="email"
-        />
+      <nut-form-item class="register-field" :label="t('register.emailLabel')">
+        <nut-input v-model="form.email" data-test="register-email" :placeholder="t('register.emailPlaceholder')" type="email" />
       </nut-form-item>
-      <nut-form-item>
-        <nut-input
-          v-model="form.password"
-          data-test="register-password"
-          :placeholder="t('register.passwordPlaceholder')"
-          type="password"
-        />
+      <nut-form-item class="register-field" :label="t('register.passwordLabel')">
+        <nut-input v-model="form.password" data-test="register-password" :placeholder="t('register.passwordPlaceholder')" type="password" />
       </nut-form-item>
       <p class="hint">{{ t('register.passwordHint') }}</p>
-      <nut-form-item>
+      <nut-form-item class="register-field" :label="t('register.confirmPasswordLabel')">
         <nut-input
           v-model="form.confirmPassword"
           data-test="register-confirm-password"
@@ -61,7 +46,7 @@
       >
         {{ t('register.submit') }}
       </nut-button>
-    </div>
+    </nut-form>
 
     <p class="login-link">
       {{ t('register.haveAccount') }}
@@ -123,14 +108,61 @@
 </script>
 
 <style scoped lang="scss">
-  .register { padding: 28px 20px; }
-  h1 { margin: 0; font-size: 28px; color: #101010; }
-  .subtitle, .hint, .login-link { color: #666; font-size: 14px; }
-  .form { margin-top: 28px; }
-  .nut-form-item { margin-top: 14px; border-radius: 20px; }
-  .hint { margin: 8px 14px; }
-  .error { margin: 10px 14px; color: #e34b4b; font-size: 14px; }
-  .agreement-row { display: flex; align-items: center; gap: 6px; margin: 22px 10px; font-size: 13px; }
-  .link { padding: 0; border: 0; background: transparent; color: #101010; text-decoration: underline; cursor: pointer; }
-  .login-link { text-align: center; margin-top: 20px; }
+  .register {
+    padding: 28px 20px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #101010;
+  }
+
+  .subtitle,
+  .hint,
+  .login-link {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .form {
+    margin-top: 28px;
+  }
+
+  .nut-form-item {
+    margin-top: 14px;
+    border-radius: 20px;
+  }
+
+  .hint {
+    margin: 8px 14px;
+  }
+
+  .error {
+    margin: 10px 14px;
+    font-size: 14px;
+    color: #e34b4b;
+  }
+
+  .agreement-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin: 22px 10px;
+    font-size: 13px;
+  }
+
+  .link {
+    padding: 0;
+    color: #101010;
+    text-decoration: underline;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+  }
+
+  .login-link {
+    margin-top: 20px;
+    text-align: center;
+  }
 </style>
