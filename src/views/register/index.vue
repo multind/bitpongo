@@ -130,28 +130,6 @@
     margin: 2.5rem 0;
   }
 
-  .register-field {
-    --nut-cell-padding: 0.875rem 1rem;
-    --nut-cell-border-radius: 1.25rem;
-    --nut-cell-box-shadow: 0 0.0625rem 0.4375rem rgb(237 238 241);
-    --nut-form-item-label-font-size: 0.9375rem;
-    --nut-form-item-body-font-size: 1rem;
-
-    margin-top: 1.25rem;
-    overflow: hidden;
-    background: #fff;
-    border: 0.0625rem solid #d8d8d8;
-    border-radius: 1.25rem;
-    transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
-
-    &:focus-within {
-      border-color: #101010;
-      box-shadow: 0 0 0 0.125rem rgb(16 16 16 / 12%);
-    }
-  }
-
   :deep(.register-field .nut-form-item__label) {
     font-weight: 600;
     line-height: 1.4;
@@ -175,6 +153,8 @@
 
   .hint,
   .login-link {
+    margin-top: 28px;
+    font-size: 26px;
     color: #666;
   }
 

@@ -174,16 +174,16 @@
   }
 
   .register-link {
-    margin-top: 20px;
+    margin-top: 28px;
+    font-size: 26px;
     color: #666;
-    font-size: 14px;
     text-align: center;
 
     button {
       padding: 0;
-      border: 0;
-      background: transparent;
       text-decoration: underline;
+      background: transparent;
+      border: 0;
     }
   }
 </style>
