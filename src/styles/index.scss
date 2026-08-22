@@ -1,3 +1,24 @@
+:root {
+  --app-font-family:
+    -apple-system, 'BlinkMacSystemFont', 'SF Pro Text', 'PingFang SC', 'PingFang TC', 'Roboto', 'Noto Sans CJK SC', 'Helvetica Neue',
+    'Arial', sans-serif;
+}
+
+html,
+body,
+#app {
+  font-family: var(--app-font-family);
+  font-weight: 400;
+  color: #101010;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
 .abc {
   width: 10px;
 }

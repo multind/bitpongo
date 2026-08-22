@@ -492,7 +492,6 @@
   .symbol {
     margin-top: 5px;
     margin-left: 15px;
-    font-family: 'Apple SD Gothic Neo', serif;
     font-size: 30px;
     font-weight: bold;
     color: gray;

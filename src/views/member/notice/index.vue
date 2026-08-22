@@ -98,7 +98,7 @@
     </nut-row>
     <nut-row type="flex" justify="start" style="padding-left: 13px; margin-top: 20px">
       <nut-col>
-        <text style="font-family: 'Apple SD Gothic Neo', serif; font-size: 14px; color: black"> Webhook </text>
+        <text style="font-size: 14px; color: black"> Webhook </text>
       </nut-col>
     </nut-row>
     <nut-row type="flex" justify="start" style="margin: 0 10px">
@@ -114,7 +114,7 @@
     </nut-row>
     <nut-row type="flex" justify="start" style="padding-left: 13px; margin-top: 20px">
       <nut-col>
-        <text style="font-family: 'Apple SD Gothic Neo', serif; font-size: 14px; color: black"> {{ t('notice.signed') }} </text>
+        <text style="font-size: 14px; color: black"> {{ t('notice.signed') }} </text>
       </nut-col>
     </nut-row>
     <nut-row type="flex" justify="start" style="margin: 0 10px">

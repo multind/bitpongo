@@ -26,7 +26,7 @@
   >
     <nut-row type="flex" justify="space-between" flex-wrap="nowrap" style="border: gray">
       <nut-col span="18">
-        <text style="font-family: 'Apple SD Gothic Neo', serif; font-size: 14px">{{ item.name }}</text>
+        <text style="font-size: 14px">{{ item.name }}</text>
       </nut-col>
       <nut-col align="right" span="6">
         <MoreX />
@@ -52,7 +52,7 @@
           <text style="font-size: 10px; color: gray">{{ t('common.status') }}</text>
           <nut-tag
             :color="item.status === 'active' ? 'green' : 'grey'"
-            :style="{ fontWeight: 'bold', fontSize: '12px', textAlign: 'center', lineHeight: '20px', fontFamily: 'Arial' }"
+            :style="{ fontWeight: 'bold', fontSize: '12px', textAlign: 'center', lineHeight: '20px' }"
           >
             {{ getStatusText(item.status) }}
           </nut-tag>

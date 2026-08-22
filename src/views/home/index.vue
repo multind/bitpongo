@@ -8,10 +8,7 @@
           </nut-col>
         </nut-row>
         <nut-row>
-          <nut-col>
-            <text style="font-family: Verdana, serif; font-size: 16px; font-weight: bold">249.12</text
-            ><text style="font-size: 11px"> USDT</text>
-          </nut-col>
+          <nut-col> <text style="font-size: 16px; font-weight: bold">249.12</text><text style="font-size: 11px"> USDT</text> </nut-col>
         </nut-row>
       </nut-col>
       <nut-col align="right" span="12">

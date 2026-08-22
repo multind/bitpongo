@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <h5 style="font-family: 'PingFang SC', serif; font-size: 26px; font-weight: bold; color: #101010">{{ t('login.welcome') }}</h5>
+    <h5 style="font-size: 26px; font-weight: bold; color: #101010">{{ t('login.welcome') }}</h5>
     <nut-form ref="ruleForm" :model-value="formData" style="margin: 40px 0">
       <nut-form-item label="" required prop="name" :rules="[{ required: true, message: t('login.usernameRequired') }]">
         <nut-input v-model="formData.name" :placeholder="t('login.usernamePlaceholder')" type="text">
@@ -53,10 +53,8 @@
     </div>
 
     <nut-space fill style="margin: 20px 10px">
-      <text style="font-family: 'PingFang SC', serif; font-size: 13px; color: #5f5f5f">{{ t('login.agreePrefix') }}</text>
-      <text style="font-family: 'PingFang SC', serif; font-size: 13px; color: #101010; text-decoration: underline" @click="agreement">{{
-        t('login.agreement')
-      }}</text>
+      <text style="font-size: 13px; color: #5f5f5f">{{ t('login.agreePrefix') }}</text>
+      <text style="font-size: 13px; color: #101010; text-decoration: underline" @click="agreement">{{ t('login.agreement') }}</text>
     </nut-space>
     <nut-button block size="large" type="info" @click="submit" color="#101010">
       <template #default>

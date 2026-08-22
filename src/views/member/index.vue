@@ -171,7 +171,6 @@
       margin-left: 20px;
 
       .nickname {
-        font-family: 'STIX Two Math', serif;
         font-size: 32px;
         font-weight: bold;
 

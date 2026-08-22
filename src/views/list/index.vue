@@ -64,12 +64,8 @@
         </nut-col>
         <nut-col align="right" span="12">
           <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-            <text style="font-family: Osaka, Arial, sans-serif; font-size: 12px; color: #999; text-align: center">{{
-              currentTime.time
-            }}</text>
-            <text style="font-family: Osaka, Arial, sans-serif; font-size: 12px; color: #999; text-align: center">{{
-              currentTime.date
-            }}</text>
+            <text style="font-size: 12px; color: #999; text-align: center">{{ currentTime.time }}</text>
+            <text style="font-size: 12px; color: #999; text-align: center">{{ currentTime.date }}</text>
           </nut-space>
         </nut-col>
       </nut-row>
@@ -84,10 +80,7 @@
 
       <nut-row style="margin-top: 130px" type="flex" wrap="nowrap">
         <nut-col span="24">
-          <div
-            style="font-family: 'PingFang HK', Avenir, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: bold; color: whitesmoke"
-            >Bitpongo</div
-          >
+          <div style="font-size: 22px; font-weight: bold; color: whitesmoke">Bitpongo</div>
         </nut-col>
       </nut-row>
 
