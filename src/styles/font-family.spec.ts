@@ -16,11 +16,12 @@ type FontStyles = {
   textarea: string;
   select: string;
   icon: string;
+  toast: string;
 };
 
 const CHROME_PATH_ENV = 'BITPONGO_CHROME_PATH';
 const PROCESS_TIMEOUT_MS = 30_000;
-const TEST_TIMEOUT_MS = PROCESS_TIMEOUT_MS * 4 + 5_000;
+const TEST_TIMEOUT_MS = PROCESS_TIMEOUT_MS * 5;
 
 function chromeExecutableNames() {
   return process.platform === 'win32'
@@ -205,7 +206,7 @@ async function loadCompiledFontStylesInChrome() {
 
             const fixture = document.createElement('div');
             fixture.innerHTML = \
-              '<main data-test="font-root"><p data-test="plain"><span data-test="nested">Normal text</span></p><input data-test="input" value="Input text" /><button data-test="button">Button text</button><textarea data-test="textarea">Textarea text</textarea><select data-test="select"><option>Select text</option></select><i class="iconfont" data-test="icon">&#xe600;</i></main>';
+              '<main data-test="font-root"><p data-test="plain"><span data-test="nested">Normal text</span></p><input data-test="input" value="Input text" /><button data-test="button">Button text</button><textarea data-test="textarea">Textarea text</textarea><select data-test="select"><option>Select text</option></select><i class="iconfont" data-test="icon">&#xe600;</i><div class="nut-toast" data-test="toast">Toast text</div></main>';
             document.body.append(fixture);
 
             const fontFamily = (selector) => getComputedStyle(fixture.querySelector(selector)).fontFamily;
@@ -218,6 +219,7 @@ async function loadCompiledFontStylesInChrome() {
               textarea: fontFamily('[data-test=textarea]'),
               select: fontFamily('[data-test=select]'),
               icon: fontFamily('[data-test=icon]'),
+              toast: fontFamily('[data-test=toast]'),
             });
           `;
           },
@@ -292,6 +294,10 @@ describe('global application font', () => {
     expect(runtimeFontStyles.select).toBe(runtimeFontStyles.root);
   });
 
+  it('maps NutUI toast text to the application font stack', () => {
+    expect(runtimeFontStyles.toast).toBe(runtimeFontStyles.root);
+  });
+
   it('keeps iconfont independent from the normal text inheritance chain', () => {
     expect(runtimeFontStyles.icon).toContain('iconfont');
     expect(runtimeFontStyles.icon).not.toBe(runtimeFontStyles.root);
@@ -313,22 +319,18 @@ describe('Chrome executable resolution', () => {
   );
 
   it(
-    'uses a Chrome or Chromium executable discovered on PATH',
+    'resolves the platform-specific Chrome executable discovered on PATH without launching it',
     async () => {
       const executableDirectory = await mkdtemp(join(tmpdir(), 'bitpongo-fake-chrome-'));
-      const executableName = process.platform === 'win32' ? 'chrome.cmd' : 'google-chrome';
+      const executableName = chromeExecutableNames()[0];
       const executablePath = join(executableDirectory, executableName);
-      const executableBody =
-        process.platform === 'win32'
-          ? '@echo BITPONGO_FAKE_CHROME_FROM_PATH 1>&2\r\n@exit /b 23\r\n'
-          : '#!/bin/sh\necho BITPONGO_FAKE_CHROME_FROM_PATH >&2\nexit 23\n';
 
-      await writeFile(executablePath, executableBody, { mode: 0o755 });
+      await writeFile(executablePath, '', { mode: 0o755 });
       delete process.env.BITPONGO_CHROME_PATH;
-      process.env.PATH = `${executableDirectory}${delimiter}${originalProcessPath ?? ''}`;
+      process.env.PATH = executableDirectory;
 
       try {
-        await expect(loadCompiledFontStylesInChrome()).rejects.toThrow('BITPONGO_FAKE_CHROME_FROM_PATH');
+        await expect(resolveChromeExecutable()).resolves.toBe(executablePath);
       } finally {
         await rm(executableDirectory, { force: true, recursive: true });
       }

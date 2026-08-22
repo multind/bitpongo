@@ -69,7 +69,6 @@
               fontSize: '12px',
               textAlign: 'center',
               lineHeight: '20px',
-              fontFamily: 'Arial',
             }"
           >
             {{ getStatusText(currentItem.status) }}
