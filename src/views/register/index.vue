@@ -109,47 +109,86 @@
 
 <style scoped lang="scss">
   .register {
-    padding: 28px 20px;
+    padding: 1.25rem;
   }
 
   h1 {
     margin: 0;
-    font-size: 28px;
+    font-size: 1.625rem;
+    line-height: 1.25;
     color: #101010;
   }
 
-  .subtitle,
-  .hint,
-  .login-link {
-    font-size: 14px;
+  .subtitle {
+    margin: 0.5rem 0 0;
+    font-size: 1rem;
+    line-height: 1.5;
     color: #666;
   }
 
   .form {
-    margin-top: 28px;
+    margin: 2.5rem 0;
   }
 
-  .nut-form-item {
-    margin-top: 14px;
-    border-radius: 20px;
+  .register-field {
+    --nut-cell-padding: 0.875rem 1rem;
+    --nut-cell-border-radius: 1.25rem;
+    --nut-cell-box-shadow: 0 0.0625rem 0.4375rem rgb(237 238 241);
+    --nut-form-item-label-font-size: 0.9375rem;
+    --nut-form-item-body-font-size: 1rem;
+
+    margin-top: 1.25rem;
+    overflow: hidden;
+    background: #fff;
+    border: 0.0625rem solid #d8d8d8;
+    border-radius: 1.25rem;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:focus-within {
+      border-color: #101010;
+      box-shadow: 0 0 0 0.125rem rgb(16 16 16 / 12%);
+    }
   }
 
-  .hint {
-    margin: 8px 14px;
+  :deep(.register-field .nut-form-item__label) {
+    font-weight: 600;
+    line-height: 1.4;
+    color: #333;
+  }
+
+  :deep(.register-field .nut-input),
+  :deep(.register-field .input-text) {
+    --nut-input-font-size: 1rem;
+
+    min-height: 1.5rem;
+    font-size: 1rem;
+  }
+
+  .hint,
+  .error {
+    margin: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .hint,
+  .login-link {
+    color: #666;
   }
 
   .error {
-    margin: 10px 14px;
-    font-size: 14px;
     color: #e34b4b;
   }
 
   .agreement-row {
     display: flex;
-    gap: 6px;
+    gap: 0.5rem;
     align-items: center;
-    margin: 22px 10px;
-    font-size: 13px;
+    margin: 1.375rem 0.625rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
   }
 
   .link {
@@ -162,7 +201,9 @@
   }
 
   .login-link {
-    margin-top: 20px;
+    margin-top: 1.25rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
     text-align: center;
   }
 </style>
