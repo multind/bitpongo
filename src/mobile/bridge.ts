@@ -1,8 +1,13 @@
+import type { LocaleKey } from '@/i18n';
+
 export interface NativeContext {
   appVersion: string;
   platform: 'android' | 'ios';
   systemVersion: string;
   safeArea: { top: number; right: number; bottom: number; left: number };
+  locale?: LocaleKey;
+  timeZone?: string;
+  timeZoneOffsetMinutes?: number;
 }
 
 export interface ImageRequest {

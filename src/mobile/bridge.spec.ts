@@ -1,12 +1,15 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { getNativeContext, saveCanvasImage, saveImage, shareImage } from './bridge';
+import { getNativeContext, saveCanvasImage, saveImage, shareImage, type NativeContext } from './bridge';
 
-const nativeContext = {
+const nativeContext: NativeContext = {
   appVersion: '1.0.0',
   platform: 'ios' as const,
   systemVersion: '18.0',
   safeArea: { top: 47, right: 0, bottom: 34, left: 0 },
+  locale: 'zh-tw',
+  timeZone: 'Asia/Taipei',
+  timeZoneOffsetMinutes: 480,
 };
 
 afterEach(() => {
