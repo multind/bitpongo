@@ -37,15 +37,21 @@ export const i18n = createI18n({
   messages: loadLang(),
 });
 
-function normalizeLocale(locale?: string | null): LocaleKey {
-  if (locale && SUPPORTED.includes(locale as LocaleKey)) {
-    return locale as LocaleKey;
-  }
-  return 'zh-cn';
+export function isSupportedLocale(value: unknown): value is LocaleKey {
+  return typeof value === 'string' && SUPPORTED.includes(value as LocaleKey);
 }
 
-export function currentLocale(): LocaleKey {
-  return normalizeLocale(localStorage.getItem(STORAGE_KEY));
+function normalizeLocale(locale?: unknown): LocaleKey {
+  return isSupportedLocale(locale) ? locale : 'zh-cn';
+}
+
+export function savedLocale(): LocaleKey | null {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  return isSupportedLocale(stored) ? stored : null;
+}
+
+export function currentLocale(defaultLocale?: unknown): LocaleKey {
+  return savedLocale() ?? normalizeLocale(defaultLocale);
 }
 
 function applyNutuiLocale(locale: LocaleKey) {
@@ -53,16 +59,16 @@ function applyNutuiLocale(locale: LocaleKey) {
   Locale.use(name, pack);
 }
 
-export function setLang(locale?: string) {
-  if (locale) {
+export function setLang(locale?: unknown, persist = locale !== undefined) {
+  if (persist && isSupportedLocale(locale)) {
     localStorage.setItem(STORAGE_KEY, locale);
   }
-  const target = currentLocale();
+  const target = currentLocale(locale);
   i18n.global.locale.value = target;
   applyNutuiLocale(target);
 }
 
 export function switchLang(locale: LocaleKey) {
-  setLang(locale);
+  setLang(locale, true);
   window.location.reload();
 }
