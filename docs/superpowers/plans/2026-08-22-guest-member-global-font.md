@@ -4,7 +4,7 @@
 
 **Goal:** 将未登录“我的”页升级为暖橙品牌欢迎页，并让全站普通文字统一使用平台原生无衬线字体。
 
-**Architecture:** 保留 `src/views/member/index.vue` 的已登录分支和现有语言弹层，在未登录分支内增加欢迎卡、双 CTA 与三项能力卡。字体由全局 CSS 变量统一管理，并通过源码扫描测试阻止业务页面重新声明不一致字体；图标字体继续独立工作。
+**Architecture:** 保留 `src/views/member/index.vue` 的已登录分支和现有语言弹层，在未登录分支内增加欢迎卡、双 CTA 与三项能力卡。字体由全局 CSS 变量统一管理；字体验证通过 Vitest 经 Vite 实际加载编译后的 SCSS，检查 DOM 的计算样式与继承链，并单独验证 iconfont 不受普通文字字体规则影响。
 
 **Tech Stack:** Vue 3.5、TypeScript 5.9、Vue I18n 11、Pinia 4、NutUI 4、Vitest 4、SCSS。
 
@@ -18,7 +18,7 @@
 - 已登录“我的”页的数据、导航和退出逻辑保持不变。
 - 三种语言必须同时更新：`zh-cn`、`zh-tw`、`en-us`。
 - 页面新增尺寸使用 `rem`，避免 750px 转换规则缩小文字。
-- 全局字体使用平台原生无衬线栈；普通业务源码不得继续覆盖 STIX、Verdana、Osaka、Apple SD Gothic Neo 或 PingFang HK。
+- 全局字体使用平台原生无衬线栈；实施时移除普通业务页面中与该栈冲突的局部字体覆盖。
 - `src/assets/font/iconfont.css` 必须保留 `font-family: iconfont`。
 - 当前完整测试存在一个已提交的既有失败：`src/views/register/index.style.spec.ts` 期望的 `.register-field` 边框在提交 `519599e` 中被删除；未经用户明确授权不得顺带修改注册页。
 - 采用测试先行，先观察新测试因缺少页面结构或字体规则而失败，再写生产代码。
@@ -33,8 +33,8 @@
 - `src/i18n/lang/zh-cn.ts`、`zh-tw.ts`、`en-us.ts`：提供三种语言文案。
 - `src/styles/index.scss`：定义全局字体变量、基础继承和表单控件字体。
 - `src/App.vue`：移除重复的 Avenir 字体和全局 `500` 字重，只保留应用颜色及字体平滑。
-- `src/styles/font-family.spec.ts`：验证全局字体变量，并扫描业务源码中的禁用字体覆盖。
-- 现有 8 个业务页面：删除局部 `font-family`，其余样式和行为不变。
+- `src/styles/font-family.spec.ts`：经 Vite/Vitest 加载编译后的全局 SCSS，验证普通文本、嵌套元素和表单控件的计算字体/继承，并验证 iconfont 独立行为。
+- 现有业务页面中存在冲突局部字体覆盖的文件：删除这些覆盖，其余样式和行为不变。
 
 ### Task 1: 未登录“我的”页内容与导航
 
@@ -279,54 +279,64 @@ git commit -m "feat: 优化未登录我的页面"
 - Consumes: 浏览器和操作系统内置字体，不新增字体文件或网络请求。
 - Produces: CSS 变量 `--app-font-family`，所有普通文本和表单控件继承该变量。
 
-- [ ] **Step 1: 写全局字体和禁用覆盖失败测试**
+- [ ] **Step 1: 写编译后 SCSS 的运行时失败测试**
 
-创建一个源码契约测试，明确排除图标字体文件：
+创建一个 DOM 测试；测试模块必须直接导入 `./index.scss`，让 Vitest 经 Vite 编译并加载实际 SCSS，而不是读取源码或配置文本。测试夹具包含普通文本、嵌套文本、表单控件和 iconfont 元素：
 
 ```ts
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
-const root = process.cwd();
-const globalStyles = readFileSync(resolve(root, 'src/styles/index.scss'), 'utf8');
-const appStyles = readFileSync(resolve(root, 'src/App.vue'), 'utf8');
-const businessFiles = [
-  'src/views/home/index.vue',
-  'src/views/list/index.vue',
-  'src/views/list/components/CoinPicker.vue',
-  'src/views/list/components/ExchangeSelection.vue',
-  'src/views/login/index.vue',
-  'src/views/member/index.vue',
-  'src/views/member/exchange/index.vue',
-  'src/views/member/notice/index.vue',
-];
-const businessSource = businessFiles.map((path) => readFileSync(resolve(root, path), 'utf8')).join('\n');
+import './index.scss';
+import '@/assets/font/iconfont.css';
+
+function mountFontFixture() {
+  const fixture = document.createElement('div');
+  fixture.innerHTML = `
+    <main data-test="font-root">
+      <p data-test="plain"><span data-test="nested">Normal text</span></p>
+      <input data-test="input" value="Input text" />
+      <button data-test="button">Button text</button>
+      <i class="iconfont" data-test="icon">&#xe600;</i>
+    </main>`;
+  document.body.append(fixture);
+  return fixture;
+}
+
+afterEach(() => document.body.replaceChildren());
 
 describe('global application font', () => {
-  it('defines and applies one native sans-serif font variable', () => {
-    expect(globalStyles).toContain('--app-font-family:');
-    expect(globalStyles).toMatch(/html,[\s\S]*body[\s\S]*font-family:\s*var\(--app-font-family\)/);
-    expect(globalStyles).toMatch(/button,[\s\S]*input,[\s\S]*textarea,[\s\S]*select/);
-    expect(appStyles).not.toContain('font-family: Avenir');
+  it('loads compiled SCSS and inherits the native sans-serif stack into normal text and controls', () => {
+    const fixture = mountFontFixture();
+    const root = fixture.querySelector('[data-test=font-root]')!;
+    const plain = fixture.querySelector('[data-test=plain]')!;
+    const nested = fixture.querySelector('[data-test=nested]')!;
+    const input = fixture.querySelector('[data-test=input]')!;
+    const button = fixture.querySelector('[data-test=button]')!;
+
+    const rootFont = getComputedStyle(root).fontFamily;
+    expect(rootFont).toContain('-apple-system');
+    expect(getComputedStyle(plain).fontFamily).toBe(rootFont);
+    expect(getComputedStyle(nested).fontFamily).toBe(rootFont);
+    expect(getComputedStyle(input).fontFamily).toBe(rootFont);
+    expect(getComputedStyle(button).fontFamily).toBe(rootFont);
   });
 
-  it('removes page-specific font families from business text', () => {
-    expect(businessSource).not.toMatch(/STIX Two Math|Verdana|Osaka|Apple SD Gothic Neo|PingFang HK/);
-  });
+  it('keeps iconfont independent from the normal text inheritance chain', () => {
+    const fixture = mountFontFixture();
+    const root = fixture.querySelector('[data-test=font-root]')!;
+    const icon = fixture.querySelector('[data-test=icon]')!;
 
-  it('keeps the dedicated icon font outside the business scan', () => {
-    const iconFont = readFileSync(resolve(root, 'src/assets/font/iconfont.css'), 'utf8');
-    expect(iconFont).toContain('font-family: iconfont');
+    expect(getComputedStyle(icon).fontFamily).toContain('iconfont');
+    expect(getComputedStyle(icon).fontFamily).not.toBe(getComputedStyle(root).fontFamily);
   });
 });
 ```
 
-- [ ] **Step 2: 运行测试确认当前字体分散**
+- [ ] **Step 2: 运行测试确认当前运行时字体契约尚未成立**
 
 Run: `npm test -- src/styles/font-family.spec.ts`
 
-Expected: FAIL，缺少 `--app-font-family`，且业务源码仍包含被禁止字体。
+Expected: FAIL，Vite 加载当前 SCSS 后，普通文本/控件不会全部继承新的平台字体栈，或 iconfont 独立断言尚未成立；不以源码或配置字符串匹配作为通过条件。
 
 - [ ] **Step 3: 实现全局字体基础规则**
 

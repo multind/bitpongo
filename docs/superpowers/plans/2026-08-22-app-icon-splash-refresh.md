@@ -31,7 +31,7 @@
 - `assets/branding/app_icon_foreground.png`：Android 自适应图标和启动页使用的透明品牌标识。
 - `assets/branding/splash.png`：与透明前景一致的启动页标识源文件。
 - `pubspec.yaml`：分别配置主图标、自适应前景、背景色和启动页。
-- `test/branding_assets_test.dart`：读取 PNG 头部与 Flutter 配置，验证尺寸、色彩类型和必需文件。
+- `test/branding_assets_test.dart`：读取品牌源 PNG 和生成后的 Android/iOS PNG 头部，验证尺寸、色彩类型和必需资源；不读取 `pubspec.yaml` 配置文本。
 - Android/iOS 生成资源目录：由官方 Flutter 生成器更新，不手工逐张修改。
 - `assets/web_bundle/`：同步前端计划完成后的已提交生产构建。
 
@@ -173,38 +173,55 @@ git commit -m "feat: 重新设计 Bitpongo App 图标"
 - Modify: `/Volumes/ExternalDrive/Code/github/bitpongo-mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/**`
 - Modify: `/Volumes/ExternalDrive/Code/github/bitpongo-mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/**` or generator-selected launch assets
 - Modify: generator-selected Android splash resources under `android/app/src/main/res/drawable-*`
-- Test: `/Volumes/ExternalDrive/Code/github/bitpongo-mobile/test/branding_assets_test.dart`
+- Test: `/Volumes/ExternalDrive/Code/github/bitpongo-mobile/test/branding_assets_test.dart`（PNG 属性和生成产物契约，不读取配置文本）
 
 **Interfaces:**
 
 - Consumes: Task 1 的 `app_icon.png`、`app_icon_foreground.png` 和 `splash.png`。
 - Produces: Android 传统/自适应图标、iOS AppIcon 集合和两端启动页资源。
 
-- [ ] **Step 1: 扩展配置和生成资源失败测试**
+- [ ] **Step 1: 扩展生成资源失败测试**
 
-在资产测试中增加：
+保留 Task 1 的 PNG 源资产头部测试，并增加对生成后的 Android/iOS PNG 的运行结果测试；测试不得读取或断言 `pubspec.yaml` 的字符串。可复用 `readPngHeader`，增加：
 
 ```dart
-test('Flutter branding configuration separates full icon and foreground', () {
-  final pubspec = File('pubspec.yaml').readAsStringSync();
-  expect(pubspec, contains('image_path: assets/branding/app_icon.png'));
-  expect(pubspec, contains('adaptive_icon_foreground: assets/branding/app_icon_foreground.png'));
-  expect(pubspec, contains('image: assets/branding/splash.png'));
-  expect(pubspec, contains('color: "#FF8A3D"'));
+test("generated platform resources preserve the icon and foreground contracts", () {
+  final androidIcon = readPngHeader(
+    "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+  );
+  final androidForeground = readPngHeader(
+    "android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png",
+  );
+  final iosIcon = readPngHeader(
+    "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
+  );
+
+  expect((androidIcon.width, androidIcon.height), (192, 192));
+  expect((androidForeground.width, androidForeground.height), (432, 432));
+  expect(androidForeground.colorType, 6);
+  expect((iosIcon.width, iosIcon.height), (1024, 1024));
+  expect([2, 6], contains(iosIcon.colorType));
 });
 
-test('generated platform icon resources are present', () {
-  expect(File('android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png').existsSync(), isTrue);
-  expect(File('android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png').existsSync(), isTrue);
-  expect(File('ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png').existsSync(), isTrue);
+test("generated splash resources are present for both platforms", () {
+  expect(
+    File("android/app/src/main/res/drawable-xxxhdpi/launch_background.png").existsSync(),
+    isTrue,
+  );
+  expect(
+    File("ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png").existsSync(),
+    isTrue,
+  );
 });
 ```
 
-- [ ] **Step 2: 运行测试确认配置仍引用旧前景**
+在实施前先核对生成器实际采用的 splash 文件名；若版本使用不同路径，以上断言和本计划的文件清单必须同步为实际输出。此测试只证明已生成资源的 PNG 契约，品牌颜色、无裁切和视觉一致性由 Step 6 的预览检查证明。
+
+- [ ] **Step 2: 运行测试确认生成资源尚未反映新的前景和启动页**
 
 Run: `flutter test test/branding_assets_test.dart`
 
-Expected: FAIL，`adaptive_icon_foreground` 仍指向 `app_icon.png`，背景色仍为 `#EF7D19`。
+Expected: FAIL，当前生成的 Android 前景资源、iOS 图标或启动页资源缺失，或其 PNG 尺寸/Alpha 契约尚未符合新品牌资产；不以 `pubspec.yaml` 文本断言判定失败。
 
 - [ ] **Step 3: 更新 Flutter 品牌配置**
 
@@ -244,7 +261,7 @@ Expected: Android 和 iOS 启动页资源更新，命令退出码 0。
 
 Run: `flutter test test/branding_assets_test.dart`
 
-Expected: 全部通过。
+Expected: 源资产 PNG 属性与 Android/iOS 生成资源契约全部通过。
 
 Run: `flutter analyze`
 
@@ -259,7 +276,7 @@ Expected: `No issues found!`
 - `ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png`
 - Android 12 启动图和 iOS 启动图生成文件
 
-确认圆形、圆角方形和 iOS 圆角预览均未裁切 `B` 或星光，且背景没有透明边缘。
+确认圆形、圆角方形和 iOS 圆角预览均未裁切 `B` 或星光，且背景没有透明边缘；同时查看 Android 12 与 iOS 启动页的实际生成预览，确认暖橙底色、透明标识居中且两端视觉一致。
 
 - [ ] **Step 7: 提交生成资源和配置**
 
