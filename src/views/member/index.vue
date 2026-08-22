@@ -52,13 +52,37 @@
       </template>
     </nut-cell>
   </div>
-  <div v-else class="not-login-center">
-    <img src="../../assets/not_login.png" height="350" width="350" alt="not login" />
-    <nut-button color="linear-gradient(to right, #101010, #112233)" size="small" @click="goLogin"> {{ t('member.goLogin') }} </nut-button>
-    <div style="margin-top: 16px">
-      <nut-button size="small" @click="languagePopup = true">{{ t('language.label') }}</nut-button>
-    </div>
-  </div>
+  <main v-else class="guest-member">
+    <section class="guest-hero" data-test="guest-welcome">
+      <div class="guest-mark" aria-hidden="true"><span>B</span><i>✦</i></div>
+      <h1>{{ t('member.guestTitle') }}</h1>
+      <p>{{ t('member.guestDescription') }}</p>
+      <div class="guest-actions">
+        <nut-button block class="guest-login" data-test="guest-login" @click="goLogin">
+          {{ t('member.goLogin') }}
+        </nut-button>
+        <nut-button block class="guest-register" data-test="guest-register" @click="goRegister">
+          {{ t('member.goRegister') }}
+        </nut-button>
+      </div>
+    </section>
+
+    <section class="guest-features" aria-label="Bitpongo capabilities">
+      <article v-for="feature in guestFeatures" :key="feature.title" class="guest-feature" data-test="guest-feature">
+        <component :is="feature.icon" aria-hidden="true" />
+        <div
+          ><h2>{{ feature.title }}</h2
+          ><p>{{ feature.description }}</p></div
+        >
+      </article>
+    </section>
+
+    <button class="guest-language" data-test="guest-language" type="button" @click="languagePopup = true">
+      <Message aria-hidden="true" />
+      <span>{{ t('language.label') }}</span
+      ><span aria-hidden="true">›</span>
+    </button>
+  </main>
 
   <nut-popup v-model:visible="languagePopup" position="bottom" round :style="{ height: '30%' }">
     <nut-row style="margin-top: 23px; text-align: center" type="flex">
@@ -80,7 +104,7 @@
   import { useI18n } from 'vue-i18n';
   import { Issue, Link, Message, Notice, Setting } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
-  import { ref } from 'vue';
+  import { computed, ref } from 'vue';
   import { switchLang, type LocaleKey } from '@/i18n';
 
   const { t } = useI18n();
@@ -93,9 +117,15 @@
     console.log('getUserInfo', email, name);
     return email.replace(/(.{2}).*(@.*)/, '$1***$2');
   });
+  const guestFeatures = computed(() => [
+    { icon: Setting, title: t('member.guestStrategyTitle'), description: t('member.guestStrategyDescription') },
+    { icon: Link, title: t('member.guestExchangeTitle'), description: t('member.guestExchangeDescription') },
+    { icon: Notice, title: t('member.guestNoticeTitle'), description: t('member.guestNoticeDescription') },
+  ]);
   const goLogin = () => {
     router.push('/login');
   };
+  const goRegister = () => router.push('/register');
   const goExchangeInfo = () => {
     router.push('/member/exchange');
   };
@@ -131,7 +161,7 @@
   };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
   .avatar-wrap {
     display: flex;
     align-items: center;
@@ -155,6 +185,142 @@
         font-size: 24px;
         color: #2f2f2f;
       }
+    }
+  }
+
+  .guest-member {
+    min-height: 100%;
+    padding: 1rem;
+    background: #fffaf5;
+  }
+
+  .guest-hero {
+    padding: 2rem 1.5rem;
+    color: #fff;
+    background: linear-gradient(135deg, #fb923c, #f97316);
+    border-radius: 1.5rem;
+    box-shadow: 0 0.75rem 1.5rem rgb(234 88 12 / 20%);
+
+    h1 {
+      margin: 1.25rem 0 0.5rem;
+      font-size: 1.75rem;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+  }
+
+  .guest-mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: rgb(255 255 255 / 20%);
+    border-radius: 1rem;
+
+    i {
+      position: absolute;
+      top: -0.25rem;
+      right: -0.375rem;
+      font-size: 1rem;
+      font-style: normal;
+    }
+  }
+
+  .guest-actions {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .guest-actions :deep(.nut-button),
+  .guest-actions button {
+    min-height: 2.875rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 0.875rem;
+  }
+
+  .guest-login {
+    color: #9a3412;
+    background: #fff;
+    border: 0;
+  }
+
+  .guest-register {
+    color: #fff;
+    background: transparent;
+    border: 0.0625rem solid rgb(255 255 255 / 70%);
+  }
+
+  .guest-features {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .guest-feature {
+    display: flex;
+    gap: 0.875rem;
+    align-items: flex-start;
+    padding: 1rem;
+    background: #fff;
+    border: 0.0625rem solid #fed7aa;
+    border-radius: 1rem;
+
+    > svg {
+      flex: 0 0 auto;
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-top: 0.125rem;
+      color: #ea580c;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.4;
+      color: #431407;
+    }
+
+    p {
+      margin: 0.25rem 0 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #78716c;
+    }
+  }
+
+  .guest-language {
+    display: flex;
+    gap: 0.625rem;
+    align-items: center;
+    width: 100%;
+    min-height: 2.875rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    color: #7c2d12;
+    text-align: left;
+    background: #fff;
+    border: 0.0625rem solid #fed7aa;
+    border-radius: 0.875rem;
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    span:last-child {
+      margin-left: auto;
+      font-size: 1.5rem;
+      line-height: 1;
     }
   }
 </style>

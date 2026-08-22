@@ -138,6 +138,15 @@ export type langType = {
     slogan: string;
     signOut: string;
     goLogin: string;
+    guestTitle: string;
+    guestDescription: string;
+    goRegister: string;
+    guestStrategyTitle: string;
+    guestStrategyDescription: string;
+    guestExchangeTitle: string;
+    guestExchangeDescription: string;
+    guestNoticeTitle: string;
+    guestNoticeDescription: string;
     signOutConfirmTitle: string;
     signOutConfirmContent: string;
   };
