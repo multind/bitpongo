@@ -4,6 +4,7 @@ import { i18n, setLang } from '@/i18n';
 import { initializeAppContext } from '@/mobile/app-context';
 import router from '@/router';
 import store from '@/store';
+import './styles/index.scss';
 import './assets/font/iconfont.css';
 
 import '@nutui/nutui/dist/packages/toast/style/css';
