@@ -1,6 +1,6 @@
 # Registration Form Visibility Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 让 Bitpongo 注册页在移动端以正常字号显示四个带标签、边框和聚焦状态的输入字段。
 
@@ -36,7 +36,7 @@
 - Consumes: existing `form` reactive object and `register.*Placeholder` translations.
 - Produces: `register.nameLabel`, `register.emailLabel`, `register.passwordLabel`, and `register.confirmPasswordLabel`; four `.register-field` form items.
 
-- [ ] **Step 1: Extend the NutUI stubs and write the failing label test**
+- [x] **Step 1: Extend the NutUI stubs and write the failing label test**
 
 Replace the inline `nut-form-item` stub in `mountView()` and add a `nut-form` stub:
 
@@ -70,13 +70,13 @@ it('renders four visible localized field labels', () => {
 });
 ```
 
-- [ ] **Step 2: Run the focused test and verify RED**
+- [x] **Step 2: Run the focused test and verify RED**
 
 Run: `pnpm test -- src/views/register/index.spec.ts`
 
 Expected: FAIL because the current view has no `.register-field` items and no localized labels.
 
-- [ ] **Step 3: Add the four translation keys**
+- [x] **Step 3: Add the four translation keys**
 
 Add these properties to `register` in `src/i18n/lang/lang-base.ts`:
 
@@ -114,7 +114,7 @@ passwordLabel: 'Password',
 confirmPasswordLabel: 'Confirm password',
 ```
 
-- [ ] **Step 4: Wrap the fields in a top-label NutUI form**
+- [x] **Step 4: Wrap the fields in a top-label NutUI form**
 
 Replace `<div class="form">` with:
 
@@ -133,13 +133,13 @@ Give the four form items their labels and stable class, preserving their current
 
 Replace the matching closing `</div>` after the submit button with `</nut-form>`.
 
-- [ ] **Step 5: Run focused tests and verify GREEN**
+- [x] **Step 5: Run focused tests and verify GREEN**
 
 Run: `pnpm test -- src/views/register/index.spec.ts`
 
 Expected: all registration view tests PASS.
 
-- [ ] **Step 6: Commit the labeled form**
+- [x] **Step 6: Commit the labeled form**
 
 ```bash
 git add src/views/register/index.spec.ts src/views/register/index.vue src/i18n/lang/lang-base.ts src/i18n/lang/zh-cn.ts src/i18n/lang/zh-tw.ts src/i18n/lang/en-us.ts
@@ -158,7 +158,7 @@ git commit -m "fix: add visible registration field labels"
 - Consumes: the four `.register-field` elements produced by Task 1.
 - Produces: scoped `rem` typography, visible field borders, and a `:focus-within` state.
 
-- [ ] **Step 1: Write the failing style contract test**
+- [x] **Step 1: Write the failing style contract test**
 
 Create `src/views/register/index.style.spec.ts`:
 
@@ -179,13 +179,13 @@ describe('registration view styles', () => {
 });
 ```
 
-- [ ] **Step 2: Run the style test and verify RED**
+- [x] **Step 2: Run the style test and verify RED**
 
 Run: `pnpm test -- src/views/register/index.style.spec.ts`
 
 Expected: FAIL because the current registration styles use converted `px` values and contain no field border or focus state.
 
-- [ ] **Step 3: Replace the registration page style block**
+- [x] **Step 3: Replace the registration page style block**
 
 Use this scoped style implementation in `src/views/register/index.vue`:
 
@@ -290,13 +290,13 @@ h1 {
 }
 ```
 
-- [ ] **Step 4: Run focused tests and verify GREEN**
+- [x] **Step 4: Run focused tests and verify GREEN**
 
 Run: `pnpm test -- src/views/register/index.style.spec.ts src/views/register/index.spec.ts`
 
 Expected: both registration test files PASS.
 
-- [ ] **Step 5: Run full frontend verification**
+- [x] **Step 5: Run full frontend verification**
 
 Run: `pnpm test`
 
@@ -314,14 +314,14 @@ Run: `rg -n "font-size:1\.625rem|border:\.0625rem solid #d8d8d8|focus-within" di
 
 Expected: built registration CSS contains the readable heading size, visible border, and focus state; it does not convert these `rem` values to half-size `vw` values.
 
-- [ ] **Step 6: Commit the visual fix without staging the user file**
+- [x] **Step 6: Commit the visual fix without staging the user file**
 
 ```bash
 git add src/views/register/index.style.spec.ts src/views/register/index.vue
 git commit -m "fix: improve registration form visibility"
 ```
 
-- [ ] **Step 7: Verify repository scope and push main**
+- [x] **Step 7: Verify repository scope and push main**
 
 Run: `git status --short --branch`
 
@@ -335,9 +335,9 @@ Expected: remote `main` matches local `HEAD`.
 
 ## Self-review
 
-- [ ] Every design requirement is covered by Task 1 or Task 2.
-- [ ] All translation keys match `register.*` usage in the component.
-- [ ] Test steps verify RED before production changes and GREEN afterward.
-- [ ] Registration behavior and validation remain unchanged.
-- [ ] `.eslintrc-auto-import.json` is never staged.
-- [ ] No global PostCSS or non-Bitpongo repository is modified.
+- [x] Every design requirement is covered by Task 1 or Task 2.
+- [x] All translation keys match `register.*` usage in the component.
+- [x] Test steps verify RED before production changes and GREEN afterward.
+- [x] Registration behavior and validation remain unchanged.
+- [x] `.eslintrc-auto-import.json` is never staged.
+- [x] No global PostCSS or non-Bitpongo repository is modified.
