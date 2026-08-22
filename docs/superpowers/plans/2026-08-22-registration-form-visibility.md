@@ -4,7 +4,7 @@
 
 **Goal:** 让 Bitpongo 注册页在移动端以正常字号显示四个带标签、边框和聚焦状态的输入字段。
 
-**Architecture:** 保留现有注册状态、校验和 API 数据流，只调整注册视图的 NutUI 表单结构、国际化字段标签和局部样式。注册页使用 `rem` 尺寸避开业务源码的 750px-to-vw 转换，不修改全局 PostCSS 或其他页面。
+**Architecture:** 保留现有注册状态、校验和 API 数据流，只调整注册视图的 NutUI 表单结构、国际化字段标签和局部样式。注册页参考登录页的标题、表单间距、圆角白色卡片和黑色大按钮，并使用 `rem` 尺寸避开业务源码的 750px-to-vw 转换；不修改全局 PostCSS 或其他页面。
 
 **Tech Stack:** Vue 3、TypeScript、NutUI 4、Vue I18n、SCSS、Vitest、Vite
 
@@ -16,6 +16,7 @@
 - 不修改 API、路由、Pinia 状态、注册校验规则或后端。
 - 不修改全局 PostCSS；注册页关键尺寸使用 `rem`。
 - 字段顺序固定为昵称、邮箱、密码、确认密码。
+- 保留字段标签，不增加登录页的左侧图标。
 
 ---
 
@@ -169,7 +170,7 @@ const source = readFileSync(new URL('./index.vue', import.meta.url), 'utf8');
 
 describe('registration view styles', () => {
   it('keeps readable rem typography and visible field boundaries', () => {
-    expect(source).toMatch(/h1\s*\{[^}]*font-size:\s*1\.75rem/s);
+    expect(source).toMatch(/h1\s*\{[^}]*font-size:\s*1\.625rem/s);
     expect(source).toMatch(/\.subtitle[^}]*font-size:\s*1rem/s);
     expect(source).toMatch(/\.register-field\s*\{[^}]*border:\s*0\.0625rem solid #d8d8d8/s);
     expect(source).toMatch(/&:focus-within\s*\{/);
@@ -190,13 +191,13 @@ Use this scoped style implementation in `src/views/register/index.vue`:
 
 ```scss
 .register {
-  padding: 1.75rem 1.25rem;
+  padding: 1.25rem;
 }
 
 h1 {
   margin: 0;
   color: #101010;
-  font-size: 1.75rem;
+  font-size: 1.625rem;
   line-height: 1.25;
 }
 
@@ -208,21 +209,21 @@ h1 {
 }
 
 .form {
-  margin-top: 1.75rem;
+  margin: 2.5rem 0;
 }
 
 .register-field {
   --nut-cell-padding: 0.875rem 1rem;
-  --nut-cell-border-radius: 0.75rem;
-  --nut-cell-box-shadow: none;
+  --nut-cell-border-radius: 1.25rem;
+  --nut-cell-box-shadow: 0 0.0625rem 0.4375rem rgb(237 238 241);
   --nut-form-item-label-font-size: 0.9375rem;
   --nut-form-item-body-font-size: 1rem;
 
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   overflow: hidden;
   background: #fff;
   border: 0.0625rem solid #d8d8d8;
-  border-radius: 0.75rem;
+  border-radius: 1.25rem;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -309,7 +310,7 @@ Run: `pnpm build`
 
 Expected: production build succeeds.
 
-Run: `rg -n "font-size:1\.75rem|border:\.0625rem solid #d8d8d8|focus-within" dist/assets/register-*.css`
+Run: `rg -n "font-size:1\.625rem|border:\.0625rem solid #d8d8d8|focus-within" dist/assets/register-*.css`
 
 Expected: built registration CSS contains the readable heading size, visible border, and focus state; it does not convert these `rem` values to half-size `vw` values.
 
