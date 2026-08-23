@@ -1,20 +1,14 @@
 <template>
   <main class="account-settings">
-    <section class="warning-card">
-      <h1>{{ t('account.deleteTitle') }}</h1>
-      <p>{{ t('account.deleteWarning') }}</p>
-      <nut-cell-group>
-        <nut-cell :title="t('account.stopPlans')" />
-        <nut-cell :title="t('account.removeApiKeys')" />
-        <nut-cell :title="t('account.anonymizeHistory')" />
-      </nut-cell-group>
-    </section>
+    <h1>{{ t('account.deleteTitle') }}</h1>
+    <p class="subtitle">{{ t('account.deleteWarning') }}</p>
 
-    <section class="confirmation-card">
+    <section class="account-form">
       <label class="field-label" for="account-password">{{ t('account.passwordLabel') }}</label>
       <nut-input
         id="account-password"
         v-model="password"
+        class="account-password"
         data-test="account-password"
         type="password"
         autocomplete="current-password"
@@ -26,6 +20,7 @@
       </nut-checkbox>
       <nut-button
         block
+        class="delete-button"
         color="#d93025"
         size="large"
         data-test="delete-account"
@@ -86,35 +81,49 @@
 
 <style scoped lang="scss">
   .account-settings {
-    padding: 16px;
-  }
-
-  .warning-card,
-  .confirmation-card {
-    padding: 16px;
-    margin-bottom: 16px;
-    background: #fff;
-    border-radius: 10px;
+    padding: 1.25rem;
   }
 
   h1 {
-    margin: 0 0 8px;
-    font-size: 22px;
-    color: #d93025;
+    margin: 0;
+    font-size: 1.625rem;
+    line-height: 1.25;
+    color: #101010;
   }
 
-  p,
-  .field-label {
-    font-size: 14px;
-    color: #1f1f1f;
+  .subtitle {
+    margin: 0.5rem 0 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #666;
+  }
+
+  .account-form {
+    margin-top: 2.5rem;
   }
 
   .field-label {
     display: block;
-    margin-bottom: 8px;
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #333;
+  }
+
+  .account-password {
+    --nut-input-font-size: 1rem;
   }
 
   .nut-checkbox {
-    margin: 18px 0;
+    margin: 1.375rem 0.625rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .delete-button {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
   }
 </style>

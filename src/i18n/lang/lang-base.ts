@@ -235,9 +235,6 @@ export type langType = {
   account: {
     deleteTitle: string;
     deleteWarning: string;
-    stopPlans: string;
-    removeApiKeys: string;
-    anonymizeHistory: string;
     passwordLabel: string;
     passwordPlaceholder: string;
     acknowledge: string;

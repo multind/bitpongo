@@ -82,12 +82,13 @@ describe('account deletion view', () => {
     mocks.showToastFail.mockReset();
   });
 
-  it('explains every account deletion consequence', () => {
+  it('shows a concise irreversible deletion warning', () => {
     const { wrapper } = mountView();
 
-    expect(wrapper.text()).toContain('停止全部运行中的策略');
-    expect(wrapper.text()).toContain('删除交易所 API 密钥');
-    expect(wrapper.text()).toContain('匿名保留历史记录');
+    expect(wrapper.text()).toContain('注销后，账号及相关数据将无法恢复。');
+    expect(wrapper.text()).not.toContain('停止全部运行中的策略');
+    expect(wrapper.text()).not.toContain('删除交易所 API 密钥');
+    expect(wrapper.text()).not.toContain('匿名保留历史记录');
   });
 
   it('requires both a password and explicit acknowledgement', async () => {
@@ -123,6 +124,7 @@ describe('account deletion view', () => {
 
     await wrapper.get('[data-test="delete-account"]').trigger('click');
     expect(currentDialog().title).toBe('确认注销账号');
+    expect(currentDialog().content).toBe('账号注销后无法恢复，确定继续吗？');
     expect(deleteAccount).not.toHaveBeenCalled();
 
     await currentDialog().onOk();
