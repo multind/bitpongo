@@ -47,7 +47,6 @@ type RuntimeStyles = FontStyles & {
   pageBackground: string;
   navbarBackground: string;
   tabbarBackground: string;
-  guestBackground: string;
   cardBackground: string;
   errorBackground: string;
 };
@@ -75,7 +74,6 @@ fixture.innerHTML = `
     <section class="main-page" data-test="page"></section>
     <header class="nut-navbar" data-test="navbar"></header>
     <footer class="nut-tabbar" data-test="tabbar"></footer>
-    <section class="guest-member" data-test="guest"></section>
     <article class="background-contract-card" data-test="card"></article>
     <aside class="background-contract-error" data-test="error"></aside>
   </main>`;
@@ -95,7 +93,6 @@ appBackground: backgroundColor('#app'),
 pageBackground: backgroundColor('[data-test=page]'),
 navbarBackground: backgroundColor('[data-test=navbar]'),
 tabbarBackground: backgroundColor('[data-test=tabbar]'),
-guestBackground: backgroundColor('[data-test=guest]'),
 cardBackground: backgroundColor('[data-test=card]'),
 errorBackground: backgroundColor('[data-test=error]'),
 ```
@@ -113,7 +110,6 @@ describe('global page background', () => {
     expect(runtimeFontStyles.pageBackground).toBe(pageBackground);
     expect(runtimeFontStyles.navbarBackground).toBe(pageBackground);
     expect(runtimeFontStyles.tabbarBackground).toBe(pageBackground);
-    expect(runtimeFontStyles.guestBackground).toBe(pageBackground);
   });
 
   it('does not override functional card and error backgrounds', () => {
@@ -123,13 +119,13 @@ describe('global page background', () => {
 });
 ```
 
-`.guest-member` 通过真实浏览器计算样式验证页面行为；实现 diff 另行核对其声明使用 `var(--app-page-background)`，不使用源码字符串匹配测试。
+未登录“我的”页使用 Vue scoped 样式，合成元素无法代表其真实作用域；通过组件测试验证页面渲染，并在实现 diff 中核对 `.guest-member` 使用 `var(--app-page-background)`，不添加源码字符串匹配测试。
 
 - [ ] **Step 2: 运行定向测试，确认新背景契约失败**
 
 Run: `npm test -- src/styles/font-family.spec.ts --reporter=verbose`
 
-Expected: FAIL；`pageBackgroundVariable` 为空，且页面级与 `.guest-member` 计算背景不是 `rgb(255, 250, 245)`。
+Expected: FAIL；`pageBackgroundVariable` 为空，且页面级计算背景不是 `rgb(255, 250, 245)`。
 
 - [ ] **Step 3: 添加最小全局背景实现**
 
