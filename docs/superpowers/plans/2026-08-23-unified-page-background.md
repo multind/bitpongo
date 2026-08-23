@@ -47,6 +47,7 @@ type RuntimeStyles = FontStyles & {
   pageBackground: string;
   navbarBackground: string;
   tabbarBackground: string;
+  guestBackground: string;
   cardBackground: string;
   errorBackground: string;
 };
@@ -74,6 +75,7 @@ fixture.innerHTML = `
     <section class="main-page" data-test="page"></section>
     <header class="nut-navbar" data-test="navbar"></header>
     <footer class="nut-tabbar" data-test="tabbar"></footer>
+    <section class="guest-member" data-test="guest"></section>
     <article class="background-contract-card" data-test="card"></article>
     <aside class="background-contract-error" data-test="error"></aside>
   </main>`;
@@ -93,6 +95,7 @@ appBackground: backgroundColor('#app'),
 pageBackground: backgroundColor('[data-test=page]'),
 navbarBackground: backgroundColor('[data-test=navbar]'),
 tabbarBackground: backgroundColor('[data-test=tabbar]'),
+guestBackground: backgroundColor('[data-test=guest]'),
 cardBackground: backgroundColor('[data-test=card]'),
 errorBackground: backgroundColor('[data-test=error]'),
 ```
@@ -110,6 +113,7 @@ describe('global page background', () => {
     expect(runtimeFontStyles.pageBackground).toBe(pageBackground);
     expect(runtimeFontStyles.navbarBackground).toBe(pageBackground);
     expect(runtimeFontStyles.tabbarBackground).toBe(pageBackground);
+    expect(runtimeFontStyles.guestBackground).toBe(pageBackground);
   });
 
   it('does not override functional card and error backgrounds', () => {
@@ -119,21 +123,13 @@ describe('global page background', () => {
 });
 ```
 
-在现有 `node:fs/promises` 导入中加入 `readFile`，并增加独立源码约束测试：
-
-```ts
-it('keeps the guest page tied to the global background token', async () => {
-  const memberSource = await readFile(join(process.cwd(), 'src/views/member/index.vue'), 'utf8');
-  expect(memberSource).not.toContain('background: #fffaf5');
-  expect(memberSource).toContain('background: var(--app-page-background)');
-});
-```
+`.guest-member` 通过真实浏览器计算样式验证页面行为；实现 diff 另行核对其声明使用 `var(--app-page-background)`，不使用源码字符串匹配测试。
 
 - [ ] **Step 2: 运行定向测试，确认新背景契约失败**
 
 Run: `npm test -- src/styles/font-family.spec.ts --reporter=verbose`
 
-Expected: FAIL；`pageBackgroundVariable` 为空或页面级计算背景不是 `rgb(255, 250, 245)`，且 member 页面仍包含写死的 `background: #fffaf5`。
+Expected: FAIL；`pageBackgroundVariable` 为空，且页面级与 `.guest-member` 计算背景不是 `rgb(255, 250, 245)`。
 
 - [ ] **Step 3: 添加最小全局背景实现**
 
