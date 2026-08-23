@@ -149,5 +149,20 @@ Expected: 页面 Logo 与 App 源文件 SHA-256 相同；favicon 哈希与全局
 Run:
 
 ```bash
-
+npm run typecheck
+npm run build
+git diff --check
 ```
+
+Expected: typecheck、生产构建和 diff check 均退出 0；Vite 产物包含新版 Logo 和 `/favicon.png`。
+
+- [ ] **Step 7: 提交品牌资产变更**
+
+Run:
+
+```bash
+git add src/assets/branding-assets.spec.ts src/assets/logo.png public/favicon.png
+git commit -m "style: 统一前端与 App Logo"
+```
+
+Expected: 提交只包含一个资产契约测试和两张前端 PNG；`bitpongo-mobile` 工作区没有变化。
