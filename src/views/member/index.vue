@@ -190,7 +190,7 @@
   .guest-member {
     min-height: 100%;
     padding: 1rem;
-    background: #fffaf5;
+    background: var(--app-page-background);
   }
 
   .guest-hero {

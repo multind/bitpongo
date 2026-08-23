@@ -2,15 +2,25 @@
   --app-font-family:
     -apple-system, 'BlinkMacSystemFont', 'SF Pro Text', 'PingFang SC', 'PingFang TC', 'Roboto', 'Noto Sans CJK SC', 'Helvetica Neue',
     'Arial', sans-serif;
+  --app-page-background: #fffaf5;
   --nut-font-family: var(--app-font-family);
+  --nut-navbar-background: var(--app-page-background);
 }
 
 html,
 body,
 #app {
+  min-height: 100%;
   font-family: var(--app-font-family);
   font-weight: 400;
   color: #101010;
+  background: var(--app-page-background);
+}
+
+.main-page,
+:root .nut-navbar,
+:root .nut-tabbar {
+  background: var(--app-page-background);
 }
 
 button,

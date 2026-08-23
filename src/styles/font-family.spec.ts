@@ -19,6 +19,18 @@ type FontStyles = {
   toast: string;
 };
 
+type RuntimeStyles = FontStyles & {
+  pageBackgroundVariable: string;
+  htmlBackground: string;
+  bodyBackground: string;
+  appBackground: string;
+  pageBackground: string;
+  navbarBackground: string;
+  tabbarBackground: string;
+  cardBackground: string;
+  errorBackground: string;
+};
+
 const CHROME_PATH_ENV = 'BITPONGO_CHROME_PATH';
 const PROCESS_TIMEOUT_MS = 30_000;
 const TEST_TIMEOUT_MS = PROCESS_TIMEOUT_MS * 5;
@@ -164,7 +176,7 @@ function dumpChromeDom(chrome: ChildProcessWithoutNullStreams): Promise<string> 
   });
 }
 
-let runtimeFontStyles: FontStyles;
+let runtimeFontStyles: RuntimeStyles;
 
 async function loadCompiledFontStylesInChrome() {
   const virtualModuleId = 'virtual:font-family-runtime';
@@ -206,10 +218,11 @@ async function loadCompiledFontStylesInChrome() {
 
             const fixture = document.createElement('div');
             fixture.innerHTML = \
-              '<main data-test="font-root"><p data-test="plain"><span data-test="nested">Normal text</span></p><input data-test="input" value="Input text" /><button data-test="button">Button text</button><textarea data-test="textarea">Textarea text</textarea><select data-test="select"><option>Select text</option></select><i class="iconfont" data-test="icon">&#xe600;</i><div class="nut-toast" data-test="toast">Toast text</div></main>';
+              '<style>.background-contract-card{background:#fff}.background-contract-error{background:#fde3e3}</style><main data-test="font-root"><p data-test="plain"><span data-test="nested">Normal text</span></p><input data-test="input" value="Input text" /><button data-test="button">Button text</button><textarea data-test="textarea">Textarea text</textarea><select data-test="select"><option>Select text</option></select><i class="iconfont" data-test="icon">&#xe600;</i><div class="nut-toast" data-test="toast">Toast text</div><section class="main-page" data-test="page"></section><header class="nut-navbar" data-test="navbar"></header><footer class="nut-tabbar" data-test="tabbar"></footer><article class="background-contract-card" data-test="card"></article><aside class="background-contract-error" data-test="error"></aside></main>';
             document.body.append(fixture);
 
             const fontFamily = (selector) => getComputedStyle(fixture.querySelector(selector)).fontFamily;
+            const backgroundColor = (selector) => getComputedStyle(document.querySelector(selector)).backgroundColor;
             document.body.dataset.fontResults = JSON.stringify({
               root: fontFamily('[data-test=font-root]'),
               plain: fontFamily('[data-test=plain]'),
@@ -220,6 +233,17 @@ async function loadCompiledFontStylesInChrome() {
               select: fontFamily('[data-test=select]'),
               icon: fontFamily('[data-test=icon]'),
               toast: fontFamily('[data-test=toast]'),
+              pageBackgroundVariable: getComputedStyle(document.documentElement)
+                .getPropertyValue('--app-page-background')
+                .trim(),
+              htmlBackground: backgroundColor('html'),
+              bodyBackground: backgroundColor('body'),
+              appBackground: backgroundColor('#app'),
+              pageBackground: backgroundColor('[data-test=page]'),
+              navbarBackground: backgroundColor('[data-test=navbar]'),
+              tabbarBackground: backgroundColor('[data-test=tabbar]'),
+              cardBackground: backgroundColor('[data-test=card]'),
+              errorBackground: backgroundColor('[data-test=error]'),
             });
           `;
           },
@@ -258,7 +282,7 @@ async function loadCompiledFontStylesInChrome() {
     const renderedDocument = new DOMParser().parseFromString(output, 'text/html');
     const result = renderedDocument.body.dataset.fontResults;
     if (!result) throw new Error(`Chrome font fixture returned no font results: ${output}`);
-    return JSON.parse(result) as FontStyles;
+    return JSON.parse(result) as RuntimeStyles;
   } finally {
     try {
       await withTimeout(viteServer.close(), 'Vite font fixture shutdown');
@@ -301,6 +325,24 @@ describe('global application font', () => {
   it('keeps iconfont independent from the normal text inheritance chain', () => {
     expect(runtimeFontStyles.icon).toContain('iconfont');
     expect(runtimeFontStyles.icon).not.toBe(runtimeFontStyles.root);
+  });
+});
+
+describe('global page background', () => {
+  it('uses the brand warm-white canvas across app and navigation surfaces', () => {
+    expect(runtimeFontStyles.pageBackgroundVariable).toBe('#fffaf5');
+    const pageBackground = 'rgb(255, 250, 245)';
+    expect(runtimeFontStyles.htmlBackground).toBe(pageBackground);
+    expect(runtimeFontStyles.bodyBackground).toBe(pageBackground);
+    expect(runtimeFontStyles.appBackground).toBe(pageBackground);
+    expect(runtimeFontStyles.pageBackground).toBe(pageBackground);
+    expect(runtimeFontStyles.navbarBackground).toBe(pageBackground);
+    expect(runtimeFontStyles.tabbarBackground).toBe(pageBackground);
+  });
+
+  it('does not override functional card and error backgrounds', () => {
+    expect(runtimeFontStyles.cardBackground).toBe('rgb(255, 255, 255)');
+    expect(runtimeFontStyles.errorBackground).toBe('rgb(253, 227, 227)');
   });
 });
 
