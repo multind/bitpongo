@@ -194,16 +194,28 @@
 </script>
 
 <style scoped lang="scss">
-  ::v-deep(.nut-cell__value) {
-    flex: 1;
+  ::v-deep(.nut-cell__title) {
+    box-sizing: border-box;
+    flex: 0 0 6.5rem;
     min-width: 0;
+    padding-right: 0.75rem;
   }
 
-  ::v-deep(.nut-cell__desc) {
+  ::v-deep(.nut-cell__value) {
+    flex: 1 1 0;
     min-width: 0;
+    max-width: calc(100% - 6.5rem);
     text-align: right;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  ::v-deep(.nut-cell__value > span) {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
     word-break: break-all;
-    overflow-wrap: break-word;
     white-space: normal;
   }
 </style>
