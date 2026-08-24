@@ -189,6 +189,8 @@ export type langType = {
     intro: string;
     barkTitle: string;
     pushUrl: string;
+    showPushUrl: string;
+    hidePushUrl: string;
     pushUrlPlaceholder: string;
     configured: string;
     notConfigured: string;

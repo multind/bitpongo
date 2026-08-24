@@ -192,6 +192,8 @@ export const lang: langType = {
     intro: '使用 Bark 接收交易、计划和系统通知。通知声音会根据事件严重程度自动调整。',
     barkTitle: 'Bark 推送',
     pushUrl: 'Bark 推送地址',
+    showPushUrl: '显示 Bark 推送地址',
+    hidePushUrl: '隐藏 Bark 推送地址',
     pushUrlPlaceholder: '粘贴 Bark App 中复制的测试地址',
     configured: '已配置',
     notConfigured: '未配置',

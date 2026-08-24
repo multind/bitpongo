@@ -121,6 +121,67 @@ describe('Bark notification settings view', () => {
     expect(mocks.saveBarkSetting).not.toHaveBeenCalled();
   });
 
+  it('saves a configured target as disabled without replacing its secret address', async () => {
+    mocks.getBarkSetting.mockResolvedValue({
+      configured: true,
+      enabled: true,
+      masked_push_url: 'https://api.day.app/****-key',
+      locale: 'zh-CN',
+      timezone: 'Asia/Shanghai',
+      updated_at: null,
+    });
+    const wrapper = mountView();
+    await flushPromises();
+    await wrapper.get('input[type="checkbox"]').setValue(false);
+    await wrapper.get('[data-test="bark-save"]').trigger('click');
+    await flushPromises();
+
+    expect(mocks.saveBarkSetting).toHaveBeenCalledWith({
+      enabled: false,
+      locale: 'zh-CN',
+      timezone: 'Asia/Shanghai',
+    });
+    expect(mocks.saveBarkSetting.mock.calls[0]?.[0]).not.toHaveProperty('push_url');
+  });
+
+  it('tests a configured target without sending a replacement secret address', async () => {
+    mocks.getBarkSetting.mockResolvedValue({
+      configured: true,
+      enabled: true,
+      masked_push_url: 'https://api.day.app/****-key',
+      locale: 'zh-CN',
+      timezone: 'Asia/Shanghai',
+      updated_at: null,
+    });
+    const wrapper = mountView();
+    await flushPromises();
+    await wrapper.get('[data-test="bark-test"]').trigger('click');
+    await flushPromises();
+
+    expect(mocks.testBarkSetting).toHaveBeenCalledWith({});
+  });
+
+  it.each([
+    ['zh-cn', '显示 Bark 推送地址', '隐藏 Bark 推送地址'],
+    ['zh-tw', '顯示 Bark 推播地址', '隱藏 Bark 推播地址'],
+    ['en-us', 'Show Bark push URL', 'Hide Bark push URL'],
+  ])('exposes the visibility state to assistive technology in %s', async (language, showLabel, hideLabel) => {
+    i18n.global.locale.value = language as 'zh-cn' | 'zh-tw' | 'en-us';
+    const wrapper = mountView();
+    await flushPromises();
+
+    const button = wrapper.get('[data-test="bark-visibility"]');
+    expect(button.attributes('aria-label')).toBe(showLabel);
+    expect(button.attributes('aria-pressed')).toBe('false');
+    expect(wrapper.get('[data-test="bark-push-url"]').attributes('type')).toBe('password');
+
+    await button.trigger('click');
+
+    expect(button.attributes('aria-label')).toBe(hideLabel);
+    expect(button.attributes('aria-pressed')).toBe('true');
+    expect(wrapper.get('[data-test="bark-push-url"]').attributes('type')).toBe('text');
+  });
+
   it('deletes the configured target only after confirmation', async () => {
     mocks.getBarkSetting.mockResolvedValue({
       configured: true,

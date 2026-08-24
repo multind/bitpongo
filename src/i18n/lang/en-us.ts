@@ -194,6 +194,8 @@ export const lang: langType = {
     intro: 'Use Bark for trade, plan, and system notifications. Sounds adjust automatically to event severity.',
     barkTitle: 'Bark notifications',
     pushUrl: 'Bark push URL',
+    showPushUrl: 'Show Bark push URL',
+    hidePushUrl: 'Hide Bark push URL',
     pushUrlPlaceholder: 'Paste the test URL copied from the Bark app',
     configured: 'Configured',
     notConfigured: 'Not configured',

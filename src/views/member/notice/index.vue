@@ -17,7 +17,8 @@
         <button
           class="visibility-button"
           type="button"
-          :aria-label="t('notice.pushUrl')"
+          :aria-label="showPushUrl ? t('notice.hidePushUrl') : t('notice.showPushUrl')"
+          :aria-pressed="showPushUrl"
           data-test="bark-visibility"
           @click="showPushUrl = !showPushUrl"
         >
