@@ -13,6 +13,26 @@ export interface AuthSession {
   info: UserInfo;
 }
 
+export interface BarkSetting {
+  configured: boolean;
+  enabled: boolean;
+  masked_push_url: string | null;
+  locale: 'zh-CN' | 'zh-TW' | 'en-US';
+  timezone: string;
+  updated_at: string | null;
+}
+
+export interface BarkSettingRequest {
+  push_url?: string;
+  enabled?: boolean;
+  locale?: BarkSetting['locale'];
+  timezone?: string;
+}
+
+export interface BarkTestRequest {
+  push_url?: string;
+}
+
 /**
  * 账号密码登录
  * @returns UseAxiosReturn
@@ -74,10 +94,18 @@ export function getPlanInfo(id: string) {
   return http.get(`/plans/${id}`);
 }
 
-export function ding(data: any) {
-  return http.post('/users/ding', data);
+export function getBarkSetting(): Promise<BarkSetting> {
+  return http.get<BarkSetting>('/users/notifications/bark');
 }
 
-export function noticeInfo() {
-  return http.get('/users/notices');
+export function saveBarkSetting(data: BarkSettingRequest): Promise<BarkSetting> {
+  return http.put<BarkSetting>('/users/notifications/bark', data);
+}
+
+export function deleteBarkSetting(): Promise<void> {
+  return http.delete<void>('/users/notifications/bark');
+}
+
+export function testBarkSetting(data: BarkTestRequest = {}): Promise<{ sent: boolean }> {
+  return http.post<{ sent: boolean }>('/users/notifications/bark/test', data);
 }
