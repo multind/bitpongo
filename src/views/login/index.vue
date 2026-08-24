@@ -1,5 +1,8 @@
 <template>
   <div class="login">
+    <div class="brand-logo">
+      <img src="../../assets/logo.png" alt="Bitpongo" />
+    </div>
     <h5 style="font-size: 26px; font-weight: bold; color: #101010">{{ t('login.welcome') }}</h5>
     <nut-form ref="ruleForm" :model-value="formData" style="margin: 40px 0">
       <nut-form-item label="" required prop="name" :rules="[{ required: true, message: t('login.usernameRequired') }]">
@@ -143,6 +146,18 @@
 <style scoped lang="scss">
   .login {
     padding: 20px;
+
+    .brand-logo {
+      display: flex;
+      justify-content: center;
+      margin: 4px 0 20px;
+
+      img {
+        width: 88px;
+        height: 88px;
+        border-radius: 22px;
+      }
+    }
 
     .nut-form-item {
       margin-top: 20px;

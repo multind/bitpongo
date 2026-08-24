@@ -1,5 +1,8 @@
 <template>
   <main class="register">
+    <div class="brand-logo">
+      <img src="../../assets/logo.png" alt="Bitpongo" />
+    </div>
     <h1>{{ t('register.title') }}</h1>
     <p class="subtitle">{{ t('register.subtitle') }}</p>
 
@@ -110,6 +113,18 @@
 <style scoped lang="scss">
   .register {
     padding: 1.25rem;
+  }
+
+  .brand-logo {
+    display: flex;
+    justify-content: center;
+    margin: 0.25rem 0 1.25rem;
+
+    img {
+      width: 88px;
+      height: 88px;
+      border-radius: 22px;
+    }
   }
 
   h1 {

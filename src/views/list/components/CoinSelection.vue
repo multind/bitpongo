@@ -1,16 +1,16 @@
 <template>
   <nut-row class="row-content" type="flex" justify="space-between" wrap="nowrap">
-    <nut-col class="col-content" :span="18">
+    <div class="coin-icons">
       <nut-avatar-group size="small" max-count="8" z-index="left">
         <nut-avatar size="small" v-for="i in props.strategy.coins.length" :key="i">
           <img :src="props.strategy.coins[i - 1]?.icon" :alt="props.strategy.coins[i - 1]?.symbol" />
         </nut-avatar>
       </nut-avatar-group>
-    </nut-col>
-    <nut-col :span="6">
+    </div>
+    <div class="coin-action" data-test="coin-selection-action">
       <nut-button class="coin-select-btn" size="normal" @click="coinChoice = true">{{ t('strategy.buyCoins') }}</nut-button>
       <CoinPicker v-model:visible="coinChoice" @confirm="handleCoinConfirm" />
-    </nut-col>
+    </div>
   </nut-row>
 </template>
 
@@ -41,7 +41,7 @@
 
 <style scoped>
   .coin-select-btn {
-    min-width: 120px;
+    min-width: 0;
     white-space: nowrap;
   }
 
@@ -50,13 +50,24 @@
   }
 
   .row-content {
+    box-sizing: border-box;
+    gap: 12px;
     align-items: center;
+    padding-right: 12px;
     margin-top: 15px;
     margin-bottom: 15px;
   }
 
-  .col-content {
+  .coin-icons {
+    flex: 1 1 0;
     align-items: center;
+    min-width: 0;
     margin-left: 25px;
+    overflow: hidden;
+  }
+
+  .coin-action {
+    flex: 0 0 auto;
+    min-width: 0;
   }
 </style>

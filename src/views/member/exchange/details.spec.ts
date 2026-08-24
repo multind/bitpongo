@@ -59,4 +59,35 @@ describe('member exchange details', () => {
 
     expect(statusLabel.style.fontFamily).toBe('');
   });
+
+  it('mounts the detail cells only after the first API response is ready', async () => {
+    let resolveDetails!: (value: Record<string, unknown>) => void;
+    mocks.exchangeDetails.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveDetails = resolve;
+      }),
+    );
+
+    const wrapper = mountDetails();
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('[data-test="exchange-details"]').exists()).toBe(false);
+
+    resolveDetails({
+      id: 7,
+      name: 'Primary',
+      exchange: 'binance',
+      access_key: 'access',
+      secret_key: 'secret',
+      password: '',
+      status: 'active',
+      created_at: '2026-08-22T12:00:00Z',
+    });
+    await vi.waitFor(() => {
+      expect(wrapper.find('[data-test="exchange-details"]').exists()).toBe(true);
+      expect(wrapper.text()).toContain('Primary');
+      expect(wrapper.text()).toContain('access');
+      expect(wrapper.text()).toContain('secret');
+    });
+  });
 });

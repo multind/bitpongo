@@ -9,7 +9,7 @@
       <span style="color: red">{{ error }}</span>
     </nut-col>
   </nut-row>
-  <nut-cell-group :span="10">
+  <nut-cell-group v-else data-test="exchange-details" :span="10">
     <nut-cell :title="t('exchange.name')">
       <template #desc>
         <span style="color: #2c3e50">
@@ -205,17 +205,17 @@
     flex: 1 1 0;
     min-width: 0;
     max-width: calc(100% - 6.5rem);
+    overflow: visible;
     text-align: right;
     overflow-wrap: anywhere;
-    word-break: break-word;
     white-space: normal;
   }
 
   ::v-deep(.nut-cell__value > span) {
     display: block;
     max-width: 100%;
-    overflow-wrap: anywhere;
     word-break: break-all;
+    overflow-wrap: anywhere;
     white-space: normal;
   }
 </style>
