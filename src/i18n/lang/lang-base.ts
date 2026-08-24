@@ -289,6 +289,7 @@ export type langType = {
     nextBuyTime: string;
     stop: string;
     pause: string;
+    resume: string;
     start: string;
     details: string;
   };

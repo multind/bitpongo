@@ -294,6 +294,7 @@ export const lang: langType = {
     nextBuyTime: '下次買進時間',
     stop: '停止',
     pause: '暫停',
+    resume: '恢復',
     start: '啟動',
     details: '詳情',
   },

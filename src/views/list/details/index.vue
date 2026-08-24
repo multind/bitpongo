@@ -3,7 +3,7 @@
     <text style="margin-left: 10px">{{ t('common.loading') }}</text>
   </div>
 
-  <div v-else-if="plan">
+  <div v-else-if="plan" class="details-page" style="padding-right: 16px; padding-left: 16px">
     <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 10px">
       <nut-col align="left" span="18">
         <text style="font-size: 15px">{{ plan.strategy.name }}</text
@@ -274,13 +274,13 @@
     <nut-sticky position="bottom">
       <nut-row type="flex" :gutter="10" style="padding-top: 10px; padding-bottom: 10px; background-color: whitesmoke">
         <nut-col align="center" :span="12">
-          <nut-button v-if="plan.status === 'active'" @click="handleClick('stop')">
+          <nut-button v-if="plan.status === 'active'" :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('stop')">
             <template #icon>
               <PlayStop />
             </template>
             {{ t('planCard.pause') }}
           </nut-button>
-          <nut-button v-else @click="handleClick('active')">
+          <nut-button v-else :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('active')">
             <template #icon>
               <PlayStart />
             </template>
@@ -288,7 +288,7 @@
           </nut-button>
         </nut-col>
         <nut-col align="center" :span="12">
-          <nut-button>
+          <nut-button :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('close')">
             <template #icon>
               <CheckDisabled />
             </template>
@@ -428,7 +428,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useRoute } from 'vue-router';
+  import { useRoute, useRouter } from 'vue-router';
   import { useI18n } from 'vue-i18n';
   import { CheckDisabled, Edit, MoreX, PlayStart, PlayStop } from '@nutui/icons-vue';
   import { computed, onMounted, ref } from 'vue';
@@ -440,11 +440,13 @@
 
   const { t } = useI18n();
   const route = useRoute();
+  const router = useRouter();
   const planIdQuery = route.query.planId;
   const planId = Array.isArray(planIdQuery) ? planIdQuery[0] : planIdQuery;
   const emit = defineEmits<{ 'update-status': [] }>();
   const plan = ref<any>(null);
   const loading = ref(true);
+  const updatingStatus = ref(false);
   const showOrderDetailsPopup = ref(false);
   const editStrategyNamePopup = ref(false);
   const currentOrder = ref<any>(null);
@@ -638,14 +640,22 @@
     }, 3000);
   };
 
-  const handleClick = (newStatus: string) => {
-    updatePlanStatus(plan.value.id, newStatus)
-      .then(() => {
-        emit('update-status');
-      })
-      .catch((error) => {
-        console.error('更新计划状态失败:', error);
-      });
+  const handleClick = async (newStatus: string) => {
+    if (!plan.value || updatingStatus.value) return;
+    updatingStatus.value = true;
+    try {
+      await updatePlanStatus(plan.value.id, newStatus);
+      if (newStatus === 'close') {
+        router.back();
+        return;
+      }
+      plan.value.status = newStatus;
+      emit('update-status');
+    } catch (error) {
+      console.error('更新计划状态失败:', error);
+    } finally {
+      updatingStatus.value = false;
+    }
   };
 </script>
 

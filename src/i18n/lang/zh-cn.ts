@@ -293,6 +293,7 @@ export const lang: langType = {
     nextBuyTime: '下次买入时间',
     stop: '停止',
     pause: '暂停',
+    resume: '恢复',
     start: '启动',
     details: '详情',
   },

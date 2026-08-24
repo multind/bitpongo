@@ -296,6 +296,7 @@ export const lang: langType = {
     nextBuyTime: 'Next buy time',
     stop: 'Stop',
     pause: 'Pause',
+    resume: 'Resume',
     start: 'Start',
     details: 'Details',
   },
