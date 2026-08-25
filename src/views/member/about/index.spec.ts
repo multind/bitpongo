@@ -45,4 +45,12 @@ describe('About view', () => {
     expect(sourceLink.text()).toContain('MIT License');
     expect(sourceLink.text()).toContain('github.com/multind/bitpongo');
   });
+
+  it('links to the public privacy policy', () => {
+    const wrapper = mountView();
+    const privacyLink = wrapper.get('[data-test="about-privacy"]');
+
+    expect(privacyLink.attributes('href')).toBe('/privacy');
+    expect(privacyLink.text()).toContain('Privacy Policy');
+  });
 });

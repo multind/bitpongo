@@ -252,6 +252,9 @@ export const lang: langType = {
     deleteConfirmTitle: '確認刪除帳號',
     deleteConfirmContent: '帳號刪除後無法復原，確定繼續嗎？',
   },
+  privacy: {
+    title: '隱私權政策',
+  },
   about: {
     version: '版本：{version}',
     publishTime: '發佈時間：{time}',

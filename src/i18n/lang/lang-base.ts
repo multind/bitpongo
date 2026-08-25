@@ -247,6 +247,9 @@ export type langType = {
     deleteConfirmTitle: string;
     deleteConfirmContent: string;
   };
+  privacy: {
+    title: string;
+  };
   about: {
     version: string;
     publishTime: string;

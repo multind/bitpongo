@@ -110,6 +110,15 @@ export const routes = [
         },
       },
       {
+        name: 'privacy',
+        path: '/privacy',
+        component: () => import('@/views/privacy/index.vue'),
+        meta: {
+          title: 'privacy.title',
+          border: true,
+        },
+      },
+      {
         name: 'agreement',
         path: '/agreement',
         component: () => import('@/views/login/agreement.vue'),

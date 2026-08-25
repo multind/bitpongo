@@ -26,6 +26,9 @@
   <nut-cell-group>
     <nut-cell :title="t('about.developer')" sub-title="Designed with ❤ by Multind.com"></nut-cell>
     <nut-cell :title="t('about.contact')" sub-title="https://multind.com"></nut-cell>
+    <a class="about-source" data-test="about-privacy" href="/privacy">
+      <nut-cell :title="t('privacy.title')" is-link></nut-cell>
+    </a>
     <a class="about-source" data-test="about-source" href="https://github.com/multind/bitpongo">
       <nut-cell :title="t('about.openSource')" sub-title="MIT License · github.com/multind/bitpongo" is-link></nut-cell>
     </a>

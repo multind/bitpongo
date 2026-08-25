@@ -253,6 +253,9 @@ export const lang: langType = {
     deleteConfirmTitle: 'Confirm account deletion',
     deleteConfirmContent: 'Your account cannot be recovered after deletion. Continue?',
   },
+  privacy: {
+    title: 'Privacy Policy',
+  },
   about: {
     version: 'Version: {version}',
     publishTime: 'Released: {time}',

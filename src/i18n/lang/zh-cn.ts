@@ -251,6 +251,9 @@ export const lang: langType = {
     deleteConfirmTitle: '确认注销账号',
     deleteConfirmContent: '账号注销后无法恢复，确定继续吗？',
   },
+  privacy: {
+    title: '隐私政策',
+  },
   about: {
     version: '版本：{version}',
     publishTime: '发布时间：{time}',
