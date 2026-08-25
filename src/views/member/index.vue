@@ -54,7 +54,9 @@
   </div>
   <main v-else class="guest-member">
     <section class="guest-hero" data-test="guest-welcome">
-      <div class="guest-mark" aria-hidden="true"><span>B</span><i>✦</i></div>
+      <div class="guest-mark" aria-hidden="true"
+        ><div class="brand-logo"> <img src="../../assets/logo.png" alt="Bitpongo" /> </div><i>✦</i></div
+      >
       <h1>{{ t('member.guestTitle') }}</h1>
       <p>{{ t('member.guestDescription') }}</p>
       <div class="guest-actions">
@@ -206,6 +208,18 @@
       line-height: 1.25;
     }
 
+    .brand-logo {
+      display: flex;
+      justify-content: left;
+      margin: 4px 0 20px;
+
+      img {
+        width: 88px;
+        height: 88px;
+        border-radius: 22px;
+      }
+    }
+
     p {
       margin: 0;
       font-size: 0.9375rem;
@@ -221,7 +235,6 @@
     height: 3rem;
     font-size: 1.75rem;
     font-weight: 800;
-    background: rgb(255 255 255 / 20%);
     border-radius: 1rem;
 
     i {

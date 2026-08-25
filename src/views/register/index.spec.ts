@@ -107,6 +107,28 @@ describe('registration view', () => {
     expect(button.attributes('disabled')).toBeDefined();
   });
 
+  it('toggles agreement from the whole row without changing it when opening the terms', async () => {
+    const { wrapper } = mountView();
+    const row = wrapper.find('[data-test="register-agreement-row"]');
+
+    expect(row.exists()).toBe(true);
+    const checkbox = wrapper.get('[data-test="register-agreement"]');
+    expect((checkbox.element as HTMLInputElement).checked).toBe(false);
+
+    await row.trigger('click');
+    expect((checkbox.element as HTMLInputElement).checked).toBe(true);
+
+    await row.trigger('click');
+    expect((checkbox.element as HTMLInputElement).checked).toBe(false);
+
+    await row.trigger('keydown', { key: ' ' });
+    expect((checkbox.element as HTMLInputElement).checked).toBe(true);
+
+    await wrapper.get('[data-test="register-agreement-link"]').trigger('click');
+    expect(mocks.push).toHaveBeenCalledWith('/agreement');
+    expect((checkbox.element as HTMLInputElement).checked).toBe(true);
+  });
+
   it('registers and enters the member page', async () => {
     const { store, wrapper } = mountView();
     const register = vi.spyOn(store, 'register').mockResolvedValue({

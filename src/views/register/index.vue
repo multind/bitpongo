@@ -1,8 +1,5 @@
 <template>
   <main class="register">
-    <div class="brand-logo">
-      <img src="../../assets/logo.png" alt="Bitpongo" />
-    </div>
     <h1>{{ t('register.title') }}</h1>
     <p class="subtitle">{{ t('register.subtitle') }}</p>
 
@@ -31,10 +28,21 @@
       </p>
       <p v-if="errorMessage" class="error" data-test="register-error">{{ errorMessage }}</p>
 
-      <div class="agreement-row">
-        <nut-checkbox v-model="form.agreed" data-test="register-agreement" />
+      <div
+        class="agreement-row"
+        data-test="register-agreement-row"
+        role="checkbox"
+        :aria-checked="form.agreed"
+        tabindex="0"
+        @click="toggleAgreement"
+        @keydown.enter.prevent="toggleAgreement"
+        @keydown.space.prevent="toggleAgreement"
+      >
+        <nut-checkbox v-model="form.agreed" data-test="register-agreement" @click.stop />
         <span>{{ t('register.agreePrefix') }}</span>
-        <button class="link" type="button" @click="router.push('/agreement')">{{ t('register.agreement') }}</button>
+        <button class="link" data-test="register-agreement-link" type="button" @click.stop="router.push('/agreement')">
+          {{ t('register.agreement') }}
+        </button>
       </div>
 
       <nut-button
@@ -93,6 +101,10 @@
     return t('register.failed');
   }
 
+  function toggleAgreement() {
+    form.agreed = !form.agreed;
+  }
+
   async function submit() {
     if (!canSubmit.value) return;
     errorMessage.value = '';
@@ -113,18 +125,6 @@
 <style scoped lang="scss">
   .register {
     padding: 1.25rem;
-  }
-
-  .brand-logo {
-    display: flex;
-    justify-content: center;
-    margin: 0.25rem 0 1.25rem;
-
-    img {
-      width: 88px;
-      height: 88px;
-      border-radius: 22px;
-    }
   }
 
   h1 {
@@ -182,8 +182,10 @@
     gap: 0.5rem;
     align-items: center;
     margin: 1.375rem 0.625rem;
-    font-size: 0.875rem;
+    font-size: 0.675rem;
     line-height: 1.5;
+    cursor: pointer;
+    user-select: none;
   }
 
   .link {
