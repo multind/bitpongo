@@ -82,9 +82,6 @@
     <nut-row type="flex" justify="center" :gutter="10" style="margin-top: 10px">
       <nut-col :span="22">
         <nut-button size="large" style="background-color: #101010" @click="apiStatusCheck">
-          <template #icon>
-            <Refresh color="white" />
-          </template>
           <span style="color: whitesmoke"> {{ t('common.check') }} </span>
         </nut-button>
       </nut-col>
@@ -97,7 +94,6 @@
   import { onMounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { checkExchange, exchangeDetails } from '@/api';
-  import { Refresh } from '@nutui/icons-vue';
   import { showToast } from '@nutui/nutui';
   import type { CheckExchangeData } from '@/views/list/types/exchange';
 

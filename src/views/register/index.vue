@@ -184,7 +184,7 @@
     display: flex;
     align-items: center;
     margin: 1.375rem 0.625rem;
-    font-size: 0.675rem;
+    font-size: 0.825rem;
     line-height: 1.5;
     cursor: pointer;
     user-select: none;

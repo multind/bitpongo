@@ -7,11 +7,11 @@
     </nut-col>
   </nut-row>
 
-  <nut-row type="flex" justify="center" flex-wrap="nowrap" style="margin: 20px 0">
-    <nut-col span="22">
-      <text style="font-size: 13px; color: black; border-bottom: 1px dashed #999"> {{ t('exchange.howTo') }} </text>
-    </nut-col>
-  </nut-row>
+  <!--  <nut-row type="flex" justify="center" flex-wrap="nowrap" style="margin: 20px 0">-->
+  <!--    <nut-col span="22">-->
+  <!--      <text style="font-size: 13px; color: black; border-bottom: 1px dashed #999"> {{ t('exchange.howTo') }} </text>-->
+  <!--    </nut-col>-->
+  <!--  </nut-row>-->
 
   <div
     v-for="(item, index) in listData"
