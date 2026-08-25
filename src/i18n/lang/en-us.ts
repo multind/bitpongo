@@ -258,6 +258,7 @@ export const lang: langType = {
     publishTime: 'Released: {time}',
     developer: 'Developer',
     contact: 'Contact us',
+    openSource: 'Open Source',
     copyright: 'Copyright',
   },
   strategy: {

@@ -252,6 +252,7 @@ export type langType = {
     publishTime: string;
     developer: string;
     contact: string;
+    openSource: string;
     copyright: string;
   };
   strategy: {

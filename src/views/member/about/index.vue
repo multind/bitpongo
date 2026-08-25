@@ -26,7 +26,10 @@
   <nut-cell-group>
     <nut-cell :title="t('about.developer')" sub-title="Designed with ❤ by Multind.com"></nut-cell>
     <nut-cell :title="t('about.contact')" sub-title="https://multind.com"></nut-cell>
-    <nut-cell :title="t('about.copyright')" sub-title="Copyright © 2026 Bitpongo. All rights reserved."></nut-cell>
+    <a class="about-source" data-test="about-source" href="https://github.com/multind/bitpongo">
+      <nut-cell :title="t('about.openSource')" sub-title="MIT License · github.com/multind/bitpongo" is-link></nut-cell>
+    </a>
+    <nut-cell :title="t('about.copyright')" sub-title="Copyright © 2026 Bitpongo."></nut-cell>
   </nut-cell-group>
 </template>
 
@@ -38,4 +41,9 @@
   const buildTime = new Date(__BUILD_TIME__).toLocaleString();
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  .about-source {
+    color: inherit;
+    text-decoration: none;
+  }
+</style>

@@ -257,6 +257,7 @@ export const lang: langType = {
     publishTime: '發佈時間：{time}',
     developer: '開發者',
     contact: '聯絡我們',
+    openSource: '開源專案',
     copyright: '版權資訊',
   },
   strategy: {
