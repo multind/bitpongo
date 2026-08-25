@@ -34,11 +34,14 @@
         role="checkbox"
         :aria-checked="form.agreed"
         tabindex="0"
+        style="gap: 0.25rem"
         @click="toggleAgreement"
         @keydown.enter.prevent="toggleAgreement"
         @keydown.space.prevent="toggleAgreement"
       >
-        <nut-checkbox v-model="form.agreed" data-test="register-agreement" @click.stop />
+        <nut-checkbox v-model="form.agreed" data-test="register-agreement" style="
+
+--nut-checkbox-margin-right: 0" @click.stop />
         <span>{{ t('register.agreePrefix') }}</span>
         <button class="link" data-test="register-agreement-link" type="button" @click.stop="router.push('/agreement')">
           {{ t('register.agreement') }}
@@ -179,7 +182,6 @@
 
   .agreement-row {
     display: flex;
-    gap: 0.5rem;
     align-items: center;
     margin: 1.375rem 0.625rem;
     font-size: 0.675rem;

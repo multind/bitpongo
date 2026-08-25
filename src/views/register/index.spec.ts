@@ -129,6 +129,17 @@ describe('registration view', () => {
     expect((checkbox.element as HTMLInputElement).checked).toBe(true);
   });
 
+  it('keeps the agreement checkbox close to its text', () => {
+    const { wrapper } = mountView();
+    const row = wrapper.get('[data-test="register-agreement-row"]');
+    const checkbox = wrapper.get('[data-test="register-agreement"]');
+    const rowStyle = (row.element as HTMLElement).style;
+    const checkboxStyle = (checkbox.element as HTMLElement).style;
+
+    expect(rowStyle.gap).toBe('0.25rem');
+    expect(checkboxStyle.getPropertyValue('--nut-checkbox-margin-right').trim()).toBe('0');
+  });
+
   it('registers and enters the member page', async () => {
     const { store, wrapper } = mountView();
     const register = vi.spyOn(store, 'register').mockResolvedValue({
