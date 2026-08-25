@@ -1,141 +1,143 @@
 <template>
-  <nut-row>
-    <nut-col align="right" span="24">
-      <p>更新即生效日期: 2026-01-01</p>
-    </nut-col>
-  </nut-row>
-  <div>
-    <h3>一、总则</h3>
-    <p>1.1 保宝网的所有权和运营权归深圳市永兴元科技有限公司所有。</p>
-    <p
-      >1.2
-      用户在注册之前，应当仔细阅读本协议，并同意遵守本协议后方可成为注册用户。一旦注册成功，则用户与保宝网之间自动形成协议关系，用户应当受本协议的约束。用户在使用特殊的服务或产品时，应当同意接受相关协议后方能使用。</p
-    >
+  <main class="terms">
+    <header class="terms__header">
+      <p class="terms__brand">BITPONGO</p>
+      <h1>Terms of Service</h1>
+      <p class="terms__date">Last updated: August 25, 2026</p>
+    </header>
 
-    <p>1.3 本协议则可由保宝网随时更新，用户应当及时关注并同意本站不承担通知义务。本站的通知、公告、声明或其它类似内容是本协议的一部分。</p>
-    <h3>二、服务内容</h3>
-    <p>2.1 保宝网的具体内容由本站根据实际情况提供。</p>
-    <p
-      >2.2
-      本站仅提供相关的网络服务，除此之外与相关网络服务有关的设备(如个人电脑、手机、及其他与接入互联网或移动网有关的装置)及所需的费用(如为接入互联网而支付的电话费及上网费、为使用移动网而支付的手机费)均应由用户自行负担。</p
-    >
-    <h3>三、用户帐号</h3>
-    <p
-      >3.1
-      经本站注册系统完成注册程序并通过身份认证的用户即成为正式用户，可以获得本站规定用户所应享有的一切权限；未经认证仅享有本站规定的部分会员权限。保宝网有权对会员的权限设计进行变更。</p
-    >
-    <p
-      >3.2
-      用户只能按照注册要求使用真实姓名，及身份证号注册。用户有义务保证密码和帐号的安全，用户利用该密码和帐号所进行的一切活动引起的任何损失或损害，由用户自行承担全部责任，本站不承担任何责任。如用户发现帐号遭到未授权的使用或发生其他任何安全问题，应立即修改帐号密码并妥善保管，如有必要，请通知本站。因黑客行为或用户的保管疏忽导致帐号非法使用，本站不承担任何责任。</p
-    >
-    <h3>四、使用规则</h3>
-    <p
-      >4.1
-      遵守中华人民共和国相关法律法规，包括但不限于《中华人民共和国计算机信息系统安全保护条例》、《计算机软件保护条例》、《最高人民法院关于审理涉及计算机网络著作权纠纷案件适用法律若干问题的解释(法释[2004]1号)》、《全国人大常委会关于维护互联网安全的决定》、《互联网电子公告服务管理规定》、《互联网新闻信息服务管理规定》、《互联网著作权行政保护办法》和《信息网络传播权保护条例》等有关计算机互联网规定和知识产权的法律和法规、实施办法。</p
-    >
-    <p
-      >4.2
-      用户对其自行发表、上传或传送的内容负全部责任，所有用户不得在本站任何页面发布、转载、传送含有下列内容之一的信息，否则本站有权自行处理并不通知用户：</p
-    >
-    <ul>
-      <li>(1)违反宪法确定的基本原则的；</li>
-      <li>(2)危害国家安全，泄漏国家机密，颠覆国家政权，破坏国家统一的；</li>
-      <li>(3)损害国家荣誉和利益的；</li>
-      <li>(4)煽动民族仇恨、民族歧视，破坏民族团结的；</li>
-      <li>(5)破坏国家宗教政策，宣扬邪教和封建迷信的；</li>
-      <li>(6)散布谣言，扰乱社会秩序，破坏社会稳定的；</li>
-      <li>(7)散布淫秽、色情、赌博、暴力、恐怖或者教唆犯罪的；</li>
-      <li>(8)侮辱或者诽谤他人，侵害他人合法权益的；</li>
-      <li>(9)煽动非法集会、结社、游行、示威、聚众扰乱社会秩序的；</li>
-      <li>(10)以非法民间组织名义活动的；</li>
-      <li>(11)含有法律、行政法规禁止的其他内容的。</li>
-    </ul>
-    <p
-      >4.3
-      用户承诺对其发表或者上传于本站的所有信息(即属于《中华人民共和国著作权法》规定的作品，包括但不限于文字、图片、音乐、电影、表演和录音录像制品和电脑程序等)均享有完整的知识产权，或者已经得到相关权利人的合法授权；如用户违反本条规定造成本站被第三人索赔的，用户应全额补偿本站一切费用(包括但不限于各种赔偿费、诉讼代理费及为此支出的其它合理费用)；</p
-    >
-    <p
-      >4.4
-      当第三方认为用户发表或者上传于本站的信息侵犯其权利，并根据《信息网络传播权保护条例》或者相关法律规定向本站发送权利通知书时，用户同意本站可以自行判断决定删除涉嫌侵权信息，除非用户提交书面证据材料排除侵权的可能性，本站将不会自动恢复上述删除的信息；</p
-    >
-    <ul>
-      <li>(1)不得为任何非法目的而使用网络服务系统；</li>
-      <li>(2)遵守所有与网络服务有关的网络协议、规定和程序；</li>
-      <li>(3)不得利用本站进行任何可能对互联网的正常运转造成不利影响的行为；</li>
-      <li>(4)不得利用本站进行任何不利于本站的行为。</li>
-    </ul>
-    <p
-      >4.5
-      如用户在使用网络服务时违反上述任何规定，本站有权要求用户改正或直接采取一切必要的措施(包括但不限于删除用户张贴的内容、暂停或终止用户使用网络服务的权利)以减轻用户不当行为而造成的影响。</p
-    >
-    <h3>五、隐私保护</h3>
-    <p>5.1 本站不对外公开或向第三方提供单个用户的注册资料及用户在使用网络服务时存储在本站的非公开内容，但下列情况除外：</p>
-    <ul>
-      <li>(1)事先获得用户的明确授权；</li>
-      <li>(2)根据有关的法律法规或行政机关、司法机关要求；</li>
-      <li>(3)为向用户提供服务所必需；</li>
-      <li>(4)为维护社会公众的利益；</li>
-      <li>(5)发生合并、分立、收购、资产转让等情形时；</li>
-      <li>(6)依据其他相关协议规则可以转移或透露给第三方的情形。</li>
-    </ul>
-    <p
-      >5.2
-      我们可能会与第三方合作向用户提供相关的网络服务，在此情况下，如该第三方同意承担与我们同等的保护用户隐私的责任，则我们会在征得用户同意的情况下将用户的注册资料等提供给该第三方。</p
-    >
-    <p>5.3 在不透露单个用户隐私资料的前提下，我们有权对整个用户数据库进行分析，并根据需要进行使用，以优化我们服务。</p>
-    <p
-      >5.4
-      用户在使用我们服务的过程中，亦保证不以搜集、复制、存储、传播等任何方式使用其他用户的个人信息，否则，由此产生的后果用户应当自行承担。</p
-    >
-    <h3>六、版权声明</h3>
-    <p
-      >6.1 本平台提供的内容（包括但不限于文字、图片、音频、视频等）的知识产权均归我们所有或与作者共有，未经我们许可，任何人不得任意转载。</p
-    >
-    <p>6.2 本平台特有的标识、版面设计、编排方式等版权均属我们所有，未经我们许可，任何人不得任意复制或转载。</p>
-    <p
-      >6.3
-      使用本平台的任何内容均应注明“来源于：新华网股份有限公司”并署上作者姓名，按法律规定需要支付稿酬的，应当通知我们及作者并支付稿酬，并独立承担一切法律责任。</p
-    >
-    <p>6.4 本平台由用户上载的所有内容仅代表用户/作者自己的立场和观点，与我们无关，由用户/作者本人承担一切法律责任。</p>
-    <p>6.5 恶意转载本平台内容的，我们保留将其诉诸法律的权利。</p>
-    <h3>七、单项服务约定</h3>
-    <p
-      >7.1
-      本平台中包含新华网股份有限公司以合法方式获取的信息或信息内容链接，同时也包括新华网股份有限公司和/或其关联方合法运营的其他单项服务。用户可以在本平台中开启和使用上述单项服务。某些单项服务可能需要用户同时接受就此特别制订的协议或者其他约束用户与该单项服务提供者之间的规则，必要时我们会在用户计划使用前述单向服务时以醒目的方式向用户提供这些协议、规则，供用户查阅与同意。一旦用户开始使用上述服务，则视为理解并接受有关单项服务的相关协议、规则的约束。如未标明使用期限、或未标明使用期限为“永久”、“无限期”或“无限制”的，则这些产品或服务的使用期限为自用户开始使用该产品或服务至该产品或服务在本平台中下线之日为止。</p
-    >
-    <p
-      >7.2
-      用户在我们软件中使用第三方提供的相关服务时，除遵守本协议及新华网股份有限公司相关规则外，还可能需要同意并遵守第三方的协议、隐私政策及相关规则。如因第三方相关服务产生的争议、损失或损害，由你与第三方自行解决，公司并不就此而对你或任何第三方承担任何责任。</p
-    >
-    <h3>八、责任声明</h3>
-    <p>8.1 用户明确同意其使用我们服务所存在的风险及一切后果将完全由用户本人承担，我们对此不承担任何责任。</p>
-    <p
-      >8.2
-      为保障用户和本平台的利益，我们有权对用户注册时提交的信息进行审查，并有权要求用户完善相关信息。但我们的审查仅是形式审查，我们不对用户提交的材料和信息的真实性、准确性、真实性、合法性负责。</p
-    >
-    <p>8.3 我们无法保证服务一定能满足用户的要求，也不保证服务的及时性、安全性、准确性。</p>
-    <p
-      >8.4
-      我们不保证为方便用户而设置的外部链接的安全性、准确性和完整性，同时，对于该等外部链接指向的不由我们实际控制的任何网页上的内容，我们不承担任何责任。</p
-    >
-    <p>8.5 对于因不可抗力或本平台不能控制的原因造成的服务中断或其它缺陷，我们不承担任何责任，但将尽力减少因此而给用户造成的损失和影响。</p>
-    <p>8.6 对于本平台向用户提供的下列产品或者服务的质量缺陷本身及其引发的任何损失，我们无需承担任何责任：</p>
-    <ul>
-      <li>(1)我们向用户免费提供的各项服务；</li>
-      <li>(2)我们向用户赠送的任何产品或者服务。</li>
-    </ul>
-    <p>8.7 我们有权事先通知用户并于任何时间暂时或永久修改或终止本服务(或其任何部分)，我们对用户和任何第三人均无需承担任何责任。</p>
-    <h3>九、附则</h3>
-    <p>9.1 本协议的订立、执行和解释及争议的解决均应适用中华人民共和国大陆地区法律。</p>
-    <p
-      >9.2
-      如用户和我们之间发生任何争议或纠纷，应先友好协商解决；协商不成的，用户同意将争议或纠纷提交新华网股份有限公司所在地（即北京市西城区）有管辖权的人民法院管辖。</p
-    >
-    <p>9.3 如本协议中的任何条款无论因何种原因完全或部分无效或不具有执行力和约束力，本协议的其余条款仍应有效并且有执行力和约束力。</p>
-    <p>9.4 本协议解释权及修订权归新华网股份有限公司所有。</p>
-  </div>
+    <p class="terms__intro">
+      These Terms govern your use of Bitpongo. By creating an account or using the service, you agree to them. If you do not agree, do not
+      use Bitpongo.
+    </p>
+
+    <section>
+      <h2>1. What Bitpongo Does</h2>
+      <p>
+        Bitpongo helps you connect supported exchange accounts, create automated recurring-purchase strategies, view positions, and receive
+        optional Bark notifications. Bitpongo is a software tool, not a broker, custodian, exchange, or financial adviser.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. Your Account and Credentials</h2>
+      <p>
+        You are responsible for your account, password, exchange API credentials, Bark push URL, and all activity performed through your
+        account. Use only exchange accounts you are authorized to control. Grant API keys only the permissions needed for trading and do not
+        enable withdrawals.
+      </p>
+    </section>
+
+    <section>
+      <h2>3. Trading Risks</h2>
+      <p>
+        Digital-asset trading is highly risky and may result in partial or total loss. Automated orders may be affected by price changes,
+        slippage, liquidity, exchange rules, network delays, outages, or incorrect strategy settings. Bitpongo does not guarantee order
+        execution, prices, availability, or returns. You remain responsible for reviewing every strategy and its results.
+      </p>
+    </section>
+
+    <section>
+      <h2>4. Third-Party Services</h2>
+      <p>
+        Binance, Bark, and other connected services are operated by third parties under their own terms and privacy policies. Their
+        availability and actions are outside Bitpongo's control. You are responsible for complying with their rules and any laws that apply
+        to you.
+      </p>
+    </section>
+
+    <section>
+      <h2>5. Acceptable Use</h2>
+      <p>
+        You must not use Bitpongo for unlawful activity, unauthorized access, market abuse, service disruption, security testing without
+        permission, or attempts to bypass technical or account restrictions. Access may be limited or terminated when necessary to protect
+        users, the service, or legal compliance.
+      </p>
+    </section>
+
+    <section>
+      <h2>6. Data and Account Deletion</h2>
+      <p>
+        Bitpongo processes account details, exchange credentials, strategy data, and Bark settings as needed to operate and secure the
+        service. You may request account deletion in Account Settings. Deletion is irreversible, although limited records may be retained
+        where required for security, dispute resolution, or legal compliance.
+      </p>
+    </section>
+
+    <section>
+      <h2>7. Availability and Liability</h2>
+      <p>
+        The service is provided on an "as is" and "as available" basis to the extent permitted by law. Features may change, pause, or end.
+        Bitpongo is not responsible for trading losses, third-party failures, indirect losses, or interruptions outside its reasonable
+        control.
+      </p>
+    </section>
+
+    <section>
+      <h2>8. Changes to These Terms</h2>
+      <p>
+        These Terms may be updated as the service changes. The updated date will appear at the top of this page. Continuing to use Bitpongo
+        after an update means you accept the revised Terms.
+      </p>
+    </section>
+  </main>
 </template>
 
-<script setup lang="ts"></script>
+<style scoped lang="scss">
+  .terms {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 48rem;
+    min-height: 100%;
+    padding: 1.5rem 1rem 2.5rem;
+    margin: 0 auto;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: #202124;
+  }
 
-<style scoped lang="scss"></style>
+  .terms__header {
+    margin-bottom: 1.5rem;
+  }
+
+  .terms__brand {
+    margin: 0 0 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #777;
+    letter-spacing: 0.12em;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    line-height: 1.25;
+    color: #111;
+  }
+
+  .terms__date {
+    margin: 0.4rem 0 0;
+    font-size: 0.8125rem;
+    color: #777;
+  }
+
+  .terms__intro {
+    margin: 0 0 1.75rem;
+    color: #444;
+  }
+
+  section + section {
+    margin-top: 1.5rem;
+  }
+
+  h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.0625rem;
+    line-height: 1.4;
+    color: #111;
+  }
+
+  p {
+    margin: 0;
+  }
+</style>
