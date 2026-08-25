@@ -114,8 +114,8 @@
   };
 
   // 确认币种分配
-  const onAverageDownConfirm = () => {
-    console.log('逢低买入已设置');
+  const onAverageDownConfirm = (updatedStrategy: Strategy) => {
+    updateStrategy(updatedStrategy);
   };
 
   // 创建策略

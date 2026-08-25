@@ -63,7 +63,8 @@
   const props = defineProps<Props>();
 
   // 创建本地副本避免直接修改 prop
-  const localCoins = ref([...props.strategy.coins]);
+  const cloneCoins = () => props.strategy.coins.map((coin) => ({ ...coin }));
+  const localCoins = ref(cloneCoins());
   const localCondition = ref(props.strategy.condition);
 
   const showPopup = ref(false);
@@ -78,11 +79,14 @@
   // 确认分配比例
   const confirmDistribution = () => {
     showPopup.value = false;
+    if (localCoins.value.some((coin) => coin.average_down) && !localCondition.value) {
+      localCondition.value = 'total_average';
+    }
     coinAverageDownDesc.value = t('coinAverageDown.setCount', { count: localCoins.value.length });
     // 将本地修改后的数据通过事件传递给父组件
     emit('confirm', {
       ...props.strategy,
-      coins: localCoins.value,
+      coins: localCoins.value.map((coin) => ({ ...coin })),
       condition: localCondition.value,
     });
   };
@@ -91,7 +95,7 @@
   watch(
     () => props.strategy,
     (newStrategy) => {
-      localCoins.value = [...newStrategy.coins];
+      localCoins.value = newStrategy.coins.map((coin) => ({ ...coin }));
       localCondition.value = newStrategy.condition;
     },
     { deep: true },
