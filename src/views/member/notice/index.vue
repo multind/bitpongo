@@ -11,6 +11,7 @@
         <span aria-hidden="true">·</span>
         <span>{{ enabled ? t('notice.enabled') : t('notice.disabled') }}</span>
       </div>
+      <p class="effective-timezone">{{ t('notice.effectiveTimeZone', { zone: effectiveTimeZone }) }}</p>
 
       <div class="field-heading">
         <label for="bark-push-url">{{ t('notice.pushUrl') }}</label>
@@ -67,8 +68,16 @@
   import { computed, onMounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { showDialog, showToast } from '@nutui/nutui';
-  import { deleteBarkSetting, getBarkSetting, saveBarkSetting, testBarkSetting, type BarkSetting, type BarkSettingRequest } from '@/api';
-  import { getAppContext } from '@/mobile/app-context';
+  import {
+    deleteBarkSetting,
+    getBarkSetting,
+    getTimeZonePreference,
+    saveBarkSetting,
+    testBarkSetting,
+    type BarkSetting,
+    type BarkSettingRequest,
+  } from '@/api';
+  import { displayTimeZone } from '@/mobile/app-context';
 
   const { locale, t } = useI18n();
   const setting = ref<BarkSetting | null>(null);
@@ -79,6 +88,7 @@
   const saving = ref(false);
   const testing = ref(false);
   const removing = ref(false);
+  const effectiveTimeZone = ref(displayTimeZone());
 
   const configured = computed(() => setting.value?.configured ?? false);
   const maskedPushUrl = computed(() => setting.value?.masked_push_url ?? '');
@@ -95,7 +105,7 @@
   }
 
   function requestTimeZone(): string {
-    return getAppContext()?.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    return effectiveTimeZone.value;
   }
 
   function safeErrorMessage(error: unknown): string {
@@ -118,7 +128,9 @@
   async function loadSetting() {
     loading.value = true;
     try {
-      setting.value = await getBarkSetting();
+      const [loadedSetting, preference] = await Promise.all([getBarkSetting(), getTimeZonePreference()]);
+      setting.value = loadedSetting;
+      effectiveTimeZone.value = preference.effective_timezone;
       enabled.value = setting.value.enabled;
     } catch (error) {
       showToast.fail(safeErrorMessage(error));

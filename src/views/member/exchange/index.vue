@@ -84,6 +84,7 @@
   import { deleteExchange } from '@/api';
   import { showToast } from '@nutui/nutui';
   import type { Exchange } from '@/views/list/types/exchange';
+  import { formatInstant } from '@/utils/timeUtils';
 
   const { t } = useI18n();
   const listStore = useListStore();
@@ -122,8 +123,7 @@
 
   // 格式化日期
   function formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleString();
+    return dateString ? formatInstant(dateString) : '';
   }
 
   const more = ref(false);

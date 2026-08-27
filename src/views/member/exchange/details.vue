@@ -47,7 +47,7 @@
     </nut-cell>
     <nut-cell :title="t('common.createTime')">
       <template #desc>
-        <span style="color: #2c3e50">
+        <span data-test="exchange-created-at" style="color: #2c3e50">
           {{ formatDate(currentItem.created_at) }}
         </span>
       </template>
@@ -96,6 +96,7 @@
   import { checkExchange, exchangeDetails } from '@/api';
   import { showToast } from '@nutui/nutui';
   import type { CheckExchangeData } from '@/views/list/types/exchange';
+  import { formatInstant } from '@/utils/timeUtils';
 
   const { t } = useI18n();
   const route = useRoute();
@@ -150,8 +151,7 @@
 
   // 格式化日期
   function formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleString();
+    return dateString ? formatInstant(dateString) : '';
   }
 
   const apiStatusCheck = async () => {

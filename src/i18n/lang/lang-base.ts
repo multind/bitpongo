@@ -207,6 +207,7 @@ export type langType = {
     sent: string;
     removed: string;
     failed: string;
+    effectiveTimeZone: string;
   };
   exchange: {
     createButton: string;
@@ -246,6 +247,15 @@ export type langType = {
     deleteFailed: string;
     deleteConfirmTitle: string;
     deleteConfirmContent: string;
+    timeZoneTitle: string;
+    timeZoneDescription: string;
+    timeZoneMode: string;
+    followDevice: string;
+    fixedTimeZone: string;
+    fixedTimeZoneHint: string;
+    effectiveTimeZone: string;
+    saveTimeZone: string;
+    timeZoneSaved: string;
   };
   privacy: {
     title: string;

@@ -212,6 +212,7 @@ export const lang: langType = {
     sent: 'Test notification sent',
     removed: 'Bark settings deleted',
     failed: 'Operation failed. Please try again later.',
+    effectiveTimeZone: 'Notification display timezone: {zone}',
   },
   exchange: {
     createButton: 'Add API',
@@ -252,6 +253,15 @@ export const lang: langType = {
     deleteFailed: 'Deletion failed. Please try again later.',
     deleteConfirmTitle: 'Confirm account deletion',
     deleteConfirmContent: 'Your account cannot be recovered after deletion. Continue?',
+    timeZoneTitle: 'Time display',
+    timeZoneDescription: 'Strategies run in the timezone selected at creation. This setting only controls how dates and times are displayed.',
+    timeZoneMode: 'Display timezone',
+    followDevice: 'Follow device',
+    fixedTimeZone: 'Fixed timezone',
+    fixedTimeZoneHint: 'All times will be converted to the selected timezone for display.',
+    effectiveTimeZone: 'Current display timezone: {zone}',
+    saveTimeZone: 'Save timezone settings',
+    timeZoneSaved: 'Timezone settings saved',
   },
   privacy: {
     title: 'Privacy Policy',

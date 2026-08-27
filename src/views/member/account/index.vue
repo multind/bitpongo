@@ -1,5 +1,28 @@
 <template>
   <main class="account-settings">
+    <section class="timezone-settings">
+      <h1>{{ t('account.timeZoneTitle') }}</h1>
+      <p class="subtitle">{{ t('account.timeZoneDescription') }}</p>
+      <label class="field-label" for="timezone-mode">{{ t('account.timeZoneMode') }}</label>
+      <select id="timezone-mode" v-model="timeZoneMode" data-test="timezone-mode" class="timezone-mode" :disabled="timeZoneLoading">
+        <option value="FOLLOW_DEVICE">{{ t('account.followDevice') }}</option>
+        <option value="FIXED">{{ t('account.fixedTimeZone') }}</option>
+      </select>
+      <TimeZoneSelect
+        v-if="timeZoneMode === 'FIXED'"
+        v-model="fixedTimeZone"
+        label-key="account.fixedTimeZone"
+        hint-key="account.fixedTimeZoneHint"
+      />
+      <p class="effective-timezone" data-test="effective-timezone">
+        {{ t('account.effectiveTimeZone', { zone: effectiveTimeZone }) }}
+      </p>
+      <nut-button block color="#101010" data-test="save-timezone" :disabled="timeZoneLoading" @click="saveTimeZone">
+        {{ t('account.saveTimeZone') }}
+      </nut-button>
+    </section>
+
+    <section class="deletion-settings">
     <h1>{{ t('account.deleteTitle') }}</h1>
     <p class="subtitle">{{ t('account.deleteWarning') }}</p>
 
@@ -31,15 +54,19 @@
         {{ t('account.deleteButton') }}
       </nut-button>
     </section>
+    </section>
   </main>
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from 'vue';
+  import { computed, onMounted, ref } from 'vue';
   import { useRouter } from 'vue-router';
   import { useI18n } from 'vue-i18n';
   import { showDialog, showToast } from '@nutui/nutui';
   import { useUserStore } from '@/store/modules/user';
+  import { getTimeZonePreference, saveTimeZonePreference, type DisplayTimeZoneMode } from '@/api';
+  import { displayTimeZone, getAppContext, setDisplayTimeZonePreference } from '@/mobile/app-context';
+  import TimeZoneSelect from '@/views/list/components/TimeZoneSelect.vue';
 
   const { t } = useI18n();
   const router = useRouter();
@@ -48,6 +75,43 @@
   const acknowledged = ref(false);
   const loading = ref(false);
   const canSubmit = computed(() => password.value.trim().length > 0 && acknowledged.value);
+  const timeZoneMode = ref<DisplayTimeZoneMode>('FOLLOW_DEVICE');
+  const fixedTimeZone = ref(getAppContext()?.timeZone || 'UTC');
+  const effectiveTimeZone = ref(displayTimeZone());
+  const timeZoneLoading = ref(false);
+
+  async function loadTimeZone() {
+    timeZoneLoading.value = true;
+    try {
+      const preference = await getTimeZonePreference();
+      timeZoneMode.value = preference.mode;
+      fixedTimeZone.value = preference.timezone || preference.effective_timezone;
+      effectiveTimeZone.value = preference.effective_timezone;
+      setDisplayTimeZonePreference(preference.mode, preference.timezone);
+    } catch (error) {
+      showToast.fail(safeErrorMessage(error));
+    } finally {
+      timeZoneLoading.value = false;
+    }
+  }
+
+  async function saveTimeZone() {
+    if (timeZoneLoading.value) return;
+    timeZoneLoading.value = true;
+    try {
+      const preference = await saveTimeZonePreference({
+        mode: timeZoneMode.value,
+        timezone: timeZoneMode.value === 'FIXED' ? fixedTimeZone.value : null,
+      });
+      effectiveTimeZone.value = preference.effective_timezone;
+      setDisplayTimeZonePreference(preference.mode, preference.timezone);
+      showToast.success(t('account.timeZoneSaved'));
+    } catch (error) {
+      showToast.fail(safeErrorMessage(error));
+    } finally {
+      timeZoneLoading.value = false;
+    }
+  }
 
   function safeErrorMessage(error: unknown): string {
     if (typeof error === 'string' && error.trim()) return error;
@@ -77,6 +141,8 @@
       onOk: deleteAccount,
     });
   }
+
+  onMounted(loadTimeZone);
 </script>
 
 <style scoped lang="scss">
@@ -100,6 +166,25 @@
 
   .account-form {
     margin-top: 2.5rem;
+  }
+
+  .deletion-settings {
+    margin-top: 3rem;
+  }
+
+  .timezone-mode {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 0.75rem;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .effective-timezone {
+    margin: 0.75rem 0 1rem;
+    color: #666;
   }
 
   .field-label {

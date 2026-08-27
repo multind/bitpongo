@@ -210,6 +210,7 @@ export const lang: langType = {
     sent: '测试通知已发送',
     removed: 'Bark 配置已删除',
     failed: '操作失败，请稍后重试',
+    effectiveTimeZone: '通知显示时区：{zone}',
   },
   exchange: {
     createButton: '创建 API',
@@ -250,6 +251,15 @@ export const lang: langType = {
     deleteFailed: '注销失败，请稍后重试',
     deleteConfirmTitle: '确认注销账号',
     deleteConfirmContent: '账号注销后无法恢复，确定继续吗？',
+    timeZoneTitle: '时间显示',
+    timeZoneDescription: '策略按创建时选择的时区执行；这里仅设置日期和时间的显示方式。',
+    timeZoneMode: '显示时区',
+    followDevice: '跟随设备',
+    fixedTimeZone: '固定时区',
+    fixedTimeZoneHint: '所有时间将转换为所选时区显示。',
+    effectiveTimeZone: '当前显示时区：{zone}',
+    saveTimeZone: '保存时区设置',
+    timeZoneSaved: '时区设置已保存',
   },
   privacy: {
     title: '隐私政策',

@@ -1,11 +1,11 @@
 <template>
   <section class="timezone-field">
-    <label class="timezone-label" for="strategy-timezone">{{ t('strategy.timeZone') }}</label>
+    <label class="timezone-label" for="strategy-timezone">{{ t(labelKey) }}</label>
     <input v-model.trim="search" data-test="timezone-search" class="timezone-search" type="search" :placeholder="t('common.search')" />
     <select id="strategy-timezone" data-test="timezone-select" class="timezone-select" :value="modelValue" @change="selectTimeZone">
       <option v-for="zone in filteredZones" :key="zone" :value="zone">{{ zoneLabel(zone) }}</option>
     </select>
-    <small class="timezone-hint">{{ t('strategy.timeZoneHint') }}</small>
+    <small class="timezone-hint">{{ t(hintKey) }}</small>
   </section>
 </template>
 
@@ -15,7 +15,17 @@
 
   const FALLBACK_ZONES = ['UTC', 'Asia/Shanghai', 'Asia/Taipei', 'Asia/Tokyo', 'Europe/London', 'America/New_York', 'America/Los_Angeles'];
 
-  const props = defineProps<{ modelValue: string }>();
+  const props = withDefaults(
+    defineProps<{
+      modelValue: string;
+      labelKey?: string;
+      hintKey?: string;
+    }>(),
+    {
+      labelKey: 'strategy.timeZone',
+      hintKey: 'strategy.timeZoneHint',
+    },
+  );
   const emit = defineEmits<{ (event: 'update:modelValue', value: string): void }>();
   const { locale, t } = useI18n();
   const search = ref('');

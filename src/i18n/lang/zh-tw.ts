@@ -211,6 +211,7 @@ export const lang: langType = {
     sent: '測試通知已傳送',
     removed: 'Bark 設定已刪除',
     failed: '操作失敗，請稍後再試',
+    effectiveTimeZone: '通知顯示時區：{zone}',
   },
   exchange: {
     createButton: '建立 API',
@@ -251,6 +252,15 @@ export const lang: langType = {
     deleteFailed: '刪除失敗，請稍後再試',
     deleteConfirmTitle: '確認刪除帳號',
     deleteConfirmContent: '帳號刪除後無法復原，確定繼續嗎？',
+    timeZoneTitle: '時間顯示',
+    timeZoneDescription: '策略依建立時選擇的時區執行；此處僅設定日期與時間的顯示方式。',
+    timeZoneMode: '顯示時區',
+    followDevice: '跟隨裝置',
+    fixedTimeZone: '固定時區',
+    fixedTimeZoneHint: '所有時間將轉換為所選時區顯示。',
+    effectiveTimeZone: '目前顯示時區：{zone}',
+    saveTimeZone: '儲存時區設定',
+    timeZoneSaved: '時區設定已儲存',
   },
   privacy: {
     title: '隱私權政策',

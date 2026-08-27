@@ -83,7 +83,8 @@
       <nut-col align="center-left" :span="8">
         <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
           <text style="font-size: 12px; color: #2f2f2f">{{ t('planCard.nextBuyTime') }}</text>
-          <text style="font-size: 15px">{{ nextBuyTimeText }}</text>
+          <text data-test="next-buy-time" style="font-size: 15px">{{ nextBuyTimeText.primary }}</text>
+          <text v-if="nextBuyTimeText.secondary" style="font-size: 11px; color: #777">{{ nextBuyTimeText.secondary }}</text>
         </nut-space>
       </nut-col>
     </nut-row>
@@ -131,7 +132,8 @@
   import { Chart } from 'chart.js/auto';
   import { useRouter } from 'vue-router';
 
-  import { calculateRunTime, formatDateTime } from '@/utils/timeUtils';
+  import { calculateRunTime, formatScheduleInstant, parseInstant } from '@/utils/timeUtils';
+  import { displayTimeZone } from '@/mobile/app-context';
   import { updatePlanStatus } from '@/api';
 
   interface Props {
@@ -175,9 +177,9 @@
 
       // 提取 snapshots 中的 created_at 属性并格式化
       return props.plan.snapshots.map((snapshot: any) => {
-        const date = new Date(snapshot.created_at);
-        const day = String(date.getDate()).padStart(2, '0');
-        const hour = String(date.getHours()).padStart(2, '0');
+        const date = parseInstant(snapshot.created_at).setZone(displayTimeZone());
+        const day = String(date.day).padStart(2, '0');
+        const hour = String(date.hour).padStart(2, '0');
         return `${day}/${hour}:00`;
       });
     } catch (error) {
@@ -244,7 +246,10 @@
 
   // 格式化下次买入时间
   const nextBuyTimeText = computed(() => {
-    return formatDateTime(props.plan?.next_time);
+    const nextTime = props.plan?.next_time;
+    if (!nextTime) return { primary: '' };
+    const scheduleZone = props.plan?.strategy?.schedule_timezone || 'UTC';
+    return formatScheduleInstant(nextTime, scheduleZone, displayTimeZone());
   });
 
   // 币种 | 目标比例

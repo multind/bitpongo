@@ -7,6 +7,7 @@ import NoticeView from './index.vue';
 
 const mocks = vi.hoisted(() => ({
   getBarkSetting: vi.fn(),
+  getTimeZonePreference: vi.fn(),
   saveBarkSetting: vi.fn(),
   deleteBarkSetting: vi.fn(),
   testBarkSetting: vi.fn(),
@@ -17,6 +18,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/api', () => ({
   getBarkSetting: mocks.getBarkSetting,
+  getTimeZonePreference: mocks.getTimeZonePreference,
   saveBarkSetting: mocks.saveBarkSetting,
   deleteBarkSetting: mocks.deleteBarkSetting,
   testBarkSetting: mocks.testBarkSetting,
@@ -24,6 +26,7 @@ vi.mock('@/api', () => ({
 
 vi.mock('@/mobile/app-context', () => ({
   getAppContext: () => ({ locale: 'zh-cn', timeZone: 'Asia/Shanghai', timeZoneOffsetMinutes: 480 }),
+  displayTimeZone: () => 'Asia/Shanghai',
 }));
 
 vi.mock('@nutui/nutui', () => ({
@@ -77,6 +80,7 @@ describe('Bark notification settings view', () => {
       timezone: 'Asia/Shanghai',
       updated_at: null,
     });
+    mocks.getTimeZonePreference.mockResolvedValue({ mode: 'FOLLOW_DEVICE', timezone: null, effective_timezone: 'Asia/Shanghai' });
     mocks.saveBarkSetting.mockResolvedValue(undefined);
     mocks.deleteBarkSetting.mockResolvedValue(undefined);
     mocks.testBarkSetting.mockResolvedValue({ sent: true });

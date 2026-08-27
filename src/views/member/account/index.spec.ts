@@ -12,6 +12,15 @@ const mocks = vi.hoisted(() => ({
   replace: vi.fn(),
   showDialog: vi.fn(),
   showToastFail: vi.fn(),
+  showToastSuccess: vi.fn(),
+  getTimeZonePreference: vi.fn(),
+  saveTimeZonePreference: vi.fn(),
+}));
+
+vi.mock('@/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/api')>()),
+  getTimeZonePreference: mocks.getTimeZonePreference,
+  saveTimeZonePreference: mocks.saveTimeZonePreference,
 }));
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -24,7 +33,7 @@ vi.mock('vue-router', async (importOriginal) => {
 
 vi.mock('@nutui/nutui', () => ({
   showDialog: mocks.showDialog,
-  showToast: { fail: mocks.showToastFail },
+  showToast: { fail: mocks.showToastFail, success: mocks.showToastSuccess },
 }));
 
 const NutInputStub = defineComponent({
@@ -80,6 +89,9 @@ describe('account deletion view', () => {
     mocks.replace.mockReset();
     mocks.showDialog.mockReset();
     mocks.showToastFail.mockReset();
+    mocks.showToastSuccess.mockReset();
+    mocks.getTimeZonePreference.mockResolvedValue({ mode: 'FOLLOW_DEVICE', timezone: null, effective_timezone: 'Asia/Shanghai' });
+    mocks.saveTimeZonePreference.mockResolvedValue({ mode: 'FIXED', timezone: 'America/New_York', effective_timezone: 'America/New_York' });
   });
 
   it('shows a concise irreversible deletion warning', () => {
@@ -132,5 +144,19 @@ describe('account deletion view', () => {
 
     expect(deleteAccount).toHaveBeenCalledWith('secret');
     expect(mocks.replace).toHaveBeenCalledWith('/login');
+  });
+
+  it('loads and saves a fixed display timezone independently of strategy scheduling', async () => {
+    const { wrapper } = mountView();
+    await flushPromises();
+
+    expect(wrapper.get('[data-test="effective-timezone"]').text()).toContain('Asia/Shanghai');
+    await wrapper.get('[data-test="timezone-mode"]').setValue('FIXED');
+    await wrapper.get('[data-test="timezone-select"]').setValue('America/New_York');
+    await wrapper.get('[data-test="save-timezone"]').trigger('click');
+    await flushPromises();
+
+    expect(mocks.saveTimeZonePreference).toHaveBeenCalledWith({ mode: 'FIXED', timezone: 'America/New_York' });
+    expect(mocks.showToastSuccess).toHaveBeenCalled();
   });
 });

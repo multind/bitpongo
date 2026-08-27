@@ -126,7 +126,10 @@
             <text>{{ t('details.nextBuyTime') }}</text>
           </nut-col>
           <nut-col align="right" span="12">
-            <text>{{ formatDateTime(plan.next_time) }}</text>
+            <text data-test="details-next-buy-time">{{ nextBuyTimeText.primary }}</text>
+            <text v-if="nextBuyTimeText.secondary" style="display: block; font-size: 11px; color: #777">
+              {{ nextBuyTimeText.secondary }}
+            </text>
           </nut-col>
         </nut-row>
         <nut-row type="flex" style="margin-top: 10px">
@@ -435,7 +438,8 @@
 
   import { Chart } from 'chart.js/auto';
   import { getPlanInfo, updatePlanStatus } from '@/api';
-  import { calculateRunTime, formatDateTime } from '@/utils/timeUtils';
+  import { calculateRunTime, formatDateTime, formatScheduleInstant, parseInstant } from '@/utils/timeUtils';
+  import { displayTimeZone } from '@/mobile/app-context';
   import { useWebSocketBase } from '@/utils/useWebSocket';
 
   const { t } = useI18n();
@@ -523,6 +527,11 @@
     return plan.value?.created_at ? calculateRunTime(plan.value.created_at) : '';
   });
 
+  const nextBuyTimeText = computed(() => {
+    if (!plan.value?.next_time) return { primary: '' };
+    return formatScheduleInstant(plan.value.next_time, plan.value.strategy?.schedule_timezone || 'UTC', displayTimeZone());
+  });
+
   // 计算图表标签
   const chartLabels = computed(() => {
     try {
@@ -530,9 +539,9 @@
         return [''];
       }
       return plan.value?.snapshots.map((snapshot: any) => {
-        const date = new Date(snapshot.created_at);
-        const day = String(date.getDate()).padStart(2, '0');
-        const hour = String(date.getHours()).padStart(2, '0');
+        const date = parseInstant(snapshot.created_at).setZone(displayTimeZone());
+        const day = String(date.day).padStart(2, '0');
+        const hour = String(date.hour).padStart(2, '0');
         return `${day}/${hour}:00`;
       });
     } catch (error) {
