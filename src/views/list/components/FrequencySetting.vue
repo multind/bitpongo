@@ -14,6 +14,8 @@
       @choose="choose"
     />
 
+    <TimeZoneSelect :model-value="strategy.schedule_timezone" @update:model-value="updateTimeZone" />
+
     <!-- 每小时选择器 -->
     <nut-popup v-model:visible="everyHour" position="bottom" round :style="{ height: '40%' }">
       <nut-picker :columns="columnsHourly" :title="t('frequency.hourly')" @cancel="cancel" @confirm="confirmHourly" />
@@ -40,6 +42,7 @@
   import { ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import type { Strategy } from '@/views/list/types/strategy.ts';
+  import TimeZoneSelect from './TimeZoneSelect.vue';
 
   interface Props {
     strategy: Strategy;
@@ -157,6 +160,10 @@
     everyHour.value = false;
     everyMonth.value = false;
     timeRange.value = true;
+  };
+
+  const updateTimeZone = (scheduleTimezone: string) => {
+    emit('update:strategy', { ...props.strategy, schedule_timezone: scheduleTimezone });
   };
 
   const confirmDaily = ({ selectedValue, selectedOptions }: { selectedValue: string[]; selectedOptions: any[] }) => {

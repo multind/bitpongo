@@ -19,6 +19,7 @@ describe('CoinSelection', () => {
           exchange_id: 1,
           instalment: '10',
           cron: '',
+          schedule_timezone: 'UTC',
           frequency: '',
           coins: [],
           condition: '0',

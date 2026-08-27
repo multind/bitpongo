@@ -280,6 +280,9 @@ export type langType = {
     frequencyRequired: string;
     coinsRequired: string;
     proportionTotal: string;
+    timeZone: string;
+    timeZoneHint: string;
+    localTime: string;
   };
   planCard: {
     paused: string;

@@ -285,6 +285,9 @@ export const lang: langType = {
     frequencyRequired: '請設定定期定額頻率',
     coinsRequired: '請選擇幣種',
     proportionTotal: '幣種比例合計必須為100',
+    timeZone: '策略時區',
+    timeZoneHint: '即使前往其他地區，策略仍依此時區執行',
+    localTime: '當地時間',
   },
   planCard: {
     paused: '已暫停',

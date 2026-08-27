@@ -287,6 +287,9 @@ export const lang: langType = {
     frequencyRequired: 'Set the DCA frequency',
     coinsRequired: 'Select at least one asset',
     proportionTotal: 'Allocation must total 100%',
+    timeZone: 'Strategy time zone',
+    timeZoneHint: 'The strategy follows this time zone even when you travel',
+    localTime: 'Local time',
   },
   planCard: {
     paused: 'Paused',

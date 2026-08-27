@@ -50,6 +50,7 @@
   import type { Coin, Strategy } from '@/views/list/types/strategy.ts';
   import type { CheckExchangeData } from '@/views/list/types/exchange.ts';
   import { Loading } from '@nutui/icons-vue';
+  import { getAppContext } from '@/mobile/app-context';
 
   const { t } = useI18n();
   const strategy = ref<Strategy>({
@@ -60,6 +61,7 @@
     frequency: '',
     condition: '',
     cron: '',
+    schedule_timezone: getAppContext()?.timeZone || 'UTC',
     coins: [],
   });
 

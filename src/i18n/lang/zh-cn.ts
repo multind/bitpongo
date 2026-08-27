@@ -284,6 +284,9 @@ export const lang: langType = {
     frequencyRequired: '请设置定投频率',
     coinsRequired: '请选择币种',
     proportionTotal: '币种比例合计必须为100',
+    timeZone: '策略时区',
+    timeZoneHint: '即使旅行到其他地区，策略仍按此时区执行',
+    localTime: '本地时间',
   },
   planCard: {
     paused: '已暂停',

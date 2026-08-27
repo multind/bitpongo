@@ -5,6 +5,7 @@ export interface Strategy {
   instalment: string;
   frequency: string;
   cron: string;
+  schedule_timezone: string;
   coins: Coin[];
   condition: string;
 }

@@ -34,6 +34,7 @@ function strategy(averageDown: boolean) {
     frequency: 'daily',
     condition: '',
     cron: '0 8 * * *',
+    schedule_timezone: 'UTC',
     coins: [
       {
         symbol: 'BTC',

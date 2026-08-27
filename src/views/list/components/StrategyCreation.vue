@@ -33,7 +33,7 @@
         <div>{{ t('strategy.nextBuyTime') }}</div>
       </nut-col>
       <nut-col align="right" :span="10">
-        <div>{{ nextBuyTime }}</div>
+        <div data-test="next-buy-time">{{ nextBuyTime }}</div>
       </nut-col>
     </nut-row>
 
@@ -100,6 +100,7 @@
   import { showDialog } from '@nutui/nutui';
   import type { Coin, Strategy } from '@/views/list/types/strategy.ts';
   import { CronExpressionParser } from 'cron-parser';
+  import { formatInstant } from '@/utils/timeUtils';
 
   interface Props {
     strategy: Strategy;
@@ -237,9 +238,12 @@
   const nextBuyTime = computed(() => {
     try {
       if (props.strategy.cron) {
-        const interval = CronExpressionParser.parse(props.strategy.cron, {});
-        const nextDate = interval.next().toDate();
-        return formatDate(nextDate);
+        const interval = CronExpressionParser.parse(props.strategy.cron, {
+          currentDate: new Date(),
+          tz: props.strategy.schedule_timezone,
+        });
+        const nextInstant = interval.next().toISOString();
+        return `${formatInstant(nextInstant, props.strategy.schedule_timezone)} ${props.strategy.schedule_timezone}`;
       }
       return t('common.notSet');
     } catch (error) {
@@ -247,17 +251,6 @@
       return t('common.parseFailed');
     }
   });
-
-  // 格式化日期时间
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
-  };
 </script>
 
 <style scoped>
