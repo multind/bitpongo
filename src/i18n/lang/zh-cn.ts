@@ -213,6 +213,8 @@ export const lang: langType = {
     effectiveTimeZone: '通知显示时区：{zone}',
   },
   exchange: {
+    binanceName: 'Binance - 币安',
+    okxName: 'OKX - 欧易',
     createButton: '创建 API',
     apiIntro:
       '“API密钥”是API用于验证和授权调用用户或应用程序的唯一代码或一组唯一代码。有些代码用于验证，有些则用于创建加密签名以证明请求的合法性。',

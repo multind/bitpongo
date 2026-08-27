@@ -210,6 +210,8 @@ export type langType = {
     effectiveTimeZone: string;
   };
   exchange: {
+    binanceName: string;
+    okxName: string;
     createButton: string;
     apiIntro: string;
     howTo: string;

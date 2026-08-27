@@ -5,8 +5,8 @@
     </nut-form-item>
     <nut-form-item :label="t('common.exchange')" label-position="left" required prop="exchange">
       <nut-radio-group v-model="formData.exchange" direction="horizontal">
-        <nut-radio label="binance" shape="button">Binance - 币安</nut-radio>
-        <nut-radio label="okx" shape="button">OKX - 欧易</nut-radio>
+        <nut-radio label="binance" shape="button">{{ t('exchange.binanceName') }}</nut-radio>
+        <nut-radio label="okx" shape="button">{{ t('exchange.okxName') }}</nut-radio>
       </nut-radio-group>
     </nut-form-item>
     <nut-form-item :label="t('exchange.accessKey')" required label-position="left" prop="access_key">

@@ -215,6 +215,8 @@ export const lang: langType = {
     effectiveTimeZone: 'Notification display timezone: {zone}',
   },
   exchange: {
+    binanceName: 'Binance',
+    okxName: 'OKX',
     createButton: 'Add API',
     apiIntro:
       'An API key is the unique code (or set of codes) an API uses to authenticate and authorize a user or application. Some codes authenticate, others create cryptographic signatures proving a request is legitimate.',

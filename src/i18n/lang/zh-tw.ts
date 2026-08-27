@@ -214,6 +214,8 @@ export const lang: langType = {
     effectiveTimeZone: '通知顯示時區：{zone}',
   },
   exchange: {
+    binanceName: 'Binance - 幣安',
+    okxName: 'OKX - 歐易',
     createButton: '建立 API',
     apiIntro:
       '「API金鑰」是API用於驗證和授權呼叫使用者或應用程式的唯一代碼或一組唯一代碼。有些代碼用於驗證，有些則用於建立加密簽章以證明請求的合法性。',
