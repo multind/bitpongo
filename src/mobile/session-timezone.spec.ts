@@ -31,4 +31,22 @@ describe('session timezone lifecycle', () => {
     resetSessionTimeZone();
     expect(setDisplayTimeZonePreference).toHaveBeenCalledWith('FOLLOW_DEVICE', null);
   });
+
+  it('ignores a stale preference response after logout', async () => {
+    let resolvePreference!: (value: { mode: 'FIXED'; timezone: string; effective_timezone: string }) => void;
+    vi.mocked(getTimeZonePreference).mockReturnValue(
+      new Promise((resolve) => {
+        resolvePreference = resolve;
+      }),
+    );
+
+    const pending = initializeSessionTimeZone();
+    resetSessionTimeZone();
+    resolvePreference({ mode: 'FIXED', timezone: 'Asia/Tokyo', effective_timezone: 'Asia/Tokyo' });
+    await pending;
+
+    expect(setDisplayTimeZonePreference).toHaveBeenCalledTimes(1);
+    expect(setDisplayTimeZonePreference).toHaveBeenCalledWith('FOLLOW_DEVICE', null);
+    expect(syncDeviceTimeZone).not.toHaveBeenCalled();
+  });
 });
