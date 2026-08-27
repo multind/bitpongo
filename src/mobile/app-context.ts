@@ -18,6 +18,7 @@ interface AppContextDependencies {
 }
 
 let appContext: AppRuntimeContext | null = null;
+let fixedDisplayTimeZone: string | null = null;
 
 function defaultBrowserTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
@@ -52,4 +53,12 @@ export async function initializeAppContext(dependencies: AppContextDependencies 
 
 export function getAppContext(): AppRuntimeContext | null {
   return appContext;
+}
+
+export function setDisplayTimeZonePreference(mode: 'FOLLOW_DEVICE' | 'FIXED', timeZone: string | null): void {
+  fixedDisplayTimeZone = mode === 'FIXED' && timeZone?.trim() ? timeZone.trim() : null;
+}
+
+export function displayTimeZone(): string {
+  return fixedDisplayTimeZone || appContext?.timeZone || 'UTC';
 }

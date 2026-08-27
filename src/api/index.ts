@@ -33,6 +33,14 @@ export interface BarkTestRequest {
   push_url?: string;
 }
 
+export type DisplayTimeZoneMode = 'FOLLOW_DEVICE' | 'FIXED';
+
+export interface TimeZonePreference {
+  mode: DisplayTimeZoneMode;
+  timezone: string | null;
+  effective_timezone: string;
+}
+
 /**
  * 账号密码登录
  * @returns UseAxiosReturn
@@ -47,6 +55,18 @@ export function registerAccount(data: { name: string; email: string; password: s
 
 export function deleteAccount(data: { password: string }): Promise<void> {
   return http.delete('/users/account', { data });
+}
+
+export function getTimeZonePreference(): Promise<TimeZonePreference> {
+  return http.get<TimeZonePreference>('/users/timezone');
+}
+
+export function saveTimeZonePreference(data: Pick<TimeZonePreference, 'mode' | 'timezone'>): Promise<TimeZonePreference> {
+  return http.put<TimeZonePreference>('/users/timezone', data);
+}
+
+export function syncDeviceTimeZone(timezone: string): Promise<void> {
+  return http.post<void>('/users/timezone/device', { timezone });
 }
 
 /**

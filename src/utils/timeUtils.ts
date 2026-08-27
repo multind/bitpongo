@@ -1,4 +1,38 @@
 import { i18n } from '@/i18n';
+import { displayTimeZone } from '@/mobile/app-context';
+import { DateTime } from 'luxon';
+
+const ABSOLUTE_TIMESTAMP = /(Z|[+-]\d{2}:\d{2})$/;
+
+export function parseInstant(value: string): DateTime {
+  if (!ABSOLUTE_TIMESTAMP.test(value)) {
+    throw new Error('Absolute timestamp requires Z or an explicit offset');
+  }
+  const parsed = DateTime.fromISO(value, { setZone: true });
+  if (!parsed.isValid) {
+    throw new Error(`Invalid timestamp: ${value}`);
+  }
+  return parsed;
+}
+
+export function formatInstant(value: string, zone = displayTimeZone()): string {
+  const zoned = parseInstant(value).setZone(zone);
+  if (!zoned.isValid) {
+    throw new Error(`Invalid time zone: ${zone}`);
+  }
+  return zoned.toFormat('yyyy-LL-dd HH:mm');
+}
+
+export function formatScheduleInstant(value: string, scheduleZone: string, displayZone: string): { primary: string; secondary?: string } {
+  const primary = `${formatInstant(value, scheduleZone)} ${scheduleZone}`;
+  if (scheduleZone === displayZone) {
+    return { primary };
+  }
+  return {
+    primary,
+    secondary: `${formatInstant(value, displayZone)} ${displayZone}`,
+  };
+}
 
 /**
  * 计算从创建时间到当前时间的运行时长
@@ -11,7 +45,7 @@ export function calculateRunTime(createdAt?: string): string {
   }
 
   try {
-    const createdTime = new Date(createdAt).getTime();
+    const createdTime = parseInstant(createdAt).toMillis();
     const currentTime = Date.now();
     const diffMs = currentTime - createdTime;
 
@@ -42,14 +76,7 @@ export function formatDateTime(timeStr?: string): string {
   }
 
   try {
-    const date = new Date(timeStr);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
+    return formatInstant(timeStr);
   } catch (error) {
     console.error('格式化时间出错:', error);
     return timeStr; // 返回原始字符串作为后备

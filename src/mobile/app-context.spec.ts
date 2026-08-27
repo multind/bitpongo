@@ -1,8 +1,11 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { getAppContext, initializeAppContext } from './app-context';
+import { displayTimeZone, getAppContext, initializeAppContext, setDisplayTimeZonePreference } from './app-context';
 
-afterEach(() => localStorage.clear());
+afterEach(() => {
+  localStorage.clear();
+  setDisplayTimeZonePreference('FOLLOW_DEVICE', null);
+});
 
 const browserFallback = {
   browserTimeZone: () => 'Europe/Paris',
@@ -84,5 +87,17 @@ describe('App runtime context', () => {
       timeZone: 'Europe/Paris',
       timeZoneOffsetMinutes: 120,
     });
+  });
+
+  it('resolves a fixed display preference before the device zone', async () => {
+    await initializeAppContext({
+      ...browserFallback,
+      loadNativeContext: async () => null,
+    });
+    setDisplayTimeZonePreference('FIXED', 'Asia/Tokyo');
+    expect(displayTimeZone()).toBe('Asia/Tokyo');
+
+    setDisplayTimeZonePreference('FOLLOW_DEVICE', null);
+    expect(displayTimeZone()).toBe('Europe/Paris');
   });
 });
