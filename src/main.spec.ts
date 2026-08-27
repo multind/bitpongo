@@ -15,4 +15,11 @@ describe('application bootstrap', () => {
     expect(createIndex).toBeLessThan(mountIndex);
     expect(source).toContain('setLang(context.locale, false)');
   });
+
+  it('mounts before starting authenticated timezone synchronization', () => {
+    const mountIndex = source.indexOf("app.mount('#app')");
+    const sessionTimeZoneIndex = source.indexOf('initializeSessionTimeZone()');
+
+    expect(sessionTimeZoneIndex).toBeGreaterThan(mountIndex);
+  });
 });

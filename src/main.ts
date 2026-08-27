@@ -5,8 +5,7 @@ import { initializeAppContext } from '@/mobile/app-context';
 import router from '@/router';
 import store from '@/store';
 import { useUserStore } from '@/store/modules/user';
-import { getTimeZonePreference, syncDeviceTimeZone } from '@/api';
-import { setDisplayTimeZonePreference } from '@/mobile/app-context';
+import { initializeSessionTimeZone } from '@/mobile/session-timezone';
 import './styles/index.scss';
 import './assets/font/iconfont.css';
 
@@ -29,20 +28,10 @@ async function bootstrap() {
   // 状态管理
   app.use(store);
 
-  const userStore = useUserStore(store);
-  if (userStore.token) {
-    try {
-      const preference = await getTimeZonePreference();
-      setDisplayTimeZonePreference(preference.mode, preference.timezone);
-      if (preference.mode === 'FOLLOW_DEVICE') {
-        await syncDeviceTimeZone(context.timeZone);
-      }
-    } catch (error) {
-      console.warn('Failed to initialize timezone preference', error);
-    }
-  }
-
   app.mount('#app');
+
+  const userStore = useUserStore(store);
+  if (userStore.token) void initializeSessionTimeZone();
 }
 
 void bootstrap();

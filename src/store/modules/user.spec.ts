@@ -4,6 +4,13 @@ import { createPinia, setActivePinia } from 'pinia';
 import * as api from '@/api';
 import { useUserStore } from './user';
 
+const timezoneMocks = vi.hoisted(() => ({ initialize: vi.fn(), reset: vi.fn() }));
+
+vi.mock('@/mobile/session-timezone', () => ({
+  initializeSessionTimeZone: timezoneMocks.initialize,
+  resetSessionTimeZone: timezoneMocks.reset,
+}));
+
 vi.mock('@/api', () => ({
   deleteAccount: vi.fn(),
   loginPassword: vi.fn(),
@@ -18,6 +25,7 @@ describe('user account deletion', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.mocked(api.deleteAccount).mockReset();
+    timezoneMocks.reset.mockReset();
   });
 
   it('logs out only after the backend confirms deletion', async () => {
@@ -31,6 +39,7 @@ describe('user account deletion', () => {
     expect(api.deleteAccount).toHaveBeenCalledWith({ password: 'secret' });
     expect(store.token).toBe('');
     expect(store.info).toEqual({});
+    expect(timezoneMocks.reset).toHaveBeenCalledOnce();
   });
 
   it('keeps the current session when deletion fails', async () => {
@@ -50,6 +59,7 @@ describe('user registration', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.mocked(api.registerAccount).mockReset();
+    timezoneMocks.initialize.mockReset();
   });
 
   it('stores the session returned by registration', async () => {
@@ -69,6 +79,7 @@ describe('user registration', () => {
     });
     expect(store.token).toBe('new-access-token');
     expect(store.info).toEqual(session.info);
+    expect(timezoneMocks.initialize).toHaveBeenCalledOnce();
   });
 
   it('keeps the current session when registration fails', async () => {
@@ -81,5 +92,24 @@ describe('user registration', () => {
 
     expect(store.token).toBe('current-token');
     expect(store.info).toEqual({ id: 1, name: '当前用户', email: 'current@example.com' });
+  });
+});
+
+describe('user login', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.mocked(api.loginPassword).mockReset();
+    timezoneMocks.initialize.mockReset();
+  });
+
+  it('initializes the account timezone after storing the session', async () => {
+    vi.mocked(api.loginPassword).mockResolvedValue({
+      token: 'token',
+      info: { id: 9, name: 'User', email: 'user@example.com' },
+    });
+
+    await useUserStore().login('user@example.com', 'secret');
+
+    expect(timezoneMocks.initialize).toHaveBeenCalledOnce();
   });
 });
