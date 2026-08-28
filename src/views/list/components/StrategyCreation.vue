@@ -243,6 +243,7 @@
           tz: props.strategy.schedule_timezone,
         });
         const nextInstant = interval.next().toISOString();
+        if (!nextInstant) return t('common.notSet');
         return `${formatInstant(nextInstant, props.strategy.schedule_timezone)} ${props.strategy.schedule_timezone}`;
       }
       return t('common.notSet');
