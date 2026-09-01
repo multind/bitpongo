@@ -1,39 +1,75 @@
-### nut库
+# Bitpongo
 
-https://nutui.jd.com/h5/vue/4x/#/zh-CN/component/button
+[English](README.md) | [简体中文](README_zh-CN.md)
 
-### 图标库
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Vue](https://img.shields.io/badge/Vue-3-42B883.svg)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)](https://www.typescriptlang.org/)
 
-https://icon-sets.iconify.design/?query=sched
+Bitpongo is an open-source web client for creating and monitoring automated investment strategies. It works as a responsive web application and as the web layer embedded in the Bitpongo mobile app.
 
-## Docker 发布（与后端分开发布）
+The interface supports strategy scheduling, exchange connections, portfolio and return charts, order history, Bark notifications, account lifecycle operations, multiple languages, and user-specific time-zone display.
 
-前端镜像只包含构建产物和 Nginx 配置，构建前先在本地产出 `dist`：
+> [!WARNING]
+> Bitpongo is software, not investment advice. Automated trading can result in financial loss. Use exchange API keys with withdrawal permission disabled and validate strategies in a test environment first.
+
+## Features
+
+- Create, pause, resume, stop, and inspect automated strategies.
+- Configure asset allocation, execution frequency, buy ranges, and optional dip-buying rules.
+- Manage exchange API connections with masked credential display.
+- View positions, orders, execution history, and return trends.
+- Configure individual Bark push notifications.
+- English, Simplified Chinese, and Traditional Chinese interfaces.
+- IANA time-zone-aware scheduling and display.
+- Responsive PWA layout and a controlled bridge for the mobile WebView shell.
+
+## Technology
+
+- Vue 3 and TypeScript
+- Vite 8
+- Pinia and Vue Router
+- NutUI, Vant, and Varlet UI
+- Chart.js
+- Vitest and Vue Test Utils
+- Nginx and Docker Compose
+
+## Related repositories
+
+| Project | Repository |
+| --- | --- |
+| Backend API | [multind/bitpongo-api](https://github.com/multind/bitpongo-api) |
+| Documentation | [multind/bitpongo-doc](https://github.com/multind/bitpongo-doc) |
+
+## Requirements
+
+- Node.js 24 recommended; Node.js 20.10 or later is required
+- npm 10 or later
+
+## Local development
+
+Install dependencies and start the development server:
 
 ```bash
-pnpm install --frozen-lockfile
-pnpm build
-docker compose up -d --build
+npm install --legacy-peer-deps
+npm run dev
 ```
 
-Nginx 通过 Docker 服务名 `api:8000` 反向代理 `/api/`（含 WebSocket `/api/ws/`），使用 Docker 内置 DNS 运行时解析，后端重启不影响前端容器。要求：
+The development URL is printed by Vite. The default API prefix is controlled by the environment files and runtime configuration.
 
-1. 先启动 后端 Compose（会创建共享网络 `bitpongo-net`）；
-2. 前端 Compose 加入该外部网络，对外只暴露 `80`（可用 `WEB_PORT` 覆盖）。
-
-页面 SPA 路由回退到 `index.html`；浏览器与 API 同源访问，不依赖 CORS。
-
-镜像推送到 Docker Hub（`docker.io/corbettzhang/bitpongofront:latest`）：
+## Verification
 
 ```bash
-docker login
-docker compose build
-docker compose push
+npm test
+npm run typecheck
+npm run build
 ```
 
-## Flutter WebView 集成
+Lint and formatting commands are available in [`package.json`](package.json).
 
-页面会在 Vue 应用启动前加载 `/app-config.js`。浏览器部署默认保留构建时的 `VITE_URL_PREFIX`；Flutter 内嵌构建必须在该脚本中提供绝对 HTTP(S) API 地址：
+## Runtime API configuration
+
+The application loads `/app-config.js` before Vue starts. Browser deployments may use the build-time `VITE_URL_PREFIX`; embedded mobile builds should provide an absolute HTTP(S) API URL:
 
 ```js
 window.__ZHITOUBAO_APP_CONFIG__ = {
@@ -41,6 +77,69 @@ window.__ZHITOUBAO_APP_CONFIG__ = {
 };
 ```
 
-移动端可选桥接通道名为 `ZhitoubaoBridge`，仅允许 `getContext`、`saveImage`、`shareImage` 三个命令。Web 端发送的 JSON 信封格式为 `{ version: 1, command, requestId, payload }`；原生端完成后调用 `window.__ZHITOUBAO_NATIVE_RESOLVE__(requestId, result)` 返回结果。浏览器中不存在桥接通道时会安全降级，未响应请求会在 10 秒后过期。图片命令只接受绝对 HTTP(S) URL。
+Do not place access tokens, exchange credentials, or other secrets in this public file.
 
-账号设置入口位于“我的”，注销路由为 `/member/account`。注销要求当前密码、明确勾选和二次确认；只有后端确认删除成功后，前端才清除会话并跳转登录页。
+## Docker deployment
+
+The frontend is deployed separately from the API. Build the static assets first, then start the Nginx container:
+
+```bash
+npm run build
+docker compose up -d --build
+```
+
+The frontend Compose service joins the external `bitpongo-net` network and proxies `/api/` and `/api/ws/` to `api:8000`. Start the [backend Compose stack](https://github.com/multind/bitpongo-api) first so that the shared network exists.
+
+Set a different host port when necessary:
+
+```bash
+WEB_PORT=8080 docker compose up -d
+```
+
+The Compose configuration builds and tags `docker.io/corbettzhang/bitpongofront:latest`.
+
+```bash
+docker compose build
+docker compose push
+```
+
+## Mobile WebView bridge
+
+The optional channel is named `ZhitoubaoBridge` for backward compatibility. It accepts only these commands:
+
+- `getContext`
+- `saveImage`
+- `shareImage`
+
+Messages use the following envelope:
+
+```json
+{
+  "version": 1,
+  "command": "getContext",
+  "requestId": "example-request-id",
+  "payload": {}
+}
+```
+
+The native shell resolves a request through `window.__ZHITOUBAO_NATIVE_RESOLVE__(requestId, result)`. In a normal browser, the bridge degrades safely and unanswered requests expire after 10 seconds.
+
+## Security notes
+
+- Never commit exchange keys, passwords, access tokens, Bark device keys, or production logs.
+- Keep withdrawal permission disabled on every exchange API key.
+- Serve production deployments over HTTPS.
+- Keep the API and WebSocket routes same-origin through the provided Nginx proxy where possible.
+- Account deletion is permanent and requires the current password, explicit consent, and confirmation.
+
+## Contributing
+
+1. Create a focused branch.
+2. Add or update tests for behavior changes.
+3. Run tests, type checking, and the production build.
+4. Keep user-visible copy synchronized across all supported languages.
+5. Open a pull request with screenshots for visual changes.
+
+## License
+
+Released under the [MIT License](LICENSE).
