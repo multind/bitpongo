@@ -99,7 +99,8 @@
 
         <nut-row>
           <nut-col :span="24">
-            <canvas id="chartDetails"></canvas>
+            <canvas v-if="plan.snapshots?.length" id="chartDetails"></canvas>
+            <nut-empty v-else :description="t('details.noReturnData')" />
           </nut-col>
         </nut-row>
       </nut-tab-pane>
@@ -217,8 +218,8 @@
       <nut-tab-pane pane-key="c3">
         <nut-pull-refresh v-model="refresh" @refresh="refreshFun">
           <nut-infinite-loading v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-            <div v-if="plan.orders">
-              <div v-for="(order, index) in plan.orders" :key="order.id">
+            <div v-if="tradeOrders.length">
+              <div v-for="(order, index) in tradeOrders" :key="order.id">
                 <nut-row>
                   <nut-col span="18">
                     <nut-row>
@@ -250,14 +251,14 @@
                 </nut-row>
                 <nut-row type="flex" justify="start" wrap="nowrap" style="margin-top: 10px">
                   <nut-col span="12">
-                    <text style="color: #2f2f2f">{{ t('details.tradeDetailsTitle') }}</text>
+                    <text style="color: #2f2f2f">{{ t('details.filledTotal') }}</text>
                   </nut-col>
                   <nut-col align="right" span="12">
-                    <text>{{ order.total_amount }} USDT</text>
+                    <text>{{ order.total_cost }} USDT</text>
                   </nut-col>
                 </nut-row>
                 <nut-divider
-                  v-if="Number(index) < plan.orders.length - 1"
+                  v-if="Number(index) < tradeOrders.length - 1"
                   :hairline="true"
                   dashed
                   style="margin-top: 10px; margin-bottom: 10px"
@@ -437,7 +438,7 @@
   import { computed, onMounted, ref } from 'vue';
 
   import { Chart } from 'chart.js/auto';
-  import { getPlanInfo, updatePlanStatus } from '@/api';
+  import { getPlanInfo, getPlanOrders, updatePlanStatus } from '@/api';
   import { calculateRunTime, formatDateTime, formatScheduleInstant, parseInstant } from '@/utils/timeUtils';
   import { displayTimeZone } from '@/mobile/app-context';
   import { useWebSocketBase } from '@/utils/useWebSocket';
@@ -470,6 +471,13 @@
     },
   ]);
   const strategyName = ref('');
+  const tradeOrders = ref<any[]>([]);
+  const ordersPage = ref(0);
+  const ordersLoading = ref(false);
+  const infinityValue = ref(false);
+  const hasMore = ref(false);
+  const refresh = ref(false);
+  const ORDER_PAGE_SIZE = 20;
 
   const strategyNameHandler = (name: string) => {
     // 确保 name 参数有效
@@ -502,7 +510,8 @@
       return;
     }
     try {
-      plan.value = await getPlanInfo(planId);
+      plan.value = await getPlanInfo(planId, false);
+      await loadOrders(true);
       initChart();
 
       // 建立WebSocket连接，订阅币种价格
@@ -631,22 +640,37 @@
     }
   };
 
-  const infinityValue = ref(false);
-  const hasMore = ref(true);
-  const loadMore = () => {
-    // setTimeout(() => {
-    //   sum.value = sum.value + 24;
-    //   cycle.value++;
-    //   if (cycle.value > 2) hasMore.value = false;
-    //   infinityValue.value = false;
-    // }, 1000);
+  const loadOrders = async (reset: boolean) => {
+    if (!planId || ordersLoading.value || (!reset && !hasMore.value)) {
+      infinityValue.value = false;
+      refresh.value = false;
+      return;
+    }
+    ordersLoading.value = true;
+    const page = reset ? 0 : ordersPage.value;
+    try {
+      const result = await getPlanOrders(planId, page, ORDER_PAGE_SIZE);
+      const incoming = result.items || [];
+      tradeOrders.value = reset
+        ? incoming
+        : [...tradeOrders.value, ...incoming.filter((item) => !tradeOrders.value.some((current) => current.id === item.id))];
+      ordersPage.value = result.page + 1;
+      hasMore.value = result.has_more;
+    } catch (error) {
+      console.error('Failed to load trade history:', error);
+    } finally {
+      ordersLoading.value = false;
+      infinityValue.value = false;
+      refresh.value = false;
+    }
   };
 
-  const refresh = ref(false);
-  const refreshFun = () => {
-    setTimeout(() => {
-      refresh.value = false;
-    }, 3000);
+  const loadMore = async () => {
+    await loadOrders(false);
+  };
+
+  const refreshFun = async () => {
+    await loadOrders(true);
   };
 
   const handleClick = async (newStatus: string) => {
@@ -698,9 +722,7 @@
   }
 
   ::v-deep(.nut-tab-pane) {
-    max-height: 60vh;
     padding-right: 10px;
     padding-left: 10px;
-    overflow-y: auto;
   }
 </style>

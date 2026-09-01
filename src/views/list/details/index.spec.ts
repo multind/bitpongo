@@ -7,6 +7,7 @@ import PlanDetails from './index.vue';
 
 const mocks = vi.hoisted(() => ({
   getPlanInfo: vi.fn(),
+  getPlanOrders: vi.fn(),
   updatePlanStatus: vi.fn(),
   routerBack: vi.fn(),
   connect: vi.fn(),
@@ -19,6 +20,7 @@ vi.mock('vue-router', () => ({
 
 vi.mock('@/api', () => ({
   getPlanInfo: mocks.getPlanInfo,
+  getPlanOrders: mocks.getPlanOrders,
   updatePlanStatus: mocks.updatePlanStatus,
 }));
 
@@ -39,6 +41,16 @@ const NutButtonStub = defineComponent({
   emits: ['click'],
   template:
     '<button :disabled="disabled || loading" :data-loading="String(loading)" @click="$emit(\'click\')"><slot name="icon" /><slot /></button>',
+});
+
+const PullRefreshStub = defineComponent({
+  emits: ['refresh'],
+  template: '<div><button data-test="pull-refresh" @click="$emit(\'refresh\')">refresh</button><slot /></div>',
+});
+
+const InfiniteLoadingStub = defineComponent({
+  emits: ['load-more'],
+  template: '<div><slot /><button data-test="load-more" @click="$emit(\'load-more\')">more</button></div>',
 });
 
 function planFixture(status = 'active') {
@@ -77,8 +89,8 @@ function mountDetails() {
         'nut-divider': PassthroughStub,
         'nut-sticky': PassthroughStub,
         'nut-popup': PassthroughStub,
-        'nut-pull-refresh': PassthroughStub,
-        'nut-infinite-loading': PassthroughStub,
+        'nut-pull-refresh': PullRefreshStub,
+        'nut-infinite-loading': InfiniteLoadingStub,
         'nut-empty': PassthroughStub,
         'nut-input': PassthroughStub,
         'nut-button': NutButtonStub,
@@ -111,6 +123,7 @@ describe('plan details actions', () => {
     i18n.global.locale.value = 'zh-cn';
     vi.clearAllMocks();
     mocks.getPlanInfo.mockResolvedValue(planFixture());
+    mocks.getPlanOrders.mockResolvedValue({ items: [], page: 0, size: 20, total: 0, has_more: false });
     mocks.updatePlanStatus.mockResolvedValue(undefined);
   });
 
@@ -153,5 +166,46 @@ describe('plan details actions', () => {
     const style = getComputedStyle(wrapper.get('.details-page').element);
     expect(style.paddingLeft).toBe('16px');
     expect(style.paddingRight).toBe('16px');
+  });
+
+  it('replaces trade history on pull refresh and appends the next page at the bottom', async () => {
+    mocks.getPlanOrders
+      .mockResolvedValueOnce({
+        items: [{ id: 1, symbol: 'BTC/USDT', created_at: '2026-08-24T08:00:00Z' }],
+        page: 0,
+        size: 20,
+        total: 2,
+        has_more: true,
+      })
+      .mockResolvedValueOnce({
+        items: [{ id: 2, symbol: 'ETH/USDT', created_at: '2026-08-23T08:00:00Z' }],
+        page: 1,
+        size: 20,
+        total: 2,
+        has_more: false,
+      })
+      .mockResolvedValueOnce({
+        items: [{ id: 3, symbol: 'SOL/USDT', created_at: '2026-08-25T08:00:00Z' }],
+        page: 0,
+        size: 20,
+        total: 1,
+        has_more: false,
+      });
+    const wrapper = mountDetails();
+    await flushPromises();
+
+    expect(mocks.getPlanInfo).toHaveBeenCalledWith('7', false);
+    expect(mocks.getPlanOrders).toHaveBeenCalledWith('7', 0, 20);
+    expect(wrapper.text()).toContain('BTC/USDT');
+
+    await wrapper.get('[data-test="load-more"]').trigger('click');
+    await flushPromises();
+    expect(mocks.getPlanOrders).toHaveBeenCalledWith('7', 1, 20);
+    expect(wrapper.text()).toContain('ETH/USDT');
+
+    await wrapper.get('[data-test="pull-refresh"]').trigger('click');
+    await flushPromises();
+    expect(wrapper.text()).toContain('SOL/USDT');
+    expect(wrapper.text()).not.toContain('BTC/USDT');
   });
 });

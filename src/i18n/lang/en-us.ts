@@ -256,7 +256,8 @@ export const lang: langType = {
     deleteConfirmTitle: 'Confirm account deletion',
     deleteConfirmContent: 'Your account cannot be recovered after deletion. Continue?',
     timeZoneTitle: 'Time display',
-    timeZoneDescription: 'Strategies run in the timezone selected at creation. This setting only controls how dates and times are displayed.',
+    timeZoneDescription:
+      'Strategies run in the timezone selected at creation. This setting only controls how dates and times are displayed.',
     timeZoneMode: 'Display timezone',
     followDevice: 'Follow device',
     fixedTimeZone: 'Fixed timezone',
@@ -393,6 +394,7 @@ export const lang: langType = {
     amount: 'Amount',
     totalInvested: 'Total DCA invested',
     returnTrend: 'Return trend',
+    noReturnData: 'Return data will appear after the first completed trade.',
     quoteCurrency: 'Quote currency',
     frequency: 'DCA frequency',
     nextBuyTime: 'Next buy time',

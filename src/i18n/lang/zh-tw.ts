@@ -391,6 +391,7 @@ export const lang: langType = {
     amount: '金額',
     totalInvested: '累計定期定額',
     returnTrend: '收益變化',
+    noReturnData: '首次成交後將顯示收益資料',
     quoteCurrency: '買入幣對的計價',
     frequency: '定期定額頻率',
     nextBuyTime: '下次買進時間',

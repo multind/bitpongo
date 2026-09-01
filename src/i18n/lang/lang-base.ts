@@ -386,6 +386,7 @@ export type langType = {
     amount: string;
     totalInvested: string;
     returnTrend: string;
+    noReturnData: string;
     quoteCurrency: string;
     frequency: string;
     nextBuyTime: string;

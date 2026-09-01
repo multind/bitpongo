@@ -390,6 +390,7 @@ export const lang: langType = {
     amount: '金额',
     totalInvested: '累计定投',
     returnTrend: '收益变化',
+    noReturnData: '首次成交后将显示收益数据',
     quoteCurrency: '买入币对的计价',
     frequency: '定投频率',
     nextBuyTime: '下次买入时间',

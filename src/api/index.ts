@@ -110,8 +110,20 @@ export function updatePlanStatus(id: string, status: string) {
   return http.get(`/plans/${id}/${status}`);
 }
 
-export function getPlanInfo(id: string) {
-  return http.get(`/plans/${id}`);
+export interface PlanOrderPage {
+  items: any[];
+  page: number;
+  size: number;
+  total: number;
+  has_more: boolean;
+}
+
+export function getPlanInfo(id: string, includeOrders = true) {
+  return http.get(`/plans/${id}`, { params: { include_orders: includeOrders } });
+}
+
+export function getPlanOrders(id: string, page = 0, size = 20): Promise<PlanOrderPage> {
+  return http.get<PlanOrderPage>(`/plans/${id}/orders`, { params: { page, size } });
 }
 
 export function getBarkSetting(): Promise<BarkSetting> {
