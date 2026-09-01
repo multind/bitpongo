@@ -33,6 +33,8 @@ describe('Privacy policy view', () => {
   it('provides a public contact link', () => {
     const contact = mountView().get('[data-test="privacy-contact"]');
 
-    expect(contact.attributes('href')).toBe('https://multind.com');
+    expect(contact.attributes('href')).toBe('https://imastermind.io');
+    expect(contact.text()).toBe('https://iMastermind.io');
+    expect(mountView().text()).toContain('iMastermind.io 网站');
   });
 });

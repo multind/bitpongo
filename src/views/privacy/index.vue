@@ -20,7 +20,7 @@
       <h2>{{ content.contactTitle }}</h2>
       <p>
         {{ content.contactText }}
-        <a data-test="privacy-contact" href="https://multind.com">{{ content.contactLabel }}</a>
+        <a data-test="privacy-contact" href="https://imastermind.io">{{ content.contactLabel }}</a>
       </p>
     </section>
   </main>

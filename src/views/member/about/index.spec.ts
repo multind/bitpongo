@@ -53,4 +53,12 @@ describe('About view', () => {
     expect(privacyLink.attributes('href')).toBe('/privacy');
     expect(privacyLink.text()).toContain('Privacy Policy');
   });
+
+  it('shows iMastermind.io as the developer and contact website', () => {
+    const wrapper = mountView();
+
+    expect(wrapper.text()).toContain('Designed with ❤ by iMastermind.io');
+    expect(wrapper.text()).toContain('https://iMastermind.io');
+    expect(wrapper.text()).not.toContain('Multind.com');
+  });
 });

@@ -81,8 +81,8 @@ export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
       },
     ],
     contactTitle: '10. 联系我们',
-    contactText: '如果你对本政策或个人信息处理有疑问，请通过 Multind 网站联系我们：',
-    contactLabel: 'https://multind.com',
+    contactText: '如果你对本政策或个人信息处理有疑问，请通过 iMastermind.io 网站联系我们：',
+    contactLabel: 'https://iMastermind.io',
   },
   'zh-tw': {
     title: '隱私權政策',
@@ -148,8 +148,8 @@ export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
       },
     ],
     contactTitle: '10. 聯絡我們',
-    contactText: '如果你對本政策或個人資訊處理有疑問，請透過 Multind 網站與我們聯絡：',
-    contactLabel: 'https://multind.com',
+    contactText: '如果你對本政策或個人資訊處理有疑問，請透過 iMastermind.io 網站與我們聯絡：',
+    contactLabel: 'https://iMastermind.io',
   },
   'en-us': {
     title: 'Privacy Policy',
@@ -220,7 +220,8 @@ export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
       },
     ],
     contactTitle: '10. Contact Us',
-    contactText: 'If you have questions about this policy or how personal information is handled, contact us through the Multind website:',
-    contactLabel: 'https://multind.com',
+    contactText:
+      'If you have questions about this policy or how personal information is handled, contact us through the iMastermind.io website:',
+    contactLabel: 'https://iMastermind.io',
   },
 };

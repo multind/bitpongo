@@ -24,8 +24,8 @@
   </nut-row>
 
   <nut-cell-group>
-    <nut-cell :title="t('about.developer')" sub-title="Designed with ❤ by Multind.com"></nut-cell>
-    <nut-cell :title="t('about.contact')" sub-title="https://multind.com"></nut-cell>
+    <nut-cell :title="t('about.developer')" sub-title="Designed with ❤ by iMastermind.io"></nut-cell>
+    <nut-cell :title="t('about.contact')" sub-title="https://iMastermind.io"></nut-cell>
     <a class="about-source" data-test="about-privacy" href="/privacy">
       <nut-cell :title="t('privacy.title')" is-link></nut-cell>
     </a>
