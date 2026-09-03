@@ -75,12 +75,10 @@
 
   .main-page {
     box-sizing: border-box;
-    height: calc(100vh - 110px);
-    overflow: hidden scroll;
+    min-height: calc(100vh - 110px);
   }
 
   .tabbar {
-    height: calc(100vh - 110px);
     padding-bottom: 100px;
   }
 
