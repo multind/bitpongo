@@ -78,6 +78,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
     },
     plugins: createVitePlugins(viteEnv, isProduction),
     build: {
+      target: 'chrome80',
       minify: 'terser',
       terserOptions: {
         compress: {
