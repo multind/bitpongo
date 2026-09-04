@@ -58,7 +58,7 @@
           </div>
         </div>
       </template>
-      <nut-tab-pane pane-key="c1">
+      <nut-tab-pane pane-key="c1" :style="tabPaneScrollStyle">
         <nut-row>
           <nut-col>
             <text>{{ t('details.totalReturn') }}</text>
@@ -105,7 +105,7 @@
         </nut-row>
       </nut-tab-pane>
 
-      <nut-tab-pane pane-key="c2">
+      <nut-tab-pane pane-key="c2" :style="tabPaneScrollStyle">
         <nut-row type="flex">
           <nut-col span="12">
             <text>{{ t('details.quoteCurrency') }}</text>
@@ -215,7 +215,7 @@
         </div>
       </nut-tab-pane>
 
-      <nut-tab-pane pane-key="c3">
+      <nut-tab-pane pane-key="c3" :style="tabPaneScrollStyle">
         <nut-pull-refresh v-model="refresh" @refresh="refreshFun">
           <nut-infinite-loading v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
             <div v-if="tradeOrders.length">
@@ -478,6 +478,7 @@
   const hasMore = ref(false);
   const refresh = ref(false);
   const ORDER_PAGE_SIZE = 20;
+  const tabPaneScrollStyle = { height: 'auto', overflow: 'visible' };
 
   const strategyNameHandler = (name: string) => {
     // 确保 name 参数有效

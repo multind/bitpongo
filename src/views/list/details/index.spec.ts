@@ -1,9 +1,16 @@
 import { defineComponent, nextTick } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import { i18n } from '@/i18n';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import tabPaneCss from '@nutui/nutui/dist/packages/tabpane/index.css?inline';
 
 import PlanDetails from './index.vue';
+
+const tabPaneStyle = document.createElement('style');
+tabPaneStyle.textContent = tabPaneCss;
+
+beforeAll(() => document.head.append(tabPaneStyle));
+afterAll(() => tabPaneStyle.remove());
 
 const mocks = vi.hoisted(() => ({
   getPlanInfo: vi.fn(),
@@ -34,6 +41,10 @@ vi.mock('chart.js/auto', () => ({
 
 const PassthroughStub = defineComponent({
   template: '<div><slot name="titles" /><slot name="icon" /><slot name="image" /><slot /></div>',
+});
+
+const TabPaneStub = defineComponent({
+  template: '<section class="nut-tab-pane"><slot /></section>',
 });
 
 const NutButtonStub = defineComponent({
@@ -85,7 +96,7 @@ function mountDetails() {
         'nut-space': PassthroughStub,
         'nut-tag': PassthroughStub,
         'nut-tabs': PassthroughStub,
-        'nut-tab-pane': PassthroughStub,
+        'nut-tab-pane': TabPaneStub,
         'nut-divider': PassthroughStub,
         'nut-sticky': PassthroughStub,
         'nut-popup': PassthroughStub,
@@ -166,6 +177,15 @@ describe('plan details actions', () => {
     const style = getComputedStyle(wrapper.get('.details-page').element);
     expect(style.paddingLeft).toBe('16px');
     expect(style.paddingRight).toBe('16px');
+  });
+
+  it('keeps trade history panes in the WebView scroll flow instead of creating a nested scroller', async () => {
+    const wrapper = mountDetails();
+    await flushPromises();
+
+    const paneStyle = getComputedStyle(wrapper.findAll('.nut-tab-pane')[2].element);
+    expect(paneStyle.height).toBe('auto');
+    expect(paneStyle.overflow).toBe('visible');
   });
 
   it('replaces trade history on pull refresh and appends the next page at the bottom', async () => {
