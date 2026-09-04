@@ -1,16 +1,9 @@
 import { defineComponent, nextTick } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import { i18n } from '@/i18n';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import tabPaneCss from '@nutui/nutui/dist/packages/tabpane/index.css?inline';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import PlanDetails from './index.vue';
-
-const tabPaneStyle = document.createElement('style');
-tabPaneStyle.textContent = tabPaneCss;
-
-beforeAll(() => document.head.append(tabPaneStyle));
-afterAll(() => tabPaneStyle.remove());
 
 const mocks = vi.hoisted(() => ({
   getPlanInfo: vi.fn(),
@@ -41,6 +34,11 @@ vi.mock('chart.js/auto', () => ({
 
 const PassthroughStub = defineComponent({
   template: '<div><slot name="titles" /><slot name="icon" /><slot name="image" /><slot /></div>',
+});
+
+const TabsStub = defineComponent({
+  props: { autoHeight: Boolean },
+  template: '<div class="nut-tabs" :data-auto-height="String(autoHeight)"><slot name="titles" /><slot /></div>',
 });
 
 const TabPaneStub = defineComponent({
@@ -95,7 +93,7 @@ function mountDetails() {
         'nut-col': PassthroughStub,
         'nut-space': PassthroughStub,
         'nut-tag': PassthroughStub,
-        'nut-tabs': PassthroughStub,
+        'nut-tabs': TabsStub,
         'nut-tab-pane': TabPaneStub,
         'nut-divider': PassthroughStub,
         'nut-sticky': PassthroughStub,
@@ -179,13 +177,26 @@ describe('plan details actions', () => {
     expect(style.paddingRight).toBe('16px');
   });
 
-  it('keeps trade history panes in the WebView scroll flow instead of creating a nested scroller', async () => {
+  it('sizes the tabs to the active pane while keeping trade history in the WebView scroll flow', async () => {
     const wrapper = mountDetails();
     await flushPromises();
 
-    const paneStyle = getComputedStyle(wrapper.findAll('.nut-tab-pane')[2].element);
-    expect(paneStyle.height).toBe('auto');
-    expect(paneStyle.overflow).toBe('visible');
+    expect(wrapper.get('.nut-tabs').attributes('data-auto-height')).toBe('true');
+
+    let panes = wrapper.findAll('.nut-tab-pane');
+    expect(panes[0].attributes('style')).toContain('height: auto');
+    expect(panes[0].attributes('style')).toContain('overflow: visible');
+    expect(panes[1].attributes('style')).toMatch(/height: 0(?:px)?/);
+    expect(panes[2].attributes('style')).toMatch(/height: 0(?:px)?/);
+
+    await wrapper.findAll('.custom-tab-item')[2].trigger('click');
+    await nextTick();
+
+    expect(wrapper.findAll('.custom-title')[2].classes()).toContain('active');
+    panes = wrapper.findAll('.nut-tab-pane');
+    expect(panes[0].attributes('style')).toMatch(/height: 0(?:px)?/);
+    expect(panes[2].attributes('style')).toContain('height: auto');
+    expect(panes[2].attributes('style')).toContain('overflow: visible');
   });
 
   it('replaces trade history on pull refresh and appends the next page at the bottom', async () => {
