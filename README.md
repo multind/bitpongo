@@ -2,16 +2,21 @@
 
 [English](README.md) | [简体中文](README_zh-CN.md)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Vue](https://img.shields.io/badge/Vue-3-42B883.svg)](https://vuejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Vue](https://img.shields.io/badge/Vue-3-42B883.svg)](https://vuejs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)](https://www.typescriptlang.org/)
 
 Bitpongo is an open-source web client for creating and monitoring automated investment strategies. It works as a responsive web application and as the web layer embedded in the Bitpongo mobile app.
 
 The interface supports strategy scheduling, exchange connections, portfolio and return charts, order history, Bark notifications, account lifecycle operations, multiple languages, and user-specific time-zone display.
 
 > [!WARNING]
+>
 > Bitpongo is software, not investment advice. Automated trading can result in financial loss. Use exchange API keys with withdrawal permission disabled and validate strategies in a test environment first.
+
+## Try Bitpongo online
+
+Open the hosted application at [https://app.imastermind.io](https://app.imastermind.io). Create an account or sign in, connect a supported exchange account, and then create and monitor an automated strategy directly in your browser.
+
+This is a live service, not a simulated demo. Depending on your exchange and strategy settings, actions can submit real orders. Use an API key with trading permission only, keep withdrawal permission disabled, and review every setting before starting a strategy.
 
 ## Features
 
@@ -36,9 +41,9 @@ The interface supports strategy scheduling, exchange connections, portfolio and 
 
 ## Related repositories
 
-| Project | Repository |
-| --- | --- |
-| Backend API | [multind/bitpongo-api](https://github.com/multind/bitpongo-api) |
+| Project       | Repository                                                      |
+| ------------- | --------------------------------------------------------------- |
+| Backend API   | [multind/bitpongo-api](https://github.com/multind/bitpongo-api) |
 | Documentation | [multind/bitpongo-doc](https://github.com/multind/bitpongo-doc) |
 
 ## Requirements

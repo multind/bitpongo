@@ -2,16 +2,21 @@
 
 [English](README.md) | [简体中文](README_zh-CN.md)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Vue](https://img.shields.io/badge/Vue-3-42B883.svg)](https://vuejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Vue](https://img.shields.io/badge/Vue-3-42B883.svg)](https://vuejs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)](https://www.typescriptlang.org/)
 
 Bitpongo 是用于创建和监控自动化投资策略的开源 Web 客户端，既可以作为响应式 Web 应用运行，也可以作为 Bitpongo 移动端内嵌的 Web 页面层。
 
 界面支持策略调度、交易所连接、持仓与收益图表、订单历史、Bark 通知、账号生命周期、多语言和用户时区显示。
 
 > [!WARNING]
+>
 > Bitpongo 是软件工具，不构成投资建议。自动化交易可能造成资金损失。交易所 API 必须关闭提现权限，并应先在测试环境验证策略。
+
+## 在线体验 Bitpongo
+
+打开在线应用：[https://app.imastermind.io](https://app.imastermind.io)。注册或登录账号，连接受支持的交易所账户后，即可直接在浏览器中创建并监控自动化策略。
+
+这是正式在线服务，不是模拟演示。根据交易所和策略配置，操作可能提交真实订单。API Key 只应开启交易权限，必须关闭提现权限，并在启动策略前仔细检查全部配置。
 
 ## 功能
 
@@ -36,8 +41,8 @@ Bitpongo 是用于创建和监控自动化投资策略的开源 Web 客户端，
 
 ## 相关仓库
 
-| 项目 | 仓库 |
-| --- | --- |
+| 项目     | 仓库                                                            |
+| -------- | --------------------------------------------------------------- |
 | 后端 API | [multind/bitpongo-api](https://github.com/multind/bitpongo-api) |
 | 文档站点 | [multind/bitpongo-doc](https://github.com/multind/bitpongo-doc) |
 
