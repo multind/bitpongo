@@ -423,7 +423,13 @@
     <nut-sticky bottom="5" position="bottom">
       <nut-row type="flex" justify="center" :gutter="10" style="margin-top: 20px">
         <nut-col :span="22">
-          <nut-button size="large" style="background-color: #101010" @click="strategyNameUpdateHandler">
+          <nut-button
+            size="large"
+            style="background-color: #101010"
+            :disabled="!strategyName.trim()"
+            :loading="updatingStrategyName"
+            @click="strategyNameUpdateHandler"
+          >
             <text style="color: whitesmoke"> {{ t('common.save') }} </text>
           </nut-button>
         </nut-col>
@@ -439,7 +445,7 @@
   import { computed, onMounted, ref } from 'vue';
 
   import { Chart } from 'chart.js/auto';
-  import { getPlanInfo, getPlanOrders, updatePlanStatus } from '@/api';
+  import { getPlanInfo, getPlanOrders, updatePlanName, updatePlanStatus } from '@/api';
   import { calculateRunTime, formatDateTime, formatScheduleInstant, parseInstant } from '@/utils/timeUtils';
   import { displayTimeZone } from '@/mobile/app-context';
   import { useWebSocketBase } from '@/utils/useWebSocket';
@@ -455,6 +461,7 @@
   const updatingStatus = ref(false);
   const showOrderDetailsPopup = ref(false);
   const editStrategyNamePopup = ref(false);
+  const updatingStrategyName = ref(false);
   const currentOrder = ref<any>(null);
   const value = ref('c1');
   const list = ref([
@@ -492,17 +499,19 @@
     editStrategyNamePopup.value = true;
   };
 
-  const strategyNameUpdateHandler = () => {
-    plan.value.strategy.name = strategyName.value;
-    console.log(t('details.saveSuccess'));
-    // updatePlanName(plan.value.id, strategyName.value)
-    //   .then(() => {
-    //     emit('update-name');
-    //   })
-    //   .catch((error) => {
-    //     console.error('更新计划名称失败:', error);
-    //   });
-    editStrategyNamePopup.value = false;
+  const strategyNameUpdateHandler = async () => {
+    const name = strategyName.value.trim();
+    if (!name || updatingStrategyName.value) return;
+    updatingStrategyName.value = true;
+    try {
+      await updatePlanName(plan.value.id, name);
+      plan.value.strategy.name = name;
+      editStrategyNamePopup.value = false;
+    } catch (error) {
+      console.error('更新计划名称失败:', error);
+    } finally {
+      updatingStrategyName.value = false;
+    }
   };
 
   // 使用公共的WebSocket Hook

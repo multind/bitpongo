@@ -8,6 +8,7 @@ import PlanDetails from './index.vue';
 const mocks = vi.hoisted(() => ({
   getPlanInfo: vi.fn(),
   getPlanOrders: vi.fn(),
+  updatePlanName: vi.fn(),
   updatePlanStatus: vi.fn(),
   routerBack: vi.fn(),
   connect: vi.fn(),
@@ -21,6 +22,7 @@ vi.mock('vue-router', () => ({
 vi.mock('@/api', () => ({
   getPlanInfo: mocks.getPlanInfo,
   getPlanOrders: mocks.getPlanOrders,
+  updatePlanName: mocks.updatePlanName,
   updatePlanStatus: mocks.updatePlanStatus,
 }));
 
@@ -50,6 +52,17 @@ const NutButtonStub = defineComponent({
   emits: ['click'],
   template:
     '<button :disabled="disabled || loading" :data-loading="String(loading)" @click="$emit(\'click\')"><slot name="icon" /><slot /></button>',
+});
+
+const NutInputStub = defineComponent({
+  props: { modelValue: String },
+  emits: ['update:modelValue'],
+  template: '<input data-test="strategy-name-input" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+});
+
+const EditStub = defineComponent({
+  emits: ['click'],
+  template: '<button data-test="edit-strategy-name" @click="$emit(\'click\')">edit</button>',
 });
 
 const PullRefreshStub = defineComponent({
@@ -101,12 +114,12 @@ function mountDetails() {
         'nut-pull-refresh': PullRefreshStub,
         'nut-infinite-loading': InfiniteLoadingStub,
         'nut-empty': PassthroughStub,
-        'nut-input': PassthroughStub,
+        'nut-input': NutInputStub,
         'nut-button': NutButtonStub,
         PlayStop: true,
         PlayStart: true,
         CheckDisabled: true,
-        Edit: true,
+        Edit: EditStub,
         MoreX: true,
       },
     },
@@ -133,7 +146,21 @@ describe('plan details actions', () => {
     vi.clearAllMocks();
     mocks.getPlanInfo.mockResolvedValue(planFixture());
     mocks.getPlanOrders.mockResolvedValue({ items: [], page: 0, size: 20, total: 0, has_more: false });
+    mocks.updatePlanName.mockResolvedValue(undefined);
     mocks.updatePlanStatus.mockResolvedValue(undefined);
+  });
+
+  it('persists a renamed strategy before updating the displayed name', async () => {
+    const wrapper = mountDetails();
+    await flushPromises();
+
+    await wrapper.get('.nut-icon-edit').trigger('click');
+    await wrapper.get('[data-test="strategy-name-input"]').setValue('新的策略名称');
+    await buttonByText(wrapper, '保存').trigger('click');
+    await flushPromises();
+
+    expect(mocks.updatePlanName).toHaveBeenCalledWith(7, '新的策略名称');
+    expect(wrapper.text()).toContain('新的策略名称');
   });
 
   it('shows progress and immediately renders the paused state after the request succeeds', async () => {

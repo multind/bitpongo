@@ -110,6 +110,10 @@ export function updatePlanStatus(id: string, status: string) {
   return http.get(`/plans/${id}/${status}`);
 }
 
+export function updatePlanName(id: string | number, name: string): Promise<void> {
+  return http.put<void>(`/plans/${id}/name`, { name });
+}
+
 export interface PlanOrderPage {
   items: any[];
   page: number;
