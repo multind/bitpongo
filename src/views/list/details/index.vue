@@ -274,6 +274,64 @@
           </nut-infinite-loading>
         </nut-pull-refresh>
       </nut-tab-pane>
+
+      <nut-tab-pane pane-key="c4" :style="tabPaneStyle('c4')">
+        <div v-if="planExecutions.length">
+          <div v-for="(execution, index) in planExecutions" :key="execution.id" class="execution-item">
+            <nut-row type="flex" justify="space-between" wrap="nowrap">
+              <nut-col span="24">
+                <text class="execution-status">{{ executionStatusText(execution.result_status) }}</text>
+              </nut-col>
+            </nut-row>
+            <nut-row v-if="execution.reason" style="margin-top: 8px">
+              <nut-col span="24">
+                <text>{{ executionReasonText(execution.reason) }}</text>
+              </nut-col>
+            </nut-row>
+            <nut-row v-if="execution.symbols?.length" type="flex" justify="space-between" wrap="nowrap" style="margin-top: 8px">
+              <nut-col span="6"
+                ><text>{{ t('details.execution.symbols') }}</text></nut-col
+              >
+              <nut-col align="right" span="18"
+                ><text>{{ formatExecutionSymbols(execution.symbols) }}</text></nut-col
+              >
+            </nut-row>
+            <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 8px">
+              <nut-col span="10"
+                ><text>{{ t('details.execution.scheduledAt') }}</text></nut-col
+              >
+              <nut-col align="right" span="14"
+                ><text>{{ formatDateTime(execution.scheduled_at) }}</text></nut-col
+              >
+            </nut-row>
+            <nut-row v-if="execution.completed_at" type="flex" justify="space-between" wrap="nowrap" style="margin-top: 8px">
+              <nut-col span="10"
+                ><text>{{ t('details.execution.completedAt') }}</text></nut-col
+              >
+              <nut-col align="right" span="14"
+                ><text>{{ formatDateTime(execution.completed_at) }}</text></nut-col
+              >
+            </nut-row>
+            <nut-divider
+              v-if="Number(index) < planExecutions.length - 1"
+              :hairline="true"
+              dashed
+              style="margin-top: 10px; margin-bottom: 10px"
+            />
+          </div>
+        </div>
+        <nut-empty v-else :description="t('details.execution.empty')" />
+        <nut-button
+          v-if="executionHasMore"
+          data-test="execution-load-more"
+          :loading="executionLoading"
+          :disabled="executionLoading"
+          style="width: 100%; margin-top: 12px"
+          @click="loadMoreExecutions"
+        >
+          {{ t('details.execution.loadMore') }}
+        </nut-button>
+      </nut-tab-pane>
     </nut-tabs>
 
     <nut-sticky position="bottom">
@@ -445,12 +503,13 @@
   import { computed, onMounted, ref } from 'vue';
 
   import { Chart } from 'chart.js/auto';
-  import { getPlanInfo, getPlanOrders, updatePlanName, updatePlanStatus } from '@/api';
+  import { getPlanExecutions, getPlanInfo, getPlanOrders, updatePlanName, updatePlanStatus } from '@/api';
+  import type { PlanExecution } from '@/api';
   import { calculateRunTime, formatDateTime, formatScheduleInstant, parseInstant } from '@/utils/timeUtils';
   import { displayTimeZone } from '@/mobile/app-context';
   import { useWebSocketBase } from '@/utils/useWebSocket';
 
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const route = useRoute();
   const router = useRouter();
   const planIdQuery = route.query.planId;
@@ -477,6 +536,10 @@
       title: t('details.tabs.trades'),
       paneKey: 'c3',
     },
+    {
+      title: t('details.tabs.executions'),
+      paneKey: 'c4',
+    },
   ]);
   const strategyName = ref('');
   const tradeOrders = ref<any[]>([]);
@@ -485,6 +548,10 @@
   const infinityValue = ref(false);
   const hasMore = ref(false);
   const refresh = ref(false);
+  const planExecutions = ref<PlanExecution[]>([]);
+  const executionPage = ref(0);
+  const executionHasMore = ref(false);
+  const executionLoading = ref(false);
   const ORDER_PAGE_SIZE = 20;
   const tabPaneStyle = (paneKey: string) => ({
     height: value.value === paneKey ? 'auto' : '0',
@@ -526,6 +593,7 @@
     try {
       plan.value = await getPlanInfo(planId, false);
       await loadOrders(true);
+      await loadExecutions(true);
       initChart();
 
       // 建立WebSocket连接，订阅币种价格
@@ -687,6 +755,43 @@
     await loadOrders(true);
   };
 
+  const executionStatusText = (status: string) => {
+    const key = `details.execution.statuses.${status}`;
+    const translated = t(key);
+    return translated === key ? status : translated;
+  };
+
+  const executionReasonText = (reason: string) => {
+    const key = `details.execution.reasons.${reason}`;
+    const translated = t(key);
+    return translated === key ? reason : translated;
+  };
+
+  const formatExecutionSymbols = (symbols: string[]) => symbols.join(locale.value === 'en-us' ? ', ' : '、');
+
+  const loadExecutions = async (reset: boolean) => {
+    if (!planId || executionLoading.value || (!reset && !executionHasMore.value)) return;
+    executionLoading.value = true;
+    const page = reset ? 0 : executionPage.value;
+    try {
+      const result = await getPlanExecutions(planId, page, 20);
+      const incoming = result.items || [];
+      planExecutions.value = reset
+        ? incoming
+        : [...planExecutions.value, ...incoming.filter((item) => !planExecutions.value.some((current) => current.id === item.id))];
+      executionPage.value = result.page + 1;
+      executionHasMore.value = result.has_more;
+    } catch (error) {
+      console.error('Failed to load execution history:', error);
+    } finally {
+      executionLoading.value = false;
+    }
+  };
+
+  const loadMoreExecutions = async () => {
+    await loadExecutions(false);
+  };
+
   const handleClick = async (newStatus: string) => {
     if (!plan.value || updatingStatus.value) return;
     updatingStatus.value = true;
@@ -733,6 +838,11 @@
 
   .custom-title.active {
     color: cadetblue;
+  }
+
+  .execution-status {
+    font-size: 15px;
+    font-weight: 600;
   }
 
   ::v-deep(.nut-tab-pane) {

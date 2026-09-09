@@ -8,6 +8,7 @@ import PlanDetails from './index.vue';
 const mocks = vi.hoisted(() => ({
   getPlanInfo: vi.fn(),
   getPlanOrders: vi.fn(),
+  getPlanExecutions: vi.fn(),
   updatePlanName: vi.fn(),
   updatePlanStatus: vi.fn(),
   routerBack: vi.fn(),
@@ -22,6 +23,7 @@ vi.mock('vue-router', () => ({
 vi.mock('@/api', () => ({
   getPlanInfo: mocks.getPlanInfo,
   getPlanOrders: mocks.getPlanOrders,
+  getPlanExecutions: mocks.getPlanExecutions,
   updatePlanName: mocks.updatePlanName,
   updatePlanStatus: mocks.updatePlanStatus,
 }));
@@ -146,6 +148,7 @@ describe('plan details actions', () => {
     vi.clearAllMocks();
     mocks.getPlanInfo.mockResolvedValue(planFixture());
     mocks.getPlanOrders.mockResolvedValue({ items: [], page: 0, size: 20, total: 0, has_more: false });
+    mocks.getPlanExecutions.mockResolvedValue({ items: [], page: 0, size: 20, total: 0, has_more: false });
     mocks.updatePlanName.mockResolvedValue(undefined);
     mocks.updatePlanStatus.mockResolvedValue(undefined);
   });
@@ -265,5 +268,34 @@ describe('plan details actions', () => {
     await flushPromises();
     expect(wrapper.text()).toContain('SOL/USDT');
     expect(wrapper.text()).not.toContain('BTC/USDT');
+  });
+
+  it('shows a localized execution history reason separately from trade history', async () => {
+    mocks.getPlanExecutions.mockResolvedValueOnce({
+      items: [
+        {
+          id: 15,
+          result_status: 'SKIPPED',
+          reason: 'PRICE_NOT_BELOW_AVERAGE',
+          symbols: ['BTCUSDT', 'ETHUSDT'],
+          scheduled_at: '2026-09-08T13:00:00Z',
+          completed_at: '2026-09-08T13:00:01Z',
+        },
+      ],
+      page: 0,
+      size: 20,
+      total: 1,
+      has_more: false,
+    });
+    const wrapper = mountDetails();
+    await flushPromises();
+
+    expect(mocks.getPlanExecutions).toHaveBeenCalledWith('7', 0, 20);
+    expect(wrapper.findAll('.custom-tab-item')[3].text()).toContain('执行历史');
+    await wrapper.findAll('.custom-tab-item')[3].trigger('click');
+    await nextTick();
+
+    expect(wrapper.text()).toContain('当前价格未低于持仓均价，本轮未买入');
+    expect(wrapper.text()).toContain('BTCUSDT、ETHUSDT');
   });
 });

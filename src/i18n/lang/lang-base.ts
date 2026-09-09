@@ -377,6 +377,7 @@ export type langType = {
       returns: string;
       strategyInfo: string;
       trades: string;
+      executions: string;
     };
     running: string;
     paused: string;
@@ -407,5 +408,14 @@ export type langType = {
     strategyName: string;
     strategyNamePlaceholder: string;
     saveSuccess: string;
+    execution: {
+      scheduledAt: string;
+      completedAt: string;
+      symbols: string;
+      empty: string;
+      loadMore: string;
+      statuses: Record<string, string>;
+      reasons: Record<string, string>;
+    };
   };
 };

@@ -122,12 +122,33 @@ export interface PlanOrderPage {
   has_more: boolean;
 }
 
+export interface PlanExecution {
+  id: number;
+  result_status: 'UNKNOWN' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'PENDING' | 'SKIPPED' | 'PARTIAL' | string;
+  reason: string | null;
+  symbols: string[];
+  scheduled_at: string;
+  completed_at: string | null;
+}
+
+export interface PlanExecutionPage {
+  items: PlanExecution[];
+  page: number;
+  size: number;
+  total: number;
+  has_more: boolean;
+}
+
 export function getPlanInfo(id: string, includeOrders = true) {
   return http.get(`/plans/${id}`, { params: { include_orders: includeOrders } });
 }
 
 export function getPlanOrders(id: string, page = 0, size = 20): Promise<PlanOrderPage> {
   return http.get<PlanOrderPage>(`/plans/${id}/orders`, { params: { page, size } });
+}
+
+export function getPlanExecutions(id: string, page = 0, size = 20): Promise<PlanExecutionPage> {
+  return http.get<PlanExecutionPage>(`/plans/${id}/executions`, { params: { page, size } });
 }
 
 export function getBarkSetting(): Promise<BarkSetting> {
