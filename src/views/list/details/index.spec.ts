@@ -207,6 +207,24 @@ describe('plan details actions', () => {
     expect(style.paddingRight).toBe('16px');
   });
 
+  it('keeps the plan actions fixed above the viewport bottom without covering tab content', async () => {
+    const wrapper = mountDetails();
+    await flushPromises();
+
+    const actionStyle = getComputedStyle(wrapper.get('.plan-action-bar').element);
+    expect(actionStyle.position).toBe('fixed');
+    expect(actionStyle.bottom).toBe('0px');
+
+    const pageStyle = getComputedStyle(wrapper.get('.details-page').element);
+    expect(Number.parseFloat(pageStyle.paddingBottom)).toBeGreaterThanOrEqual(80);
+
+    for (const tabIndex of [1, 2, 3]) {
+      await wrapper.findAll('.custom-tab-item')[tabIndex].trigger('click');
+      await nextTick();
+      expect(getComputedStyle(wrapper.get('.plan-action-bar').element).position).toBe('fixed');
+    }
+  });
+
   it('sizes the tabs to the active pane while keeping trade history in the WebView scroll flow', async () => {
     const wrapper = mountDetails();
     await flushPromises();

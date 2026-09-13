@@ -3,7 +3,7 @@
     <text style="margin-left: 10px">{{ t('common.loading') }}</text>
   </div>
 
-  <div v-else-if="plan" class="details-page" style="padding-right: 16px; padding-left: 16px">
+  <div v-else-if="plan" class="details-page" style="padding-right: 16px; padding-bottom: 96px; padding-left: 16px">
     <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 10px">
       <nut-col align="left" span="18">
         <text style="font-size: 15px">{{ plan.strategy.name }}</text
@@ -334,8 +334,8 @@
       </nut-tab-pane>
     </nut-tabs>
 
-    <nut-sticky position="bottom">
-      <nut-row type="flex" :gutter="10" style="padding-top: 10px; padding-bottom: 10px; background-color: whitesmoke">
+    <div class="plan-action-bar" style="position: fixed; right: 0; bottom: 0; left: 0">
+      <nut-row type="flex" :gutter="10">
         <nut-col align="center" :span="12">
           <nut-button v-if="plan.status === 'active'" :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('stop')">
             <template #icon>
@@ -359,7 +359,7 @@
           </nut-button>
         </nut-col>
       </nut-row>
-    </nut-sticky>
+    </div>
   </div>
 
   <div v-else class="empty-container">
@@ -817,6 +817,22 @@
     align-items: center;
     justify-content: center;
     height: 200px;
+  }
+
+  .details-page {
+    box-sizing: border-box;
+  }
+
+  .plan-action-bar {
+    z-index: 100;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 10px 16px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    background-color: whitesmoke;
+    border-top: 1px solid #eee;
   }
 
   .empty-container {
