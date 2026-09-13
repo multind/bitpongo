@@ -47,6 +47,19 @@ beforeEach(() => {
   mocks.testPush.mockResolvedValue({ queued: true });
 });
 describe('native notification settings', () => {
+  it('allows explicit removal of a disabled remote device', async () => {
+    mocks.getPushDevices.mockResolvedValue([{ installationId: 'remote-device', platform: 'android', appVersion: '1', enabled: false }]);
+    mocks.revokePushDevice.mockResolvedValue(undefined);
+    const view = render();
+    await flushPromises();
+    const remove = view.get('.device-row button');
+    expect(remove.attributes('disabled')).toBeUndefined();
+    await remove.trigger('click');
+    await flushPromises();
+    expect(mocks.revokePushDevice).toHaveBeenCalledExactlyOnceWith('remote-device');
+    expect(mocks.pushClearSession).not.toHaveBeenCalled();
+    expect(view.text()).toContain('Device removed');
+  });
   it('reconciles a remote revocation on refresh and only re-enables after explicit action', async () => {
     const view = render();
     await flushPromises();

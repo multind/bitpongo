@@ -39,7 +39,7 @@
           >{{ device.platform }} · {{ device.appVersion }}
           <small v-if="device.installationId === status.installationId">({{ copy.current }})</small></span
         ><span data-test="push-device-state">{{ device.enabled ? copy.deviceEnabled : copy.deviceDisabled }}</span
-        ><nut-button :disabled="busy || !device.enabled" @click="revoke(device.installationId)">{{ copy.revoke }}</nut-button></div
+        ><nut-button :disabled="busy" @click="revoke(device.installationId)">{{ copy.revoke }}</nut-button></div
       >
     </section>
     <nut-button :disabled="busy" data-test="push-refresh" @click="load">{{ copy.refresh }}</nut-button>
