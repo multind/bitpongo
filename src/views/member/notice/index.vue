@@ -8,9 +8,10 @@
     <p v-else-if="!status.configured || (setting && !setting.available)" role="status">{{ copy.unavailable }}</p>
     <section v-if="status.supported" class="settings-card">
       <p>{{ status.permission === 'unavailable' ? copy.permissionUnavailable : copy[status.permission] }}</p>
-      <p>{{ status.registered ? copy.registered : copy.unregistered }}</p>
+      <p>{{ registered ? copy.registered : copy.unregistered }}</p>
       <nut-button
-        v-if="status.permission === 'notDetermined' || (!status.registered && ['authorized', 'provisional'].includes(status.permission))"
+        v-if="status.permission === 'notDetermined' || (!registered && ['authorized', 'provisional'].includes(status.permission))"
+        data-test="push-enable-device"
         :disabled="busy"
         @click="requestPermission"
         >{{ copy.permission }}</nut-button
@@ -37,7 +38,8 @@
         ><span
           >{{ device.platform }} · {{ device.appVersion }}
           <small v-if="device.installationId === status.installationId">({{ copy.current }})</small></span
-        ><nut-button :disabled="busy" @click="revoke(device.installationId)">{{ copy.revoke }}</nut-button></div
+        ><span data-test="push-device-state">{{ device.enabled ? copy.deviceEnabled : copy.deviceDisabled }}</span
+        ><nut-button :disabled="busy || !device.enabled" @click="revoke(device.installationId)">{{ copy.revoke }}</nut-button></div
       >
     </section>
     <nut-button :disabled="busy" data-test="push-refresh" @click="load">{{ copy.refresh }}</nut-button>
@@ -73,6 +75,10 @@
   const setting = ref<PushSettings | null>(null);
   const devices = ref<PushDevice[]>([]);
   const status = ref({ ...unsupportedPush });
+  const registered = computed(
+    () =>
+      status.value.registered && devices.value.some((device) => device.installationId === status.value.installationId && device.enabled),
+  );
   const busy = ref(false);
   const error = ref('');
   const message = ref('');
@@ -82,7 +88,7 @@
       !!(
         setting.value?.available &&
         setting.value.enabled &&
-        status.value.registered &&
+        registered.value &&
         status.value.installationId &&
         ['authorized', 'provisional'].includes(status.value.permission)
       ),
@@ -111,10 +117,12 @@
   }
   function load() {
     return run(async () => {
-      const [prefs, list, native] = await Promise.all([getPushSettings(), getPushDevices(), pushGetStatus()]);
+      const [prefs, native] = await Promise.all([getPushSettings(), pushGetStatus()]);
       setting.value = prefs;
-      devices.value = list;
       status.value = native;
+      if (native.supported) await sync();
+      // Read after synchronization; the server may retain a remote-revocation tombstone.
+      devices.value = await getPushDevices();
     });
   }
   function save() {

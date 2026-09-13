@@ -40,12 +40,39 @@ const render = () => mount(View, { global: { stubs: { 'nut-button': button } } }
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.getPushSettings.mockResolvedValue({ ...prefs });
-  mocks.getPushDevices.mockResolvedValue([]);
+  mocks.getPushDevices.mockResolvedValue([{ installationId: 'device-1', platform: 'ios', appVersion: '1', enabled: true }]);
   mocks.pushGetStatus.mockResolvedValue({ ...status });
+  mocks.pushSyncSession.mockImplementation(() => mocks.pushGetStatus());
   mocks.savePushSettings.mockResolvedValue({ ...prefs });
   mocks.testPush.mockResolvedValue({ queued: true });
 });
 describe('native notification settings', () => {
+  it('reconciles a remote revocation on refresh and only re-enables after explicit action', async () => {
+    const view = render();
+    await flushPromises();
+    expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeUndefined();
+    expect(view.find('[data-test="push-enable-device"]').exists()).toBe(false);
+    // Native cached status deliberately remains registered until explicit re-enable.
+    mocks.getPushDevices.mockResolvedValue([{ installationId: 'device-1', platform: 'ios', appVersion: '1', enabled: false }]);
+    const syncCount = mocks.pushSyncSession.mock.calls.length;
+    await view.get('[data-test="push-refresh"]').trigger('click');
+    await flushPromises();
+    expect(mocks.pushSyncSession).toHaveBeenCalledTimes(syncCount + 1);
+    expect(view.get('[data-test="push-device-state"]').text()).toBe('Disabled');
+    expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeDefined();
+    expect(view.text()).toContain('This device is not registered');
+    expect(mocks.pushRequestPermission).not.toHaveBeenCalled();
+    mocks.pushRequestPermission.mockImplementation(async () => {
+      mocks.getPushDevices.mockResolvedValue([{ installationId: 'device-1', platform: 'ios', appVersion: '1', enabled: true }]);
+      return { ...status };
+    });
+    await view.get('[data-test="push-enable-device"]').trigger('click');
+    await flushPromises();
+    expect(mocks.pushRequestPermission).toHaveBeenCalledTimes(1);
+    expect(view.get('[data-test="push-device-state"]').text()).toBe('Enabled');
+    expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeUndefined();
+    expect(view.find('[data-test="push-enable-device"]').exists()).toBe(false);
+  });
   it('saves preferences without read-only fields', async () => {
     const view = render();
     await flushPromises();

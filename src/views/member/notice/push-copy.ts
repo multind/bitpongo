@@ -1,5 +1,7 @@
 export const pushCopy = {
   'en-us': {
+    deviceEnabled: 'Enabled',
+    deviceDisabled: 'Disabled',
     title: 'Notifications',
     intro: 'Choose account notifications and manage devices. Opening a notification only opens details; it never places a trade.',
     enabled: 'Allow notifications',
@@ -33,6 +35,8 @@ export const pushCopy = {
     soundHelp: 'System notification settings take precedence over the sound preference.',
   },
   'zh-cn': {
+    deviceEnabled: '已启用',
+    deviceDisabled: '已停用',
     title: '通知设置',
     intro: '选择账户通知并管理设备。点击通知只会打开详情，不会执行交易。',
     enabled: '接收通知',
@@ -66,6 +70,8 @@ export const pushCopy = {
     soundHelp: '系统通知设置优先于应用内提示音偏好。',
   },
   'zh-tw': {
+    deviceEnabled: '已啟用',
+    deviceDisabled: '已停用',
     title: '通知設定',
     intro: '選擇帳戶通知並管理裝置。點擊通知只會開啟詳情，不會執行交易。',
     enabled: '接收通知',
