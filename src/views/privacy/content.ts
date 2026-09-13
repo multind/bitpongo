@@ -19,7 +19,7 @@ export interface PrivacyCopy {
 export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
   'zh-cn': {
     title: '隐私政策',
-    updated: '最后更新：2026 年 8 月 26 日',
+    updated: '最后更新：2026 年 9 月 13 日',
     intro: '本隐私政策说明 Bitpongo 在你使用账户、自动化策略、交易所连接和通知功能时如何收集、使用、保存和保护信息。',
     sections: [
       {
@@ -29,7 +29,7 @@ export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
           '账户信息：用户名、电子邮件地址、用户 ID 和经过哈希处理的密码。',
           '交易所连接信息：交易所名称、AccessKey、SecretKey，以及交易所要求的密码或口令。',
           '策略与财务信息：策略设置、资产配置、余额、持仓、订单和执行结果。',
-          '通知信息：Bark 推送地址、通知偏好和发送结果。',
+          '通知信息：设备通知令牌、设备平台和 App 版本、语言、时区、通知偏好和发送结果，以及旧版客户端的 Bark 推送地址。原生通知通过 Firebase Cloud Messaging 和 Apple APNs 传递；你可以拒绝系统通知权限、关闭账户通知或移除已注册设备。通知可能延迟或无法送达。',
           '技术信息：为保障安全、诊断故障和维护服务所需的请求记录、错误记录及有限的网络信息。',
         ],
       },
@@ -86,7 +86,7 @@ export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
   },
   'zh-tw': {
     title: '隱私權政策',
-    updated: '最後更新：2026 年 8 月 26 日',
+    updated: '最後更新：2026 年 9 月 13 日',
     intro: '本隱私權政策說明 Bitpongo 在你使用帳戶、自動化策略、交易所連線和通知功能時，如何蒐集、使用、保存及保護資訊。',
     sections: [
       {
@@ -96,7 +96,7 @@ export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
           '帳戶資訊：使用者名稱、電子郵件地址、使用者 ID 和經過雜湊處理的密碼。',
           '交易所連線資訊：交易所名稱、AccessKey、SecretKey，以及交易所要求的密碼或口令。',
           '策略與財務資訊：策略設定、資產配置、餘額、持倉、訂單和執行結果。',
-          '通知資訊：Bark 推播位址、通知偏好和傳送結果。',
+          '通知資訊：裝置通知權杖、裝置平台和 App 版本、語言、時區、通知偏好和傳送結果，以及舊版客戶端的 Bark 推播位址。原生通知透過 Firebase Cloud Messaging 和 Apple APNs 傳遞；你可以拒絕系統通知權限、關閉帳戶通知或移除已註冊裝置。通知可能延遲或無法送達。',
           '技術資訊：為保障安全、診斷故障和維護服務所需的請求紀錄、錯誤紀錄及有限的網路資訊。',
         ],
       },
@@ -153,7 +153,7 @@ export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
   },
   'en-us': {
     title: 'Privacy Policy',
-    updated: 'Last updated: August 26, 2026',
+    updated: 'Last updated: September 13, 2026',
     intro:
       'This Privacy Policy explains how Bitpongo collects, uses, retains, and protects information when you use accounts, automated strategies, exchange connections, and notifications.',
     sections: [
@@ -164,7 +164,7 @@ export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
           'Account information, including your username, email address, user ID, and hashed password.',
           'Exchange connection information, including the exchange name, AccessKey, SecretKey, and any password or passphrase required by the exchange.',
           'Strategy and financial information, including strategy settings, asset allocations, balances, positions, orders, and execution results.',
-          'Notification information, including your Bark push URL, notification preferences, and delivery results.',
+          'Notification information includes device notification tokens, platform and app version, locale, timezone, notification preferences and delivery results, and Bark push URLs for legacy clients. Native notifications use Firebase Cloud Messaging and Apple APNs. You can deny notification permission, disable account notifications or remove registered devices. Notifications may be delayed or not delivered.',
           'Technical information, including request records, error records, and limited network information needed for security, troubleshooting, and service maintenance.',
         ],
       },

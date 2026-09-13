@@ -3,7 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { i18n } from '@/i18n';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import NoticeView from './index.vue';
+import NoticeView from './LegacyBarkSettings.vue';
 
 const mocks = vi.hoisted(() => ({
   getBarkSetting: vi.fn(),

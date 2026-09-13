@@ -3,7 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { i18n } from '@/i18n';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import PlanDetails from './index.vue';
+import PlanDetails from './PlanDetails.vue';
 
 const mocks = vi.hoisted(() => ({
   getPlanInfo: vi.fn(),

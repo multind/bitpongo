@@ -15,7 +15,17 @@ export interface ImageRequest {
   title?: string;
 }
 
-type NativeCommand = 'getContext' | 'saveImage' | 'shareImage' | 'saveCanvasImage';
+type NativeCommand =
+  | 'getContext'
+  | 'saveImage'
+  | 'shareImage'
+  | 'saveCanvasImage'
+  | 'pushGetStatus'
+  | 'pushRequestPermission'
+  | 'pushSyncSession'
+  | 'pushClearSession'
+  | 'pushOpenSettings'
+  | 'pushTakePendingOpen';
 
 interface PendingRequest {
   resolve: (result: unknown) => void;
@@ -56,7 +66,7 @@ function findChannel(): NativeChannel | null {
   return null;
 }
 
-function invokeNative<T>(command: NativeCommand, payload: object, fallback: T): Promise<T> {
+function invokeNative<T>(command: NativeCommand, payload: object, fallback: T, timeout = requestTimeoutMs): Promise<T> {
   const channel = findChannel();
   if (!channel) return Promise.resolve(fallback);
 
@@ -65,7 +75,7 @@ function invokeNative<T>(command: NativeCommand, payload: object, fallback: T): 
     const timeoutId = setTimeout(() => {
       pendingRequests.delete(requestId);
       resolve(fallback);
-    }, requestTimeoutMs);
+    }, timeout);
 
     pendingRequests.set(requestId, {
       resolve: (result) => resolve(result as T),
@@ -112,3 +122,45 @@ export async function shareImage(request: ImageRequest): Promise<boolean> {
 export async function saveCanvasImage(dataUrl: string): Promise<boolean> {
   return invokeNative('saveCanvasImage', { dataUrl }, false);
 }
+
+export interface PushStatus {
+  supported: boolean;
+  configured: boolean;
+  permission: 'authorized' | 'provisional' | 'denied' | 'notDetermined' | 'unavailable';
+  registered: boolean;
+  installationId: string | null;
+  error: string | null;
+}
+export interface NotificationOpen {
+  eventId: string;
+  userId: string;
+  planId?: string;
+  eventType: string;
+}
+export const unsupportedPush: PushStatus = {
+  supported: false,
+  configured: false,
+  permission: 'unavailable',
+  registered: false,
+  installationId: null,
+  error: null,
+};
+async function pushStatus(
+  command: 'pushGetStatus' | 'pushRequestPermission' | 'pushSyncSession',
+  payload: object = {},
+): Promise<PushStatus> {
+  try {
+    const result = await invokeNative<PushStatus>(command, payload, unsupportedPush, command === 'pushGetStatus' ? 1500 : 45000);
+    return result && typeof result.supported === 'boolean' && typeof result.permission === 'string' ? result : unsupportedPush;
+  } catch {
+    return { ...unsupportedPush, error: 'bridge_unavailable' };
+  }
+}
+export const pushGetStatus = () => pushStatus('pushGetStatus');
+export const pushRequestPermission = () => pushStatus('pushRequestPermission');
+export const pushSyncSession = (session: { accessToken: string; userId: string; locale: string; timezone: string }) =>
+  pushStatus('pushSyncSession', session);
+export const pushClearSession = (payload: { revokeDevice?: boolean } = {}) =>
+  invokeNative('pushClearSession', payload, { cleared: false }, 45000).catch(() => ({ cleared: false }));
+export const pushOpenSettings = () => invokeNative('pushOpenSettings', {}, { opened: false }, 1500).catch(() => ({ opened: false }));
+export const pushTakePendingOpen = () => invokeNative<NotificationOpen | null>('pushTakePendingOpen', {}, null, 1500).catch(() => null);

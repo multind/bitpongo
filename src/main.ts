@@ -6,6 +6,7 @@ import router from '@/router';
 import store from '@/store';
 import { useUserStore } from '@/store/modules/user';
 import { initializeSessionTimeZone } from '@/mobile/session-timezone';
+import { installPushLifecycle } from '@/mobile/push-lifecycle';
 import './styles/index.scss';
 import './assets/font/iconfont.css';
 
@@ -31,6 +32,7 @@ async function bootstrap() {
   app.mount('#app');
 
   const userStore = useUserStore(store);
+  installPushLifecycle(userStore, router);
   if (userStore.token) void initializeSessionTimeZone();
 }
 

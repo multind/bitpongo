@@ -1,281 +1,207 @@
 <template>
   <main class="notice-settings">
-    <header>
-      <h1>{{ t('notice.barkTitle') }}</h1>
-      <p class="intro">{{ t('notice.intro') }}</p>
-    </header>
-
-    <section class="settings-card">
-      <div class="status-row">
-        <span>{{ configured ? t('notice.configured') : t('notice.notConfigured') }}</span>
-        <span aria-hidden="true">·</span>
-        <span>{{ enabled ? t('notice.enabled') : t('notice.disabled') }}</span>
-      </div>
-      <p class="effective-timezone">{{ t('notice.effectiveTimeZone', { zone: effectiveTimeZone }) }}</p>
-
-      <div class="field-heading">
-        <label for="bark-push-url">{{ t('notice.pushUrl') }}</label>
-        <button
-          class="visibility-button"
-          type="button"
-          :aria-label="showPushUrl ? t('notice.hidePushUrl') : t('notice.showPushUrl')"
-          :aria-pressed="showPushUrl"
-          data-test="bark-visibility"
-          @click="showPushUrl = !showPushUrl"
-        >
-          {{ showPushUrl ? '◉' : '○' }}
-        </button>
-      </div>
-      <nut-input
-        id="bark-push-url"
-        v-model="pushUrl"
-        autocomplete="new-password"
-        data-test="bark-push-url"
+    <header
+      ><h1>{{ copy.title }}</h1
+      ><p>{{ copy.intro }}</p></header
+    >
+    <p v-if="!status.supported" role="status">{{ copy.unsupported }}</p>
+    <p v-else-if="!status.configured || (setting && !setting.available)" role="status">{{ copy.unavailable }}</p>
+    <section v-if="status.supported" class="settings-card">
+      <p>{{ status.permission === 'unavailable' ? copy.permissionUnavailable : copy[status.permission] }}</p>
+      <p>{{ status.registered ? copy.registered : copy.unregistered }}</p>
+      <nut-button
+        v-if="status.permission === 'notDetermined' || (!status.registered && ['authorized', 'provisional'].includes(status.permission))"
         :disabled="busy"
-        :placeholder="t('notice.pushUrlPlaceholder')"
-        :type="showPushUrl ? 'text' : 'password'"
-      />
-      <p v-if="configured && maskedPushUrl" class="masked-address">{{ maskedPushUrl }}</p>
-
-      <div class="enabled-row">
-        <span>{{ enabled ? t('notice.enabled') : t('notice.disabled') }}</span>
-        <nut-switch v-model="enabled" :disabled="busy" />
-      </div>
-
+        @click="requestPermission"
+        >{{ copy.permission }}</nut-button
+      >
+      <nut-button :disabled="busy" @click="openSettings">{{ copy.settings }}</nut-button>
+    </section>
+    <p v-if="error" role="alert">{{ error }}</p
+    ><p v-if="message" role="status">{{ message }}</p>
+    <section v-if="setting" class="settings-card">
+      <label v-for="key in preferenceKeys" :key="key" class="enabled-row"
+        ><span>{{ copy[key] }}</span
+        ><input v-model="setting[key]" type="checkbox" role="switch" :data-test="key" :disabled="busy"
+      /></label>
+      <p>{{ copy.soundHelp }}</p>
       <div class="actions">
-        <nut-button
-          block
-          color="#101010"
-          data-test="bark-save"
-          :disabled="busy || (!configured && !hasInput)"
-          :loading="saving"
-          @click="save"
-        >
-          {{ saving ? t('notice.saving') : t('notice.save') }}
-        </nut-button>
-        <nut-button block plain data-test="bark-test" :disabled="busy || (!configured && !hasInput)" :loading="testing" @click="sendTest">
-          {{ testing ? t('notice.testing') : t('notice.test') }}
-        </nut-button>
-        <nut-button v-if="configured" block plain data-test="bark-remove" :disabled="busy" @click="confirmRemove">
-          {{ t('notice.remove') }}
-        </nut-button>
+        <nut-button data-test="push-save" block color="#101010" :disabled="busy" @click="save">{{ copy.save }}</nut-button>
+        <nut-button data-test="push-test" block plain :disabled="busy || !canTest" @click="sendTest">{{ copy.test }}</nut-button>
       </div>
     </section>
+    <section class="settings-card">
+      <h2>{{ copy.devices }}</h2
+      ><p v-if="!devices.length">{{ copy.none }}</p>
+      <div v-for="device in devices" :key="device.installationId" class="device-row"
+        ><span
+          >{{ device.platform }} · {{ device.appVersion }}
+          <small v-if="device.installationId === status.installationId">({{ copy.current }})</small></span
+        ><nut-button :disabled="busy" @click="revoke(device.installationId)">{{ copy.revoke }}</nut-button></div
+      >
+    </section>
+    <nut-button :disabled="busy" data-test="push-refresh" @click="load">{{ copy.refresh }}</nut-button>
   </main>
 </template>
-
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { showDialog, showToast } from '@nutui/nutui';
   import {
-    deleteBarkSetting,
-    getBarkSetting,
-    getTimeZonePreference,
-    saveBarkSetting,
-    testBarkSetting,
-    type BarkSetting,
-    type BarkSettingRequest,
-  } from '@/api';
+    getPushDevices,
+    getPushSettings,
+    revokePushDevice,
+    savePushSettings,
+    testPush,
+    type PushDevice,
+    type PushSettings,
+  } from '@/api/push';
+  import {
+    pushGetStatus,
+    pushOpenSettings,
+    pushRequestPermission,
+    pushSyncSession,
+    pushClearSession,
+    unsupportedPush,
+  } from '@/mobile/bridge';
   import { displayTimeZone } from '@/mobile/app-context';
-
-  const { locale, t } = useI18n();
-  const setting = ref<BarkSetting | null>(null);
-  const pushUrl = ref('');
-  const enabled = ref(true);
-  const showPushUrl = ref(false);
-  const loading = ref(false);
-  const saving = ref(false);
-  const testing = ref(false);
-  const removing = ref(false);
-  const effectiveTimeZone = ref(displayTimeZone());
-
-  const configured = computed(() => setting.value?.configured ?? false);
-  const maskedPushUrl = computed(() => setting.value?.masked_push_url ?? '');
-  const hasInput = computed(() => pushUrl.value.trim().length > 0);
-  const busy = computed(() => loading.value || saving.value || testing.value || removing.value);
-
-  function requestLocale(): BarkSetting['locale'] {
-    const locales: Record<string, BarkSetting['locale']> = {
-      'zh-cn': 'zh-CN',
-      'zh-tw': 'zh-TW',
-      'en-us': 'en-US',
-    };
-    return locales[String(locale.value).toLowerCase()] ?? 'zh-CN';
-  }
-
-  function requestTimeZone(): string {
-    return effectiveTimeZone.value;
-  }
-
-  function safeErrorMessage(error: unknown): string {
-    if (typeof error === 'string' && error.trim()) return error;
-    if (error instanceof Error && error.message.trim()) return error.message;
-    return t('notice.failed');
-  }
-
-  function currentSetting(maskedPushUrlValue: string | null): BarkSetting {
-    return {
-      configured: true,
-      enabled: enabled.value,
-      masked_push_url: maskedPushUrlValue,
-      locale: requestLocale(),
-      timezone: requestTimeZone(),
-      updated_at: null,
-    };
-  }
-
-  async function loadSetting() {
-    loading.value = true;
-    try {
-      const [loadedSetting, preference] = await Promise.all([getBarkSetting(), getTimeZonePreference()]);
-      setting.value = loadedSetting;
-      effectiveTimeZone.value = preference.effective_timezone;
-      enabled.value = setting.value.enabled;
-    } catch (error) {
-      showToast.fail(safeErrorMessage(error));
-    } finally {
-      loading.value = false;
-    }
-  }
-
-  async function save() {
-    if (busy.value || (!configured.value && !hasInput.value)) return;
-    saving.value = true;
-    const input = pushUrl.value.trim();
-    const payload: BarkSettingRequest = {
-      enabled: enabled.value,
-      locale: requestLocale(),
-      timezone: requestTimeZone(),
-    };
-    if (input) payload.push_url = input;
-    try {
-      const saved = await saveBarkSetting(payload);
-      setting.value = saved || currentSetting(setting.value?.masked_push_url ?? null);
-      pushUrl.value = '';
-      showPushUrl.value = false;
-      showToast.success(t('notice.saved'));
-    } catch (error) {
-      showToast.fail(safeErrorMessage(error));
-    } finally {
-      saving.value = false;
-    }
-  }
-
-  async function sendTest() {
-    if (busy.value || (!configured.value && !hasInput.value)) return;
-    testing.value = true;
-    const input = pushUrl.value.trim();
-    try {
-      await testBarkSetting(input ? { push_url: input } : {});
-      showToast.success(t('notice.sent'));
-    } catch (error) {
-      showToast.fail(safeErrorMessage(error));
-    } finally {
-      testing.value = false;
-    }
-  }
-
-  async function remove() {
+  import { useUserStore } from '@/store/modules/user';
+  import { pushCopy } from './push-copy';
+  import { pushLocale } from '@/api/push';
+  const { locale } = useI18n();
+  const copy = computed(() => pushCopy[locale.value as keyof typeof pushCopy] || pushCopy['en-us']);
+  const user = useUserStore();
+  const setting = ref<PushSettings | null>(null);
+  const devices = ref<PushDevice[]>([]);
+  const status = ref({ ...unsupportedPush });
+  const busy = ref(false);
+  const error = ref('');
+  const message = ref('');
+  const preferenceKeys = ['enabled', 'tradeSucceeded', 'tradeFailed', 'planAlerts', 'systemAlerts', 'soundEnabled'] as const;
+  const canTest = computed(
+    () =>
+      !!(
+        setting.value?.available &&
+        setting.value.enabled &&
+        status.value.registered &&
+        status.value.installationId &&
+        ['authorized', 'provisional'].includes(status.value.permission)
+      ),
+  );
+  async function run(action: () => Promise<void>) {
     if (busy.value) return;
-    removing.value = true;
+    busy.value = true;
+    error.value = '';
+    message.value = '';
     try {
-      await deleteBarkSetting();
-      setting.value = null;
-      pushUrl.value = '';
-      enabled.value = true;
-      showPushUrl.value = false;
-      showToast.success(t('notice.removed'));
-    } catch (error) {
-      showToast.fail(safeErrorMessage(error));
+      await action();
+    } catch {
+      error.value = copy.value.failed;
     } finally {
-      removing.value = false;
+      busy.value = false;
     }
   }
-
-  function confirmRemove() {
-    if (busy.value || !configured.value) return;
-    showDialog({
-      textAlign: 'center',
-      title: t('notice.removeTitle'),
-      content: t('notice.removeConfirm'),
-      onOk: remove,
+  async function sync() {
+    if (user.token && user.info.id)
+      status.value = await pushSyncSession({
+        accessToken: user.token,
+        userId: String(user.info.id),
+        locale: pushLocale(locale.value),
+        timezone: displayTimeZone(),
+      });
+  }
+  function load() {
+    return run(async () => {
+      const [prefs, list, native] = await Promise.all([getPushSettings(), getPushDevices(), pushGetStatus()]);
+      setting.value = prefs;
+      devices.value = list;
+      status.value = native;
     });
   }
-
-  onMounted(loadSetting);
+  function save() {
+    return run(async () => {
+      if (!setting.value) return;
+      const { available: _available, deviceCount: _deviceCount, ...preferences } = setting.value;
+      setting.value = await savePushSettings({ ...preferences, locale: pushLocale(locale.value), timezone: displayTimeZone() });
+      message.value = copy.value.saved;
+    });
+  }
+  function requestPermission() {
+    return run(async () => {
+      status.value = await pushRequestPermission();
+      if (status.value.error) throw new Error();
+      await sync();
+      devices.value = await getPushDevices();
+    });
+  }
+  function openSettings() {
+    return run(async () => {
+      if (!(await pushOpenSettings()).opened) throw new Error();
+    });
+  }
+  function sendTest() {
+    return run(async () => {
+      if (!canTest.value || !status.value.installationId) return;
+      const result = await testPush(status.value.installationId);
+      if (!result.queued) throw new Error();
+      message.value = copy.value.queued;
+    });
+  }
+  function revoke(id: string) {
+    return run(async () => {
+      await revokePushDevice(id);
+      if (id === status.value.installationId) {
+        await pushClearSession({ revokeDevice: true });
+        status.value = await pushGetStatus();
+      }
+      devices.value = await getPushDevices();
+      message.value = copy.value.removed;
+    });
+  }
+  onMounted(load);
 </script>
-
 <style scoped lang="scss">
   .notice-settings {
     padding: 1.25rem;
+    color: #333;
   }
-
   h1 {
     margin: 0;
     font-size: 1.625rem;
-    line-height: 1.25;
     color: #101010;
   }
-
-  .intro {
-    margin: 0.5rem 0 0;
+  h2 {
+    font-size: 1.125rem;
+  }
+  p {
+    color: #666;
     font-size: 0.9375rem;
     line-height: 1.5;
-    color: #666;
   }
-
   .settings-card {
-    margin-top: 2rem;
+    margin: 1.5rem 0;
   }
-
-  .status-row,
   .enabled-row,
-  .field-heading {
+  .device-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0;
   }
-
-  .status-row {
-    gap: 0.5rem;
-    justify-content: flex-start;
-    margin-bottom: 1.5rem;
-    font-size: 0.875rem;
-    color: #666;
-  }
-
-  .field-heading {
-    margin-bottom: 0.625rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-  }
-
-  .visibility-button {
-    padding: 0.25rem 0.5rem;
-    font-size: 1.25rem;
-    color: #555;
-    background: transparent;
-    border: 0;
-  }
-
-  .masked-address {
-    margin: 0.5rem 0 0;
-    font-size: 0.8125rem;
-    color: #888;
+  .device-row span {
     overflow-wrap: anywhere;
   }
-
-  .enabled-row {
-    margin-top: 1.5rem;
-    font-size: 0.9375rem;
-    color: #333;
+  input {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: #101010;
   }
-
   .actions {
     display: grid;
     gap: 0.75rem;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
+  }
+  [role='alert'] {
+    color: #b42318;
   }
 </style>

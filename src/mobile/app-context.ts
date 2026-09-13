@@ -57,6 +57,7 @@ export function getAppContext(): AppRuntimeContext | null {
 
 export function setDisplayTimeZonePreference(mode: 'FOLLOW_DEVICE' | 'FIXED', timeZone: string | null): void {
   fixedDisplayTimeZone = mode === 'FIXED' && timeZone?.trim() ? timeZone.trim() : null;
+  window.dispatchEvent(new Event('bitpongo:timezone-change'));
 }
 
 export function displayTimeZone(): string {
