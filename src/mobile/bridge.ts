@@ -160,7 +160,7 @@ export const pushGetStatus = () => pushStatus('pushGetStatus');
 export const pushRequestPermission = () => pushStatus('pushRequestPermission');
 export const pushSyncSession = (session: { accessToken: string; userId: string; locale: string; timezone: string }) =>
   pushStatus('pushSyncSession', session);
-export const pushClearSession = (payload: { revokeDevice?: boolean } = {}) =>
+export const pushClearSession = (payload: { revokeDevice?: boolean; preservePendingOpen?: boolean } = {}) =>
   invokeNative('pushClearSession', payload, { cleared: false }, 45000).catch(() => ({ cleared: false }));
 export const pushOpenSettings = () => invokeNative('pushOpenSettings', {}, { opened: false }, 1500).catch(() => ({ opened: false }));
 export const pushTakePendingOpen = () => invokeNative<NotificationOpen | null>('pushTakePendingOpen', {}, null, 1500).catch(() => null);

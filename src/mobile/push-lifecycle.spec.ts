@@ -37,7 +37,7 @@ describe('native notification navigation', () => {
     const { user, router } = setup('');
     await flushPromises();
     expect(native.pushTakePendingOpen).not.toHaveBeenCalled();
-    expect(native.pushClearSession).not.toHaveBeenCalled();
+    expect(native.pushClearSession).toHaveBeenCalledWith({ preservePendingOpen: true });
     user.info.id = 7;
     user.token = 'jwt';
     await nextTick();
@@ -47,6 +47,14 @@ describe('native notification navigation', () => {
     window.dispatchEvent(new CustomEvent('bitpongo:notification-open', { detail: event }));
     await flushPromises();
     expect(router.push).toHaveBeenCalledTimes(1);
+  });
+  it('detaches a prior native binding on logged-out bootstrap while leaving its cold open pending', async () => {
+    const { router } = setup('');
+    await flushPromises();
+    expect(native.pushClearSession).toHaveBeenCalledExactlyOnceWith({ preservePendingOpen: true });
+    expect(native.pushSyncSession).not.toHaveBeenCalled();
+    expect(native.pushTakePendingOpen).not.toHaveBeenCalled();
+    expect(router.push).not.toHaveBeenCalled();
   });
   it('does not navigate when ownership lookup fails', async () => {
     api.getPlanInfo.mockRejectedValue(new Error('403'));
@@ -70,7 +78,7 @@ describe('native notification navigation', () => {
     await nextTick();
     resolve();
     await flushPromises();
-    expect(native.pushClearSession).toHaveBeenCalled();
+    expect(native.pushClearSession).toHaveBeenLastCalledWith();
     expect(router.push).not.toHaveBeenCalled();
   });
 });

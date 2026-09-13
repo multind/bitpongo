@@ -15,14 +15,14 @@ describe('push bridge compatibility', () => {
     await vi.advanceTimersByTimeAsync(1500);
     expect((await status).supported).toBe(false);
   });
-  it('marks explicit device revocation separately from logout', async () => {
+  it.each([{ revokeDevice: true }, { preservePendingOpen: true }, {}])('preserves clear intent %j in the bridge envelope', async (payload) => {
     window.ZhitoubaoBridge = {
       postMessage: (raw) => {
         const request = JSON.parse(raw);
-        expect(request.payload).toEqual({ revokeDevice: true });
+        expect(request.payload).toEqual(payload);
         window.__ZHITOUBAO_NATIVE_RESOLVE__?.(request.requestId, { cleared: true });
       },
     };
-    expect(await pushClearSession({ revokeDevice: true })).toEqual({ cleared: true });
+    expect(await pushClearSession(payload)).toEqual({ cleared: true });
   });
 });

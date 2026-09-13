@@ -77,6 +77,7 @@ export function installPushLifecycle(user: { token: string; info: { id?: number 
       }
       if (!identity()) {
         if (old?.[0]) void pushClearSession();
+        else if (!old?.length) void pushClearSession({ preservePendingOpen: true });
         return;
       }
       void sync();
