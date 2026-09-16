@@ -49,6 +49,31 @@ beforeEach(() => {
   mocks.testPush.mockResolvedValue({ queued: true });
 });
 describe('native notification settings', () => {
+  it('keeps preferences and system settings usable while registration is pending', async () => {
+    let finish!: (value: typeof status) => void;
+    mocks.pushSyncSession.mockReturnValue(
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+    );
+    mocks.pushOpenSettings.mockResolvedValue({ opened: true });
+    const view = render();
+    await flushPromises();
+    expect(view.get('[data-test="push-save"]').attributes('disabled')).toBeUndefined();
+    await view.get('[data-test="push-save"]').trigger('click');
+    await flushPromises();
+    expect(mocks.savePushSettings).toHaveBeenCalledTimes(1);
+    const settingsButton = view.findAll('button').find((b) => b.text() === 'Open system settings')!;
+    expect(settingsButton.attributes('disabled')).toBeUndefined();
+    await settingsButton.trigger('click');
+    await flushPromises();
+    expect(mocks.pushOpenSettings).toHaveBeenCalledTimes(1);
+    expect(view.find('[data-test="push-registering"]').exists()).toBe(true);
+    finish({ ...status });
+    await flushPromises();
+    expect(view.find('[data-test="push-registering"]').exists()).toBe(false);
+    view.unmount();
+  });
   it.each(['en-us', 'zh-cn', 'zh-tw'])('shows safe registration stages and HTTP results in %s', async (locale) => {
     mocks.locale.value = locale;
     mocks.pushGetStatus.mockResolvedValue({

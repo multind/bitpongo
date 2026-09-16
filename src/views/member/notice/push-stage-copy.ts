@@ -1,5 +1,6 @@
 export const pushStageCopy = {
   'en-us': {
+    pending: 'Connecting to push services… You can still save preferences or open system settings.',
     stage: 'Registration stage',
     code: 'Diagnostic code',
     apns: 'APNs token ready (iOS)',
@@ -35,6 +36,7 @@ export const pushStageCopy = {
     },
   },
   'zh-cn': {
+    pending: '正在连接推送服务…你仍可保存偏好或打开系统设置。',
     stage: '注册阶段',
     code: '诊断错误码',
     apns: 'APNs Token 已就绪（iOS）',
@@ -70,6 +72,7 @@ export const pushStageCopy = {
     },
   },
   'zh-tw': {
+    pending: '正在連線推播服務…你仍可儲存偏好或開啟系統設定。',
     stage: '註冊階段',
     code: '診斷錯誤碼',
     apns: 'APNs Token 已就緒（iOS）',

@@ -9,11 +9,12 @@
     <section v-if="status.supported" class="settings-card">
       <p>{{ permission === 'unavailable' ? copy.permissionUnavailable : copy[permission] }}</p>
       <p>{{ status.registered && !devicesLoaded ? copy.registrationUnknown : registered ? copy.registered : copy.unregistered }}</p>
-      <nut-button v-if="canEnableDevice" data-test="push-enable-device" :disabled="busy" @click="requestPermission">{{
+      <nut-button v-if="canEnableDevice" data-test="push-enable-device" :disabled="busy || registrationBusy" @click="requestPermission">{{
         copy.permission
       }}</nut-button>
-      <nut-button :disabled="busy" @click="openSettings">{{ copy.settings }}</nut-button>
+      <nut-button :disabled="settingsBusy" @click="openSettings">{{ copy.settings }}</nut-button>
     </section>
+    <p v-if="registrationBusy" role="status" data-test="push-registering">{{ stageCopy.pending }}</p>
     <p v-if="nativeError" role="alert" data-test="push-native-error">
       {{ copy.errors[nativeError] }} <code>({{ nativeError }})</code>
     </p>
@@ -52,7 +53,9 @@
       <p>{{ copy.soundHelp }}</p>
       <div class="actions">
         <nut-button data-test="push-save" block color="#101010" :disabled="busy" @click="save">{{ copy.save }}</nut-button>
-        <nut-button data-test="push-test" block plain :disabled="busy || !canTest" @click="sendTest">{{ copy.test }}</nut-button>
+        <nut-button data-test="push-test" block plain :disabled="busy || registrationBusy || !canTest" @click="sendTest">{{
+          copy.test
+        }}</nut-button>
       </div>
     </section>
     <section class="settings-card">
@@ -64,10 +67,10 @@
           >{{ device.platform }} · {{ device.appVersion }}
           <small v-if="device.installationId === status.installationId">({{ copy.current }})</small></span
         ><span data-test="push-device-state">{{ device.enabled ? copy.deviceEnabled : copy.deviceDisabled }}</span
-        ><nut-button :disabled="busy" @click="revoke(device.installationId)">{{ copy.revoke }}</nut-button></div
+        ><nut-button :disabled="busy || registrationBusy" @click="revoke(device.installationId)">{{ copy.revoke }}</nut-button></div
       >
     </section>
-    <nut-button :disabled="busy" data-test="push-refresh" @click="load">{{ copy.refresh }}</nut-button>
+    <nut-button :disabled="busy || registrationBusy" data-test="push-refresh" @click="load">{{ copy.refresh }}</nut-button>
   </main>
 </template>
 <script setup lang="ts">
@@ -132,6 +135,8 @@
         (!status.value.registered || (devicesLoaded.value && !serverRegistered.value))),
   );
   const busy = ref(false);
+  const registrationBusy = ref(false);
+  const settingsBusy = ref(false);
   const error = ref('');
   const message = ref('');
   const preferenceKeys = ['enabled', 'tradeSucceeded', 'tradeFailed', 'planAlerts', 'systemAlerts', 'soundEnabled'] as const;
@@ -145,9 +150,9 @@
         ['authorized', 'provisional'].includes(status.value.permission)
       ),
   );
-  async function run(action: () => Promise<void>) {
-    if (busy.value) return;
-    busy.value = true;
+  async function run(action: () => Promise<void>, state = busy) {
+    if (state.value) return;
+    state.value = true;
     error.value = '';
     message.value = '';
     try {
@@ -155,7 +160,7 @@
     } catch {
       error.value = copy.value.failed;
     } finally {
-      busy.value = false;
+      state.value = false;
     }
   }
   async function sync() {
@@ -173,18 +178,25 @@
     devices.value = await getPushDevices();
     devicesLoaded.value = true;
   }
-  function load() {
-    return run(async () => {
+  async function load() {
+    let preferencesLoaded = false;
+    await run(async () => {
       devicesLoaded.value = false;
       devices.value = [];
       const [prefs, native] = await Promise.allSettled([getPushSettings(), pushGetStatus()]);
       status.value = native.status === 'fulfilled' ? native.value : { ...unsupportedPush, error: 'bridge_unavailable' };
-      if (prefs.status === 'fulfilled') setting.value = prefs.value;
-      if (status.value.supported) await sync();
+      if (prefs.status === 'fulfilled') {
+        setting.value = prefs.value;
+        preferencesLoaded = true;
+      }
       if (prefs.status === 'rejected') throw new Error();
+    });
+    if (!preferencesLoaded) return;
+    await run(async () => {
+      if (status.value.supported) await sync();
       // Read after synchronization; the server may retain a remote-revocation tombstone.
       await loadDevices();
-    });
+    }, registrationBusy);
   }
   function save() {
     return run(async () => {
@@ -208,12 +220,12 @@
       if (status.value.error) return;
       await sync();
       await loadDevices();
-    });
+    }, registrationBusy);
   }
   function openSettings() {
     return run(async () => {
       if (!(await pushOpenSettings()).opened) throw new Error();
-    });
+    }, settingsBusy);
   }
   function sendTest() {
     return run(async () => {
