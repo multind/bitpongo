@@ -49,6 +49,51 @@ beforeEach(() => {
   mocks.testPush.mockResolvedValue({ queued: true });
 });
 describe('native notification settings', () => {
+  it.each(['en-us', 'zh-cn', 'zh-tw'])('shows safe registration stages and HTTP results in %s', async (locale) => {
+    mocks.locale.value = locale;
+    mocks.pushGetStatus.mockResolvedValue({
+      ...status,
+      registered: false,
+      error: 'registration_failed',
+      diagnostics: {
+        stage: 'registerHttp',
+        code: 'httpRejected',
+        apnsReady: true,
+        fcmReady: true,
+        requestStarted: true,
+        httpStatus: 401,
+        token: 'secret-token',
+        responseBody: 'private-response',
+      },
+    });
+    const view = render();
+    await flushPromises();
+    expect(view.get('[data-test="push-stage"]').text()).toContain('registerHttp');
+    expect(view.get('[data-test="push-failure-code"]').text()).toContain('httpRejected');
+    expect(view.get('[data-test="push-http-status"]').text()).toBe('401');
+    expect(view.text()).not.toContain('secret-token');
+    expect(view.text()).not.toContain('private-response');
+  });
+  it('hides unknown diagnostic values and does not coerce secrets into visible strings', async () => {
+    mocks.pushGetStatus.mockResolvedValue({
+      ...status,
+      diagnostics: {
+        stage: 'constructor',
+        code: 'secret-token',
+        apnsReady: 'secret-token',
+        fcmReady: {},
+        requestStarted: 'secret-token',
+        httpStatus: '401 secret-token',
+      },
+    });
+    const view = render();
+    await flushPromises();
+    expect(view.get('[data-test="push-stage"]').text()).toBe('Unknown');
+    expect(view.get('[data-test="push-failure-code"]').text()).toBe('Unknown');
+    expect(view.get('[data-test="push-http-status"]').text()).toBe('Unknown');
+    expect(view.text()).not.toContain('secret-token');
+    expect(view.text()).not.toContain('constructor');
+  });
   it.each(['invalid_request', 'permission_unavailable', 'token_unavailable', 'registration_failed', 'cleanup_pending'])(
     'shows safe native error %s after allowing notifications instead of swallowing it',
     async (code) => {

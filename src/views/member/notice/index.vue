@@ -30,7 +30,17 @@
         <dd data-test="push-native-registered">{{ status.registered === true ? copy.yes : copy.no }}</dd>
         <dt>{{ copy.diagnostics.serverRegistered }}</dt>
         <dd data-test="push-server-registered">{{ devicesLoaded ? (serverRegistered ? copy.yes : copy.no) : copy.unknown }}</dd>
+        <template v-if="status.diagnostics">
+          <dt>{{ stageCopy.stage }}</dt
+          ><dd data-test="push-stage">{{ stageLabel }}</dd> <dt>{{ stageCopy.code }}</dt
+          ><dd data-test="push-failure-code">{{ diagnosticCode }}</dd> <dt>{{ stageCopy.apns }}</dt
+          ><dd>{{ diagnosticBoolean(status.diagnostics.apnsReady) }}</dd> <dt>{{ stageCopy.fcm }}</dt
+          ><dd>{{ diagnosticBoolean(status.diagnostics.fcmReady) }}</dd> <dt>{{ stageCopy.request }}</dt
+          ><dd>{{ diagnosticBoolean(status.diagnostics.requestStarted) }}</dd> <dt>{{ stageCopy.http }}</dt
+          ><dd data-test="push-http-status">{{ diagnosticHttpStatus }}</dd>
+        </template>
       </dl>
+      <p v-if="status.diagnostics">{{ stageCopy.help }}</p>
     </section>
     <p v-if="error" role="alert">{{ error }}</p
     ><p v-if="message" role="status">{{ message }}</p>
@@ -83,6 +93,7 @@
   import { displayTimeZone } from '@/mobile/app-context';
   import { useUserStore } from '@/store/modules/user';
   import { pushCopy } from './push-copy';
+  import { diagnosticLabel, pushStageCopy } from './push-stage-copy';
   import { pushLocale } from '@/api/push';
   const { locale } = useI18n();
   const copy = computed(() => pushCopy[locale.value as keyof typeof pushCopy] || pushCopy['en-us']);
@@ -91,6 +102,14 @@
   const devices = ref<PushDevice[]>([]);
   const devicesLoaded = ref(false);
   const status = ref({ ...unsupportedPush });
+  const stageCopy = computed(() => pushStageCopy[locale.value as keyof typeof pushStageCopy] || pushStageCopy['en-us']);
+  const stageLabel = computed(() => diagnosticLabel(status.value.diagnostics?.stage, stageCopy.value.stages, copy.value.unknown));
+  const diagnosticCode = computed(() => diagnosticLabel(status.value.diagnostics?.code, stageCopy.value.codes, copy.value.unknown));
+  const diagnosticBoolean = (value: unknown) => (value === true ? copy.value.yes : value === false ? copy.value.no : copy.value.unknown);
+  const diagnosticHttpStatus = computed(() => {
+    const value = status.value.diagnostics?.httpStatus;
+    return typeof value === 'number' && Number.isInteger(value) && value >= 100 && value <= 599 ? String(value) : copy.value.unknown;
+  });
   const permission = computed(() => {
     const value = status.value.permission;
     return ['authorized', 'provisional', 'denied', 'notDetermined'].includes(value) ? value : 'unavailable';

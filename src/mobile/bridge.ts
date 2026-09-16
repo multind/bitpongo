@@ -130,6 +130,14 @@ export interface PushStatus {
   registered: boolean;
   installationId: string | null;
   error: string | null;
+  diagnostics?: {
+    stage?: unknown;
+    code?: unknown;
+    apnsReady?: unknown;
+    fcmReady?: unknown;
+    requestStarted?: unknown;
+    httpStatus?: unknown;
+  };
 }
 export interface NotificationOpen {
   eventId: string;
