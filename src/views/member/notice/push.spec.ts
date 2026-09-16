@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   pushRequestPermission: vi.fn(),
   pushSyncSession: vi.fn(),
   pushClearSession: vi.fn(),
+  locale: { value: 'en-us' },
 }));
 vi.mock('@/api/push', () => ({ ...mocks, pushLocale: () => 'en-US' }));
 vi.mock('@/mobile/bridge', () => ({
@@ -20,7 +21,7 @@ vi.mock('@/mobile/bridge', () => ({
 }));
 vi.mock('@/store/modules/user', () => ({ useUserStore: () => ({ token: 'jwt', info: { id: 7 } }) }));
 vi.mock('@/mobile/app-context', () => ({ displayTimeZone: () => 'UTC' }));
-vi.mock('vue-i18n', () => ({ useI18n: () => ({ locale: { value: 'en-us' } }) }));
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ locale: mocks.locale }) }));
 import View from './index.vue';
 const prefs = {
   available: true,
@@ -39,6 +40,7 @@ const button = defineComponent({ props: { disabled: Boolean }, template: '<butto
 const render = () => mount(View, { global: { stubs: { 'nut-button': button } } });
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.locale.value = 'en-us';
   mocks.getPushSettings.mockResolvedValue({ ...prefs });
   mocks.getPushDevices.mockResolvedValue([{ installationId: 'device-1', platform: 'ios', appVersion: '1', enabled: true }]);
   mocks.pushGetStatus.mockResolvedValue({ ...status });
@@ -47,6 +49,115 @@ beforeEach(() => {
   mocks.testPush.mockResolvedValue({ queued: true });
 });
 describe('native notification settings', () => {
+  it.each(['invalid_request', 'permission_unavailable', 'token_unavailable', 'registration_failed', 'cleanup_pending'])(
+    'shows safe native error %s after allowing notifications instead of swallowing it',
+    async (code) => {
+      mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false });
+      mocks.getPushDevices.mockResolvedValue([]);
+      mocks.pushRequestPermission.mockResolvedValue({ ...status, registered: false, error: code });
+      const view = render();
+      await flushPromises();
+      await view.get('[data-test="push-enable-device"]').trigger('click');
+      await flushPromises();
+      expect(view.get('[data-test="push-native-error"]').text()).toContain(code);
+      expect(view.get('[data-test="push-diagnostics"]').text()).toContain('authorized');
+      expect(view.get('[data-test="push-native-registered"]').text()).toBe('No');
+      expect(view.get('[data-test="push-server-registered"]').text()).toBe('No');
+      expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeDefined();
+      expect(view.text()).not.toContain('Please try again');
+    },
+  );
+  it('shows an error returned by the follow-up session sync after permission succeeds', async () => {
+    mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false });
+    mocks.getPushDevices.mockResolvedValue([]);
+    mocks.pushRequestPermission.mockResolvedValue({ ...status, registered: false });
+    const view = render();
+    await flushPromises();
+    mocks.pushSyncSession.mockResolvedValue({ ...status, registered: false, error: 'registration_failed' });
+    await view.get('[data-test="push-enable-device"]').trigger('click');
+    await flushPromises();
+    expect(view.get('[data-test="push-native-error"]').text()).toContain('registration_failed');
+  });
+  it('shows initial session sync failure rather than an earlier healthy status', async () => {
+    mocks.pushSyncSession.mockResolvedValue({ ...status, registered: false, error: 'registration_failed' });
+    const view = render();
+    await flushPromises();
+    expect(view.get('[data-test="push-native-error"]').text()).toContain('registration_failed');
+    expect(view.get('[data-test="push-native-registered"]').text()).toBe('No');
+  });
+  it('does not claim the server device is absent when the device list request fails', async () => {
+    mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
+    mocks.getPushDevices.mockRejectedValue(new Error('private-response'));
+    const view = render();
+    await flushPromises();
+    expect(view.get('[data-test="push-native-error"]').text()).toContain('token_unavailable');
+    expect(view.get('[data-test="push-server-registered"]').text()).toBe('Unknown');
+    expect(view.text()).not.toContain('private-response');
+    expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeDefined();
+  });
+  it('does not re-enable a natively registered device when server status becomes unknown', async () => {
+    const view = render();
+    await flushPromises();
+    mocks.getPushDevices.mockRejectedValue(new Error('offline'));
+    await view.get('[data-test="push-refresh"]').trigger('click');
+    await flushPromises();
+    expect(view.get('[data-test="push-server-registered"]').text()).toBe('Unknown');
+    expect(view.find('[data-test="push-enable-device"]').exists()).toBe(false);
+    expect(view.find('.device-row').exists()).toBe(false);
+    expect(view.text()).not.toContain('This device is not registered');
+    expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeDefined();
+  });
+  it('keeps an unrelated preference save failure separate from healthy native status', async () => {
+    mocks.savePushSettings.mockRejectedValue(new Error('server-private-message'));
+    const view = render();
+    await flushPromises();
+    await view.get('[data-test="push-save"]').trigger('click');
+    await flushPromises();
+    expect(view.find('[data-test="push-native-error"]').exists()).toBe(false);
+    expect(view.get('[role="alert"]').text()).toContain('Please try again');
+    expect(view.text()).not.toContain('server-private-message');
+  });
+  it('retains native diagnostics when the account settings API fails', async () => {
+    mocks.getPushSettings.mockRejectedValue(new Error('network error with secret-jwt'));
+    mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
+    const view = render();
+    await flushPromises();
+    expect(view.get('[data-test="push-native-error"]').text()).toContain('token_unavailable');
+    expect(view.get('[data-test="push-server-registered"]').text()).toBe('Unknown');
+    expect(view.text()).not.toContain('secret-jwt');
+  });
+  it.each(['en-us', 'zh-cn', 'zh-tw'])('renders safe diagnostics in %s and clears them after successful refresh', async (language) => {
+    mocks.locale.value = language;
+    mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
+    const view = render();
+    await flushPromises();
+    expect(view.get('[data-test="push-native-error"]').text()).toContain('token_unavailable');
+    mocks.pushGetStatus.mockResolvedValue({ ...status });
+    await view.get('[data-test="push-refresh"]').trigger('click');
+    await flushPromises();
+    expect(view.find('[data-test="push-native-error"]').exists()).toBe(false);
+    expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeUndefined();
+  });
+  it.each(['FCM-secret jwt-secret', '__proto__', 'constructor'])(
+    'does not render unknown native error text or additional sensitive fields: %s',
+    async (untrustedError) => {
+      mocks.pushGetStatus.mockResolvedValue({
+        ...status,
+        registered: false,
+        error: untrustedError,
+        permission: 'permission-secret',
+        accessToken: 'jwt-secret',
+        token: 'FCM-secret',
+        details: 'details-secret',
+      });
+      const view = render();
+      await flushPromises();
+      expect(view.get('[data-test="push-native-error"]').text()).toContain('unknown_error');
+      for (const secret of [untrustedError, 'jwt-secret', 'FCM-secret', 'permission-secret', 'details-secret']) {
+        expect(view.html()).not.toContain(secret);
+      }
+    },
+  );
   it('allows explicit removal of a disabled remote device', async () => {
     mocks.getPushDevices.mockResolvedValue([{ installationId: 'remote-device', platform: 'android', appVersion: '1', enabled: false }]);
     mocks.revokePushDevice.mockResolvedValue(undefined);

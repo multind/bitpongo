@@ -7,16 +7,30 @@
     <p v-if="!status.supported" role="status">{{ copy.unsupported }}</p>
     <p v-else-if="!status.configured || (setting && !setting.available)" role="status">{{ copy.unavailable }}</p>
     <section v-if="status.supported" class="settings-card">
-      <p>{{ status.permission === 'unavailable' ? copy.permissionUnavailable : copy[status.permission] }}</p>
-      <p>{{ registered ? copy.registered : copy.unregistered }}</p>
-      <nut-button
-        v-if="status.permission === 'notDetermined' || (!registered && ['authorized', 'provisional'].includes(status.permission))"
-        data-test="push-enable-device"
-        :disabled="busy"
-        @click="requestPermission"
-        >{{ copy.permission }}</nut-button
-      >
+      <p>{{ permission === 'unavailable' ? copy.permissionUnavailable : copy[permission] }}</p>
+      <p>{{ status.registered && !devicesLoaded ? copy.registrationUnknown : registered ? copy.registered : copy.unregistered }}</p>
+      <nut-button v-if="canEnableDevice" data-test="push-enable-device" :disabled="busy" @click="requestPermission">{{
+        copy.permission
+      }}</nut-button>
       <nut-button :disabled="busy" @click="openSettings">{{ copy.settings }}</nut-button>
+    </section>
+    <p v-if="nativeError" role="alert" data-test="push-native-error">
+      {{ copy.errors[nativeError] }} <code>({{ nativeError }})</code>
+    </p>
+    <section v-if="status.supported || nativeError" class="settings-card push-diagnostics" data-test="push-diagnostics">
+      <h2>{{ copy.diagnostics.title }}</h2>
+      <p>{{ copy.diagnostics.help }}</p>
+      <dl>
+        <dt>{{ copy.diagnostics.supported }}</dt
+        ><dd>{{ status.supported === true ? copy.yes : copy.no }}</dd> <dt>{{ copy.diagnostics.configured }}</dt
+        ><dd>{{ status.configured === true ? copy.yes : copy.no }}</dd> <dt>{{ copy.diagnostics.session }}</dt
+        ><dd>{{ user.token && user.info.id ? copy.yes : copy.no }}</dd> <dt>{{ copy.diagnostics.permission }}</dt
+        ><dd>{{ permission }}</dd>
+        <dt>{{ copy.diagnostics.nativeRegistered }}</dt>
+        <dd data-test="push-native-registered">{{ status.registered === true ? copy.yes : copy.no }}</dd>
+        <dt>{{ copy.diagnostics.serverRegistered }}</dt>
+        <dd data-test="push-server-registered">{{ devicesLoaded ? (serverRegistered ? copy.yes : copy.no) : copy.unknown }}</dd>
+      </dl>
     </section>
     <p v-if="error" role="alert">{{ error }}</p
     ><p v-if="message" role="status">{{ message }}</p>
@@ -33,7 +47,8 @@
     </section>
     <section class="settings-card">
       <h2>{{ copy.devices }}</h2
-      ><p v-if="!devices.length">{{ copy.none }}</p>
+      ><p v-if="!devicesLoaded">{{ copy.devicesUnavailable }}</p
+      ><p v-else-if="!devices.length">{{ copy.none }}</p>
       <div v-for="device in devices" :key="device.installationId" class="device-row"
         ><span
           >{{ device.platform }} · {{ device.appVersion }}
@@ -74,10 +89,28 @@
   const user = useUserStore();
   const setting = ref<PushSettings | null>(null);
   const devices = ref<PushDevice[]>([]);
+  const devicesLoaded = ref(false);
   const status = ref({ ...unsupportedPush });
-  const registered = computed(
+  const permission = computed(() => {
+    const value = status.value.permission;
+    return ['authorized', 'provisional', 'denied', 'notDetermined'].includes(value) ? value : 'unavailable';
+  });
+  // Only known codes and scalar status fields are rendered. Never dump bridge
+  // payloads, exception messages, credentials, or provider tokens into the page.
+  const nativeError = computed(() => {
+    const value = status.value.error;
+    if (!value) return null;
+    return Object.prototype.hasOwnProperty.call(copy.value.errors, value) ? (value as keyof typeof copy.value.errors) : 'unknown_error';
+  });
+  const serverRegistered = computed(
+    () => devicesLoaded.value && devices.value.some((device) => device.installationId === status.value.installationId && device.enabled),
+  );
+  const registered = computed(() => status.value.registered && serverRegistered.value);
+  const canEnableDevice = computed(
     () =>
-      status.value.registered && devices.value.some((device) => device.installationId === status.value.installationId && device.enabled),
+      permission.value === 'notDetermined' ||
+      (['authorized', 'provisional'].includes(permission.value) &&
+        (!status.value.registered || (devicesLoaded.value && !serverRegistered.value))),
   );
   const busy = ref(false);
   const error = ref('');
@@ -115,30 +148,47 @@
         timezone: displayTimeZone(),
       });
   }
+  async function loadDevices() {
+    devicesLoaded.value = false;
+    devices.value = [];
+    devices.value = await getPushDevices();
+    devicesLoaded.value = true;
+  }
   function load() {
     return run(async () => {
-      const [prefs, native] = await Promise.all([getPushSettings(), pushGetStatus()]);
-      setting.value = prefs;
-      status.value = native;
-      if (native.supported) await sync();
+      devicesLoaded.value = false;
+      devices.value = [];
+      const [prefs, native] = await Promise.allSettled([getPushSettings(), pushGetStatus()]);
+      status.value = native.status === 'fulfilled' ? native.value : { ...unsupportedPush, error: 'bridge_unavailable' };
+      if (prefs.status === 'fulfilled') setting.value = prefs.value;
+      if (status.value.supported) await sync();
+      if (prefs.status === 'rejected') throw new Error();
       // Read after synchronization; the server may retain a remote-revocation tombstone.
-      devices.value = await getPushDevices();
+      await loadDevices();
     });
   }
   function save() {
     return run(async () => {
       if (!setting.value) return;
-      const { available: _available, deviceCount: _deviceCount, ...preferences } = setting.value;
-      setting.value = await savePushSettings({ ...preferences, locale: pushLocale(locale.value), timezone: displayTimeZone() });
+      setting.value = await savePushSettings({
+        enabled: setting.value.enabled,
+        tradeSucceeded: setting.value.tradeSucceeded,
+        tradeFailed: setting.value.tradeFailed,
+        planAlerts: setting.value.planAlerts,
+        systemAlerts: setting.value.systemAlerts,
+        soundEnabled: setting.value.soundEnabled,
+        locale: pushLocale(locale.value),
+        timezone: displayTimeZone(),
+      });
       message.value = copy.value.saved;
     });
   }
   function requestPermission() {
     return run(async () => {
       status.value = await pushRequestPermission();
-      if (status.value.error) throw new Error();
+      if (status.value.error) return;
       await sync();
-      devices.value = await getPushDevices();
+      await loadDevices();
     });
   }
   function openSettings() {
@@ -161,7 +211,7 @@
         await pushClearSession({ revokeDevice: true });
         status.value = await pushGetStatus();
       }
-      devices.value = await getPushDevices();
+      await loadDevices();
       message.value = copy.value.removed;
     });
   }
@@ -172,43 +222,76 @@
     padding: 1.25rem;
     color: #333;
   }
+
   h1 {
     margin: 0;
     font-size: 1.625rem;
     color: #101010;
   }
+
   h2 {
     font-size: 1.125rem;
   }
+
   p {
-    color: #666;
     font-size: 0.9375rem;
     line-height: 1.5;
+    color: #666;
   }
+
   .settings-card {
     margin: 1.5rem 0;
   }
+
+  .push-diagnostics {
+    padding: 1rem;
+    overflow-wrap: anywhere;
+    background: #fafafa;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.75rem;
+  }
+
+  .push-diagnostics dl {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .push-diagnostics dd {
+    margin: 0;
+    text-align: right;
+  }
+
+  code {
+    overflow-wrap: anywhere;
+  }
+
   .enabled-row,
   .device-row {
     display: flex;
+    gap: 1rem;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
     padding: 0.75rem 0;
   }
+
   .device-row span {
     overflow-wrap: anywhere;
   }
+
   input {
     width: 1.25rem;
     height: 1.25rem;
     accent-color: #101010;
   }
+
   .actions {
     display: grid;
     gap: 0.75rem;
     margin-top: 1.5rem;
   }
+
   [role='alert'] {
     color: #b42318;
   }
