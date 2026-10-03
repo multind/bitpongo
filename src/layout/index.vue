@@ -27,6 +27,7 @@
     // { key: 'home', icon: Home },
     { key: 'list', icon: Horizontal },
     { key: 'market', icon: Home },
+    { key: 'alerts', icon: Horizontal },
     { key: 'member', icon: My },
   ];
 

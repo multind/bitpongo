@@ -1,0 +1,88 @@
+.alerts-page {
+  padding: 12px 0;
+}
+
+.alert-card {
+  padding: 16px;
+  margin-bottom: 14px;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.actions,
+.rule-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.rule-heading a {
+  flex: 1;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.pill,
+button {
+  box-sizing: border-box;
+  display: inline-block;
+  min-height: 40px;
+  padding: 8px 14px;
+  font: inherit;
+  color: #333;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+}
+
+button:disabled {
+  opacity: 0.6;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filters input {
+  flex: 1;
+  min-width: 120px;
+}
+
+input:not([type='checkbox']),
+select,
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  font: inherit;
+  color: #333;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.filters select {
+  width: auto;
+}
+
+label {
+  display: block;
+  margin: 12px 0 8px;
+}
+
+.meta {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #777;
+}
+
+[role='alert'] {
+  color: #dc2626;
+}

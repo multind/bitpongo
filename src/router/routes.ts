@@ -4,6 +4,10 @@ export const routes = [
     redirect: '/list',
     component: () => import('@/layout/index.vue'),
     children: [
+      { path: 'alerts', component: () => import('@/views/alerts/index.vue'), meta: { title: 'tabbar.alerts', border: true } },
+      { path: 'alerts/create', component: () => import('@/views/alerts/create.vue'), meta: { title: 'alerts.create', border: true } },
+      { path: 'alerts/events', component: () => import('@/views/alerts/events.vue'), meta: { title: 'alerts.inbox', border: true } },
+      { path: 'alerts/:id', component: () => import('@/views/alerts/details.vue'), meta: { title: 'tabbar.alerts', border: true } },
       {
         path: 'market',
         name: 'market',

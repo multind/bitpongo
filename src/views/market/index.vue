@@ -41,6 +41,7 @@
       </template>
       <p v-else>{{ t('market.empty') }}</p>
       <p class="market-meta">{{ t('market.source') }}</p>
+      <RouterLink :to="{ path: '/alerts/create', query: { symbol } }">{{ t('alerts.create') }}</RouterLink>
     </section>
   </main>
 </template>
