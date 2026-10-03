@@ -17,7 +17,7 @@
   import { useI18n } from 'vue-i18n'; // 添加这行
   import { useRouter } from 'vue-router';
   // import { Home, Horizontal, My } from '@nutui/icons-vue';
-  import { Horizontal, My } from '@nutui/icons-vue';
+  import { Home, Horizontal, My } from '@nutui/icons-vue';
 
   defineOptions({
     name: 'BasicLayoutPage',
@@ -26,6 +26,7 @@
   const tabItem = [
     // { key: 'home', icon: Home },
     { key: 'list', icon: Horizontal },
+    { key: 'market', icon: Home },
     { key: 'member', icon: My },
   ];
 
@@ -49,17 +50,8 @@
   );
 
   const tabSwitch = (_item: any, index: number) => {
-    switch (index) {
-      // case 0:
-      //   router.push('/home');
-      //   break;
-      case 0:
-        router.push('/list');
-        break;
-      case 1:
-        router.push('/member');
-        break;
-    }
+    const tab = tabItem[index];
+    if (tab) router.push(`/${tab.key}`);
     activeTab.value = index;
   };
 

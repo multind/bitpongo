@@ -3,9 +3,25 @@ import type { langType } from './lang-base';
 export const lang: langType = {
   title: 'Bitpongo',
   tabbar: {
+    market: '行情',
     home: '首页',
     list: '列表',
     member: '我的',
+  },
+  market: {
+    search: '搜索币种',
+    searchHint: 'BTC、ETH…',
+    pair: '交易对',
+    volume: '24 小时成交额',
+    updated: '更新时间',
+    refresh: '刷新',
+    interval: '时间周期',
+    candles: 'K 线图',
+    close: '收盘价',
+    source: 'Binance 现货行情 · 每 30 秒刷新',
+    loadFailed: '行情加载失败，请重试。',
+    retry: '重试',
+    empty: '暂无行情数据',
   },
   language: {
     label: '语言',

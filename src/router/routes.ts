@@ -4,6 +4,12 @@ export const routes = [
     redirect: '/list',
     component: () => import('@/layout/index.vue'),
     children: [
+      {
+        path: 'market',
+        name: 'market',
+        component: () => import('@/views/market/index.vue'),
+        meta: { title: 'tabbar.market', border: true },
+      },
       // {
       //   path: 'home',
       //   component: () => import('@/views/home/index.vue'),

@@ -4,6 +4,22 @@ export type langType = {
     home: string;
     list: string;
     member: string;
+    market: string;
+  };
+  market: {
+    search: string;
+    searchHint: string;
+    pair: string;
+    volume: string;
+    updated: string;
+    refresh: string;
+    interval: string;
+    candles: string;
+    close: string;
+    source: string;
+    loadFailed: string;
+    retry: string;
+    empty: string;
   };
   language: {
     label: string;
