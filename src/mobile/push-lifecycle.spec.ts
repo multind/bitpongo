@@ -20,7 +20,7 @@ describe('native notification navigation', () => {
   afterEach(() => stop?.());
   const event = { eventId: 'event-1', userId: '7', planId: '12', eventType: 'TRADE_SUCCEEDED' };
   it('opens the owned inbox for price and webhook notifications', () => {
-    for (const eventType of ['PRICE_ALERT_TRIGGERED', 'WEBHOOK_TRIGGERED']) {
+    for (const eventType of ['PRICE_ALERT_TRIGGERED', 'WEBHOOK_TRIGGERED', 'STRATEGY_SIGNAL']) {
       const notice = { eventId: 'alert-event', userId: '7', eventType };
       expect(notificationDestination(notice, '7')).toEqual({ path: '/alerts/events' });
       expect(notificationDestination(notice, '8')).toBeNull();

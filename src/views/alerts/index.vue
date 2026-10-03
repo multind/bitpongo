@@ -4,6 +4,7 @@
       <RouterLink class="pill" to="/alerts/create">{{ t('alerts.create') }}</RouterLink>
       <RouterLink class="pill" to="/alerts/events">{{ t('alerts.inbox') }}</RouterLink>
       <RouterLink class="pill" to="/alerts/logs">{{ t('alerts.logs') }}</RouterLink>
+      <RouterLink class="pill" to="/alerts/subscriptions">{{ t('subscriptions.title') }}</RouterLink>
       <RouterLink class="pill" to="/alerts/webhooks">{{ t('webhook.title') }}</RouterLink>
       <button type="button" :disabled="busy" @click="load(0)">{{ t('market.refresh') }}</button>
     </div>

@@ -1,5 +1,30 @@
 export type langType = {
   title: string;
+  subscriptions: {
+    title: string;
+    dca: string;
+    dcaHint: string;
+    hint: string;
+    viewIndex: string;
+    enabled: string;
+    fear: string;
+    greed: string;
+  };
+  indicators: {
+    fearGreed: string;
+    explanation: string;
+    stale: string;
+    source: string;
+    history: string;
+    time: string;
+    value: string;
+    sentiment: string;
+    extremeFear: string;
+    fear: string;
+    neutral: string;
+    greed: string;
+    extremeGreed: string;
+  };
   webhook: {
     title: string;
     unavailable: string;

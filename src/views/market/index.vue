@@ -1,5 +1,6 @@
 <template>
   <main class="market-page">
+    <RouterLink class="market-card" to="/market/indicators">{{ t('indicators.fearGreed') }}</RouterLink>
     <section class="market-card">
       <label for="market-search">{{ t('market.search') }}</label>
       <input id="market-search" v-model="query" type="search" :placeholder="t('market.searchHint')" />

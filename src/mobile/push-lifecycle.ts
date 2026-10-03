@@ -20,7 +20,7 @@ export function notificationDestination(value: unknown, userId: string) {
     if (typeof open.planId !== 'string' || !/^[1-9]\d{0,18}$/.test(open.planId)) return null;
     return { path: '/details', query: { id: open.planId, tab: open.eventType === 'TRADE_SUCCEEDED' ? 'trades' : 'executions' } };
   }
-  if (open.eventType === 'PRICE_ALERT_TRIGGERED' || open.eventType === 'WEBHOOK_TRIGGERED') {
+  if (open.eventType === 'PRICE_ALERT_TRIGGERED' || open.eventType === 'WEBHOOK_TRIGGERED' || open.eventType === 'STRATEGY_SIGNAL') {
     return { path: '/alerts/events' };
   }
   return { path: open.eventType === 'PUSH_TEST' ? '/member/notice' : '/list' };

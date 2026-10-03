@@ -9,6 +9,11 @@ export const routes = [
       { path: 'alerts/:id/edit', component: () => import('@/views/alerts/create.vue'), meta: { title: 'alerts.edit', border: true } },
       { path: 'alerts/events', component: () => import('@/views/alerts/events.vue'), meta: { title: 'alerts.inbox', border: true } },
       { path: 'alerts/logs', component: () => import('@/views/alerts/events.vue'), meta: { title: 'alerts.logs', border: true } },
+      {
+        path: 'alerts/subscriptions',
+        component: () => import('@/views/alerts/subscriptions.vue'),
+        meta: { title: 'subscriptions.title', border: true },
+      },
       { path: 'alerts/webhooks', component: () => import('@/views/alerts/webhook.vue'), meta: { title: 'webhook.title', border: true } },
       { path: 'alerts/:id', component: () => import('@/views/alerts/details.vue'), meta: { title: 'tabbar.alerts', border: true } },
       {
@@ -16,6 +21,11 @@ export const routes = [
         name: 'market',
         component: () => import('@/views/market/index.vue'),
         meta: { title: 'tabbar.market', border: true },
+      },
+      {
+        path: 'market/indicators',
+        component: () => import('@/views/market/indicators.vue'),
+        meta: { title: 'indicators.fearGreed', border: true },
       },
       // {
       //   path: 'home',
