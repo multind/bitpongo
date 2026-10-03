@@ -4,19 +4,20 @@
     ><p v-if="loading">{{ t('common.loading') }}</p>
     <article v-if="rule" class="alert-card"
       ><h2>{{ rule.name }}</h2
+      ><RouterLink :to="`/alerts/${rule.id}/edit`">{{ t('alerts.edit') }}</RouterLink
       ><p>{{ rule.symbol }}</p
       ><p>{{ t(`alerts.conditions.${rule.condition}`) }}: {{ rule.target ?? `${rule.lower}–${rule.upper}` }}</p
       ><p>{{ t(`alerts.frequencies.${rule.frequency}`) }}</p
-      ><p>{{ t(rule.enabled ? 'alerts.active' : 'alerts.paused') }}</p
+      ><p>{{ t(expired ? 'alerts.expired' : rule.enabled ? 'alerts.active' : 'alerts.paused') }}</p
       ><p>{{ t('alerts.triggered') }}: {{ rule.triggeredCount }}</p
       ><p v-if="rule.lastTriggeredAt">{{ formatInstant(rule.lastTriggeredAt) }}</p
       ><p v-if="rule.expiresAt">{{ t('alerts.expiry') }}: {{ formatInstant(rule.expiresAt) }}</p
-      ><button :disabled="loading" @click="toggle">{{ t(rule.enabled ? 'common.pause' : 'common.resume') }}</button></article
+      ><button :disabled="loading || expired" @click="toggle">{{ t(rule.enabled ? 'common.pause' : 'common.resume') }}</button></article
     >
   </main>
 </template>
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { computed, onMounted, ref } from 'vue';
   import { useRoute } from 'vue-router';
   import { useI18n } from 'vue-i18n';
   import { getAlert, setAlertEnabled } from '@/api/alerts';
@@ -25,6 +26,7 @@
   const { t } = useI18n();
   const route = useRoute();
   const rule = ref<AlertRule>();
+  const expired = computed(() => rule.value?.expiresAt != null && Date.parse(rule.value.expiresAt) <= Date.now());
   const error = ref(false);
   const loading = ref(false);
   async function load() {

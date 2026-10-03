@@ -3,6 +3,8 @@
     <div class="actions">
       <RouterLink class="pill" to="/alerts/create">{{ t('alerts.create') }}</RouterLink>
       <RouterLink class="pill" to="/alerts/events">{{ t('alerts.inbox') }}</RouterLink>
+      <RouterLink class="pill" to="/alerts/logs">{{ t('alerts.logs') }}</RouterLink>
+      <RouterLink class="pill" to="/alerts/webhooks">{{ t('webhook.title') }}</RouterLink>
       <button type="button" :disabled="busy" @click="load(0)">{{ t('market.refresh') }}</button>
     </div>
     <form class="filters" @submit.prevent="load(0)">
@@ -19,21 +21,28 @@
     <div v-if="selected.length" class="actions">
       <button type="button" :disabled="busy" @click="bulk('enable')">{{ t('alerts.enableSelected') }}</button>
       <button type="button" :disabled="busy" @click="bulk('disable')">{{ t('alerts.pauseSelected') }}</button>
+      <button type="button" :disabled="busy" @click="removeSelected">{{ t('common.delete') }}</button>
     </div>
     <article v-for="rule in rules" :key="rule.id" class="alert-card">
       <div class="rule-heading"
         ><input v-model="selected" type="checkbox" :value="rule.id" :aria-label="rule.name" /><RouterLink :to="`/alerts/${rule.id}`">{{
           rule.name
         }}</RouterLink
-        ><span data-test="alert-status">{{ t(rule.enabled ? 'alerts.active' : 'alerts.paused') }}</span></div
+        ><span data-test="alert-status">{{
+          t(expired(rule) ? 'alerts.expired' : rule.enabled ? 'alerts.active' : 'alerts.paused')
+        }}</span></div
       >
       <p>{{ rule.symbol }} · {{ t(`alerts.conditions.${rule.condition}`) }} · {{ rule.target ?? `${rule.lower}–${rule.upper}` }}</p>
       <p class="meta">{{ t(`alerts.frequencies.${rule.frequency}`) }} · {{ t('alerts.triggered') }}: {{ rule.triggeredCount }}</p>
       <p v-if="rule.lastTriggeredAt" class="meta">{{ formatInstant(rule.lastTriggeredAt) }}</p>
       <div class="actions">
-        <button type="button" data-test="alert-toggle" :disabled="busy" @click="run(() => setAlertEnabled(rule.id, !rule.enabled))">{{
-          t(rule.enabled ? 'common.pause' : 'common.resume')
-        }}</button>
+        <button
+          type="button"
+          data-test="alert-toggle"
+          :disabled="busy || expired(rule)"
+          @click="run(() => setAlertEnabled(rule.id, !rule.enabled))"
+          >{{ t(rule.enabled ? 'common.pause' : 'common.resume') }}</button
+        >
         <button type="button" :disabled="busy" @click="run(() => copyAlert(rule.id))">{{ t('alerts.copy') }}</button>
         <button type="button" :disabled="busy" @click="remove(rule.id)">{{ t('common.delete') }}</button>
       </div>
@@ -53,6 +62,7 @@
   import type { AlertRule } from '@/api/alerts';
   import { formatInstant } from '@/utils/timeUtils';
   const { t } = useI18n();
+  const expired = (rule: AlertRule) => rule.expiresAt != null && Date.parse(rule.expiresAt) <= Date.now();
   const rules = ref<AlertRule[]>([]);
   const selected = ref<number[]>([]);
   const busy = ref(false);
@@ -98,6 +108,9 @@
   }
   function bulk(action: string) {
     void run(() => bulkAlerts([...selected.value], action));
+  }
+  function removeSelected() {
+    showDialog({ title: t('common.delete'), content: t('alerts.deleteConfirm'), onOk: () => bulk('delete') });
   }
   onMounted(() => load(0));
   onUnmounted(() => generation++);

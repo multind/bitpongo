@@ -45,6 +45,18 @@ async function mountList() {
   return w;
 }
 describe('alert management', () => {
+  it('shows an expired rule as expired and disables resuming it', async () => {
+    vi.mocked(listAlerts).mockResolvedValue({
+      items: [{ ...rule, expiresAt: '2000-01-01T00:00:00Z' }],
+      total: 1,
+      page: 0,
+      size: 20,
+      hasMore: false,
+    });
+    const w = await mountList();
+    expect(w.get('[data-test="alert-status"]').text()).toBe('Expired');
+    expect(w.get('[data-test="alert-toggle"]').attributes('disabled')).toBeDefined();
+  });
   it('updates pause status after the server succeeds', async () => {
     vi.mocked(listAlerts)
       .mockResolvedValueOnce({ items: [rule], total: 1, page: 0, size: 20, hasMore: false })

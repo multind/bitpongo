@@ -43,6 +43,9 @@ export function listAlerts(params: { q?: string; status?: string; page?: number;
 export function createAlert(data: AlertCreate) {
   return http.post<number>('/alerts', data);
 }
+export function updateAlert(id: number, data: AlertCreate) {
+  return http.put<void>(`/alerts/${id}`, data);
+}
 export function getAlert(id: number) {
   return http.get<AlertRule>(`/alerts/${id}`);
 }
@@ -72,4 +75,13 @@ export function deleteAlertEvent(id: number) {
 }
 export function clearAlertEvents() {
   return http.delete<void>('/alerts/events');
+}
+export function listAlertLogs(params: { page?: number; size?: number }) {
+  return http.get<AlertPage<AlertEvent>>('/alerts/logs', { params });
+}
+export function deleteAlertLog(id: number) {
+  return http.delete<void>(`/alerts/logs/${id}`);
+}
+export function clearAlertLogs() {
+  return http.delete<void>('/alerts/logs');
 }

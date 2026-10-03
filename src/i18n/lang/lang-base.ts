@@ -1,5 +1,23 @@
 export type langType = {
   title: string;
+  webhook: {
+    title: string;
+    unavailable: string;
+    description: string;
+    keywords: string;
+    ips: string;
+    hint: string;
+    credentials: string;
+    secretHint: string;
+    url: string;
+    signingKey: string;
+    signatureHint: string;
+    activate: string;
+    revoke: string;
+    rotateHint: string;
+    revokeHint: string;
+    status: Record<'DRAFT' | 'ACTIVE' | 'REVOKED', string>;
+  };
   tabbar: {
     home: string;
     list: string;
@@ -8,8 +26,12 @@ export type langType = {
     alerts: string;
   };
   alerts: {
+    edit: string;
+    expired: string;
     create: string;
     inbox: string;
+    logs: string;
+    noLogs: string;
     name: string;
     condition: string;
     target: string;

@@ -32,7 +32,9 @@
       <label for="alert-expiry">{{ t('alerts.expiry') }}</label
       ><input id="alert-expiry" v-model="expiry" type="datetime-local" /> <p class="meta">{{ t('alerts.expiryHint') }}</p
       ><p class="meta">{{ t('alerts.notificationHint') }}</p> <p v-if="error" role="alert">{{ t(error) }}</p
-      ><button type="submit" :disabled="busy || !symbols.length">{{ busy ? t('common.loading') : t('common.create') }}</button>
+      ><button type="submit" :disabled="busy || !symbols.length">{{
+        busy ? t('common.loading') : t(editId ? 'common.save' : 'common.create')
+      }}</button>
     </form></main
   >
 </template>
@@ -40,13 +42,14 @@
   import { onMounted, reactive, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useRoute, useRouter } from 'vue-router';
-  import { createAlert } from '@/api/alerts';
+  import { createAlert, getAlert, updateAlert } from '@/api/alerts';
   import type { AlertCreate } from '@/api/alerts';
   import { getMarketSymbols } from '@/api/market';
   import type { MarketSymbol } from '@/api/market';
   const { t } = useI18n();
   const router = useRouter();
   const route = useRoute();
+  const editId = Number(route.params.id) || null;
   const form = reactive<AlertCreate>({
     name: '',
     symbol: typeof route.query.symbol === 'string' ? route.query.symbol : 'BTCUSDT',
@@ -85,14 +88,16 @@
     busy.value = true;
     error.value = '';
     try {
-      await createAlert({
+      const data = {
         ...form,
         target: form.condition === 'CHANNEL_OUTSIDE' ? null : form.target,
         lower: form.condition === 'CHANNEL_OUTSIDE' ? form.lower : null,
         upper: form.condition === 'CHANNEL_OUTSIDE' ? form.upper : null,
         expiresAt: expiration?.toISOString() ?? null,
-      });
-      await router.replace('/alerts');
+      };
+      if (editId) await updateAlert(editId, data);
+      else await createAlert(data);
+      await router.replace(editId ? `/alerts/${editId}` : '/alerts');
     } catch {
       error.value = 'alerts.failed';
     } finally {
@@ -102,6 +107,18 @@
   onMounted(async () => {
     try {
       symbols.value = await getMarketSymbols();
+      if (editId) {
+        const existing = await getAlert(editId);
+        Object.assign(form, existing, {
+          target: existing.target == null ? '' : String(existing.target),
+          lower: existing.lower == null ? '' : String(existing.lower),
+          upper: existing.upper == null ? '' : String(existing.upper),
+        });
+        if (existing.expiresAt) {
+          const local = new Date(existing.expiresAt);
+          expiry.value = new Date(local.getTime() - local.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+        }
+      }
     } catch {
       error.value = 'alerts.failed';
     }
