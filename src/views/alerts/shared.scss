@@ -1,21 +1,21 @@
 .alerts-page {
-  padding: 12px 0;
+  padding: 0.75rem 0;
 }
 
 .alert-card {
-  padding: 16px;
-  margin-bottom: 14px;
+  padding: 1rem;
+  margin-bottom: 0.875rem;
   background: #fff;
-  border-radius: 12px;
+  border-radius: 0.75rem;
 }
 
 .actions,
 .rule-heading {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
 }
 
 .rule-heading a {
@@ -28,14 +28,14 @@
 button {
   box-sizing: border-box;
   display: inline-block;
-  min-height: 40px;
-  padding: 8px 14px;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.875rem;
   font: inherit;
   color: #333;
   text-decoration: none;
   background: #fff;
   border: 1px solid #ddd;
-  border-radius: 20px;
+  border-radius: 1.25rem;
 }
 
 button:disabled {
@@ -45,13 +45,13 @@ button:disabled {
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .filters input {
   flex: 1;
-  min-width: 120px;
+  min-width: 7.5rem;
 }
 
 input:not([type='checkbox']),
@@ -59,13 +59,13 @@ select,
 textarea {
   box-sizing: border-box;
   width: 100%;
-  min-height: 44px;
-  padding: 8px 12px;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
   font: inherit;
   color: #333;
   background: #fff;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 
 .filters select {
@@ -74,11 +74,11 @@ textarea {
 
 label {
   display: block;
-  margin: 12px 0 8px;
+  margin: 0.75rem 0 0.5rem;
 }
 
 .meta {
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
   color: #777;
 }

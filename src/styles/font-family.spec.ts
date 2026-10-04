@@ -20,6 +20,9 @@ type FontStyles = {
 };
 
 type RuntimeStyles = FontStyles & {
+  alertInputHeight: number;
+  alertButtonHeight: number;
+  alertMetaFontSize: number;
   pageBackgroundVariable: string;
   htmlBackground: string;
   bodyBackground: string;
@@ -215,15 +218,20 @@ async function loadCompiledFontStylesInChrome() {
 
             return `
             import '/src/main.ts';
+            import '/src/views/alerts/shared.scss';
 
             const fixture = document.createElement('div');
             fixture.innerHTML = \
               '<style>.background-contract-card{background:#fff}.background-contract-error{background:#fde3e3}</style><main data-test="font-root"><p data-test="plain"><span data-test="nested">Normal text</span></p><input data-test="input" value="Input text" /><button data-test="button">Button text</button><textarea data-test="textarea">Textarea text</textarea><select data-test="select"><option>Select text</option></select><i class="iconfont" data-test="icon">&#xe600;</i><div class="nut-toast" data-test="toast">Toast text</div><section class="main-page" data-test="page"></section><header class="nut-navbar" data-test="navbar"></header><footer class="nut-tabbar" data-test="tabbar"></footer><article class="background-contract-card" data-test="card"></article><aside class="background-contract-error" data-test="error"></aside></main>';
             document.body.append(fixture);
+            fixture.insertAdjacentHTML('beforeend', '<section class="alerts-page"><form class="alert-card"><input data-test="alert-input" /><button data-test="alert-button">Save</button><p class="meta" data-test="alert-meta">Field help</p></form></section>');
 
             const fontFamily = (selector) => getComputedStyle(fixture.querySelector(selector)).fontFamily;
             const backgroundColor = (selector) => getComputedStyle(document.querySelector(selector)).backgroundColor;
             document.body.dataset.fontResults = JSON.stringify({
+              alertInputHeight: fixture.querySelector('[data-test=alert-input]').getBoundingClientRect().height,
+              alertButtonHeight: fixture.querySelector('[data-test=alert-button]').getBoundingClientRect().height,
+              alertMetaFontSize: parseFloat(getComputedStyle(fixture.querySelector('[data-test=alert-meta]')).fontSize),
               root: fontFamily('[data-test=font-root]'),
               plain: fontFamily('[data-test=plain]'),
               nested: fontFamily('[data-test=nested]'),
@@ -263,6 +271,7 @@ async function loadCompiledFontStylesInChrome() {
     const page = `http://127.0.0.1:${address.port}/__font-family-runtime.html`;
     const chrome = spawn(chromeExecutable, [
       '--headless=new',
+      '--window-size=500,844',
       '--disable-gpu',
       '--no-first-run',
       '--no-default-browser-check',
@@ -343,6 +352,14 @@ describe('global page background', () => {
   it('does not override functional card and error backgrounds', () => {
     expect(runtimeFontStyles.cardBackground).toBe('rgb(255, 255, 255)');
     expect(runtimeFontStyles.errorBackground).toBe('rgb(253, 227, 227)');
+  });
+});
+
+describe('migrated form sizing', () => {
+  it('keeps form touch targets and helper text readable after the project viewport conversion', () => {
+    expect(runtimeFontStyles.alertInputHeight).toBeGreaterThanOrEqual(44);
+    expect(runtimeFontStyles.alertButtonHeight).toBeGreaterThanOrEqual(40);
+    expect(runtimeFontStyles.alertMetaFontSize).toBeGreaterThanOrEqual(12);
   });
 });
 

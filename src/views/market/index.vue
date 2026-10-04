@@ -122,20 +122,20 @@
 </script>
 <style scoped lang="scss">
   .market-page {
-    padding: 12px 0;
+    padding: 0.75rem 0;
   }
 
   .market-card {
-    padding: 16px;
-    margin-bottom: 14px;
+    padding: 1rem;
+    margin-bottom: 0.875rem;
     background: #fff;
-    border-radius: 12px;
+    border-radius: 0.75rem;
   }
 
   label {
     display: block;
-    margin: 8px 0;
-    font-size: 14px;
+    margin: 0.5rem 0;
+    font-size: 0.875rem;
     color: #666;
   }
 
@@ -143,23 +143,23 @@
   select {
     box-sizing: border-box;
     width: 100%;
-    min-height: 44px;
-    padding: 8px 12px;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
     font: inherit;
     color: #333;
     background: #fafafa;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 0.5rem;
   }
 
   button {
-    min-height: 40px;
-    padding: 8px 14px;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.875rem;
     font: inherit;
     color: #333;
     background: #fff;
     border: 1px solid #ddd;
-    border-radius: 20px;
+    border-radius: 1.25rem;
   }
 
   button:disabled {
@@ -169,18 +169,18 @@
   .ticker-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 0.5rem;
     align-items: center;
     justify-content: space-between;
-    margin-top: 20px;
+    margin-top: 1.25rem;
   }
 
   strong {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 
   small {
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: normal;
   }
 
@@ -201,7 +201,7 @@
   }
 
   .market-meta {
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.5;
     color: #777;
   }
@@ -209,7 +209,7 @@
   .intervals {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 0.375rem;
   }
 
   .selected {
