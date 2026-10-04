@@ -2,6 +2,28 @@ import type { langType } from './lang-base';
 
 export const lang: langType = {
   title: 'Bitpongo',
+  release: {
+    check: 'Check for App updates',
+    appOnly: 'Open this page in the Bitpongo App to check its version.',
+    failed: 'Unable to check for updates. Please retry.',
+    unavailable: 'App release information is not configured.',
+    update: 'Update available: {version}',
+    current: 'No newer release found (published: {version}).',
+    store: 'Open App store',
+  },
+  content: {
+    help: 'Help center',
+    articles: 'Articles',
+    article: 'Article',
+    search: 'Search',
+    history: 'Search history',
+    empty: 'No matching articles',
+    more: 'Load more',
+    remove: 'Remove',
+    clear: 'Clear history',
+    loadFailed: 'Unable to load content. Please retry.',
+    historyFailed: 'Unable to update search history. Please retry.',
+  },
   profile: {
     title: 'Profile & preferences',
     name: 'Nickname',

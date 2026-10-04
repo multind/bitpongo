@@ -2,6 +2,28 @@ import type { langType } from './lang-base';
 
 export const lang: langType = {
   title: 'Bitpongo',
+  release: {
+    check: '检查 App 更新',
+    appOnly: '请在 Bitpongo App 内检查应用版本。',
+    failed: '检查更新失败，请重试。',
+    unavailable: '尚未配置 App 发布版本。',
+    update: '可更新至 {version}',
+    current: '未发现更新版本（已发布：{version}）。',
+    store: '打开应用商店',
+  },
+  content: {
+    help: '帮助中心',
+    articles: '文章',
+    article: '文章详情',
+    search: '搜索',
+    history: '搜索历史',
+    empty: '没有匹配的文章',
+    more: '加载更多',
+    remove: '删除',
+    clear: '清空历史',
+    loadFailed: '内容加载失败，请重试。',
+    historyFailed: '搜索历史更新失败，请重试。',
+  },
   profile: {
     title: '资料与偏好',
     name: '昵称',

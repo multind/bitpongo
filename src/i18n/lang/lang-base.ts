@@ -1,5 +1,19 @@
 export type langType = {
   title: string;
+  release: { check: string; appOnly: string; failed: string; unavailable: string; update: string; current: string; store: string };
+  content: {
+    help: string;
+    articles: string;
+    article: string;
+    search: string;
+    history: string;
+    empty: string;
+    more: string;
+    remove: string;
+    clear: string;
+    loadFailed: string;
+    historyFailed: string;
+  };
   profile: {
     title: string;
     name: string;

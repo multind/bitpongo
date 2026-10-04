@@ -16,6 +16,9 @@
       <nut-cell :title="t('profile.title')" is-link @click="router.push('/member/profile')">
         <template #icon><Setting /></template>
       </nut-cell>
+      <nut-cell :title="t('content.help')" is-link @click="router.push('/help')"
+        ><template #icon><Issue /></template
+      ></nut-cell>
       <nut-cell :title="`&nbsp;${t('member.exchangeInfo')}`" is-link @click="goExchangeInfo">
         <template #icon>
           <Link />

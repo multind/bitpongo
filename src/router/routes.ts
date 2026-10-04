@@ -4,6 +4,14 @@ export const routes = [
     redirect: '/list',
     component: () => import('@/layout/index.vue'),
     children: [
+      { path: 'help', component: () => import('@/views/help/index.vue'), meta: { title: 'content.help', border: true } },
+      {
+        path: 'articles',
+        component: () => import('@/views/help/index.vue'),
+        props: { kind: 'ARTICLE' },
+        meta: { title: 'content.articles', border: true },
+      },
+      { path: 'articles/:slug', component: () => import('@/views/articles/details.vue'), meta: { title: 'content.article', border: true } },
       { path: 'alerts', component: () => import('@/views/alerts/index.vue'), meta: { title: 'tabbar.alerts', border: true } },
       { path: 'alerts/create', component: () => import('@/views/alerts/create.vue'), meta: { title: 'alerts.create', border: true } },
       { path: 'alerts/:id/edit', component: () => import('@/views/alerts/create.vue'), meta: { title: 'alerts.edit', border: true } },

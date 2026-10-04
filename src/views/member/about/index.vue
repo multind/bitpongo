@@ -24,6 +24,7 @@
   </nut-row>
 
   <nut-cell-group>
+    <RouterLink class="about-source" to="/help"><nut-cell :title="t('content.help')" is-link /></RouterLink>
     <nut-cell :title="t('about.developer')" sub-title="Designed with ❤ by iMastermind.io"></nut-cell>
     <nut-cell :title="t('about.contact')" sub-title="https://iMastermind.io"></nut-cell>
     <a class="about-source" data-test="about-privacy" href="/privacy">
@@ -34,10 +35,12 @@
     </a>
     <nut-cell :title="t('about.copyright')" sub-title="Copyright © 2026 Bitpongo."></nut-cell>
   </nut-cell-group>
+  <AppVersionCheck />
 </template>
 
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n';
+  import AppVersionCheck from './AppVersionCheck.vue';
 
   const { t } = useI18n();
   const appVersion = __APP_VERSION__;
