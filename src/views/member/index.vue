@@ -6,12 +6,16 @@
       </nut-avatar>
       <div class="member-detail">
         <div class="nickname">
-          <span> {{ getUserInfo }} </span>
+          <span> {{ userStore.info.name || getUserInfo }} </span>
         </div>
+        <p v-if="userStore.info.name" class="member-email">{{ getUserInfo }}</p>
         <div class="info"> {{ t('member.slogan') }} </div>
       </div>
     </div>
     <nut-cell-group>
+      <nut-cell :title="t('profile.title')" is-link @click="router.push('/member/profile')">
+        <template #icon><Setting /></template>
+      </nut-cell>
       <nut-cell :title="`&nbsp;${t('member.exchangeInfo')}`" is-link @click="goExchangeInfo">
         <template #icon>
           <Link />
@@ -115,8 +119,7 @@
   const languagePopup = ref(false);
 
   const getUserInfo = computed(() => {
-    const { email = '', name = '' } = userStore.getUserInfo || {};
-    console.log('getUserInfo', email, name);
+    const { email = '' } = userStore.getUserInfo || {};
     return email.replace(/(.{2}).*(@.*)/, '$1***$2');
   });
   const guestFeatures = computed(() => [

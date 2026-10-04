@@ -2,6 +2,16 @@ import type { langType } from './lang-base';
 
 export const lang: langType = {
   title: 'Bitpongo',
+  profile: {
+    title: '资料与偏好',
+    name: '昵称',
+    country: '国家/地区（可选）',
+    countryHint: '填写两位地区代码，例如 HK 或 SG。此设置不影响交易所服务可用性。',
+    introduction: '简介',
+    color: '涨跌颜色',
+    greenUp: '绿涨红跌',
+    redUp: '红涨绿跌',
+  },
   tabbar: {
     alerts: '提醒',
     market: '行情',

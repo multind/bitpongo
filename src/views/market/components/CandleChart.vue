@@ -5,12 +5,7 @@
         <line x1="8" :y1="20 + i * 60" x2="550" :y2="20 + i * 60" stroke="#e5e7eb" />
         <text x="556" :y="24 + i * 60" fill="#666" font-size="12">{{ number(price) }}</text>
       </g>
-      <g
-        v-for="(candle, i) in visible"
-        :key="candle.openTime"
-        data-test="candle"
-        :stroke="Number(candle.close) >= Number(candle.open) ? '#16a34a' : '#dc2626'"
-      >
+      <g v-for="(candle, i) in visible" :key="candle.openTime" data-test="candle" :stroke="color(candle)">
         <title>
           {{ formatInstant(new Date(candle.openTime).toISOString()) }} · {{ candle.open }} / {{ candle.high }} / {{ candle.low }} /
           {{ candle.close }}
@@ -21,7 +16,7 @@
           :y="Math.min(y(Number(candle.open)), y(Number(candle.close)))"
           :width="width"
           :height="Math.max(1, Math.abs(y(Number(candle.open)) - y(Number(candle.close))))"
-          :fill="Number(candle.close) >= Number(candle.open) ? '#16a34a' : '#dc2626'"
+          :fill="color(candle)"
         />
       </g>
       <text v-if="visible[0]" x="8" y="300" fill="#666" font-size="12">
@@ -37,7 +32,9 @@
   import { computed } from 'vue';
   import type { MarketCandle } from '@/api/market';
   import { formatInstant } from '@/utils/timeUtils';
-  const props = defineProps<{ candles: MarketCandle[]; label: string }>();
+  const props = defineProps<{ candles: MarketCandle[]; label: string; colorMode?: 'GREEN_UP' | 'RED_UP' }>();
+  const color = (candle: MarketCandle) =>
+    Number(candle.close) >= Number(candle.open) === (props.colorMode !== 'RED_UP') ? '#16a34a' : '#dc2626';
   const visible = computed(() => props.candles.slice(-80));
   const range = computed(() => {
     const low = Math.min(...visible.value.map((c) => Number(c.low)));

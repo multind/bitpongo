@@ -1,11 +1,13 @@
 import { http } from '@/utils/request';
 import type { CheckExchangeData, CreateExchangeData, Exchange } from '@/views/list/types/exchange.ts';
 import type { Strategy } from '@/views/list/types/strategy.ts';
+import type { MarketColorMode } from './profile';
 
 export interface UserInfo {
   id: number;
   name: string;
   email: string;
+  upDownColor?: MarketColorMode;
 }
 
 export interface AuthSession {

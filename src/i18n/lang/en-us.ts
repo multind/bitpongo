@@ -2,6 +2,16 @@ import type { langType } from './lang-base';
 
 export const lang: langType = {
   title: 'Bitpongo',
+  profile: {
+    title: 'Profile & preferences',
+    name: 'Nickname',
+    country: 'Country / region (optional)',
+    countryHint: 'Two-letter country code, e.g. HK or SG. This does not change exchange availability.',
+    introduction: 'Introduction',
+    color: 'Market colors',
+    greenUp: 'Green up, red down',
+    redUp: 'Red up, green down',
+  },
   tabbar: {
     alerts: 'Alerts',
     home: 'Home',

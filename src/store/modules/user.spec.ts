@@ -5,6 +5,7 @@ import * as api from '@/api';
 import { useUserStore } from './user';
 
 const timezoneMocks = vi.hoisted(() => ({ initialize: vi.fn(), reset: vi.fn() }));
+vi.mock('@/api/profile', () => ({ getUserProfile: vi.fn().mockRejectedValue(new Error('unconfigured')) }));
 
 vi.mock('@/mobile/session-timezone', () => ({
   initializeSessionTimeZone: timezoneMocks.initialize,

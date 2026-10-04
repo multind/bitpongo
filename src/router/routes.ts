@@ -97,6 +97,11 @@ export const routes = [
         },
       },
       {
+        path: '/member/profile',
+        component: () => import('@/views/member/profile/index.vue'),
+        meta: { title: 'profile.title', border: true },
+      },
+      {
         name: 'memberAccount',
         path: '/member/account',
         component: () => import('@/views/member/account/index.vue'),

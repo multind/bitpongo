@@ -2,6 +2,7 @@ import { mount, flushPromises } from '@vue/test-utils';
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import { i18n } from '@/i18n';
 import MarketView from './index.vue';
+import { createPinia } from 'pinia';
 import { getMarketCandles, getMarketSymbols, getMarketTickers } from '@/api/market';
 
 vi.mock('@/api/market', () => ({ getMarketCandles: vi.fn(), getMarketSymbols: vi.fn(), getMarketTickers: vi.fn() }));
@@ -24,7 +25,7 @@ function createView() {
   vi.mocked(getMarketTickers).mockResolvedValue([
     { symbol: 'BTCUSDT', lastPrice: '60500', changePercent: '2', volume: '10', updatedAt: '2026-10-03T00:00:00Z' },
   ]);
-  const wrapper = mount(MarketView, { global: { plugins: [i18n] } });
+  const wrapper = mount(MarketView, { global: { plugins: [i18n, createPinia()] } });
   wrappers.push(wrapper);
   return wrapper;
 }

@@ -1,5 +1,5 @@
 <template>
-  <main class="market-page">
+  <main class="market-page" :class="{ 'red-up': colorMode === 'RED_UP' }">
     <RouterLink class="market-card" to="/market/indicators">{{ t('indicators.fearGreed') }}</RouterLink>
     <section class="market-card">
       <label for="market-search">{{ t('market.search') }}</label>
@@ -38,7 +38,7 @@
       </div>
       <template v-else-if="candles.length">
         <p data-test="chart-summary">{{ symbol }} · {{ t('market.close') }} {{ number(candles.at(-1)!.close) }}</p>
-        <CandleChart :candles="candles" :label="`${symbol} ${interval} ${t('market.candles')}`" />
+        <CandleChart :candles="candles" :color-mode="colorMode" :label="`${symbol} ${interval} ${t('market.candles')}`" />
       </template>
       <p v-else>{{ t('market.empty') }}</p>
       <p class="market-meta">{{ t('market.source') }}</p>
@@ -53,6 +53,9 @@
   import type { MarketSymbol, MarketTicker, MarketCandle } from '@/api/market';
   import { formatInstant } from '@/utils/timeUtils';
   import CandleChart from './components/CandleChart.vue';
+  import { useUserStore } from '@/store/modules/user';
+  const user = useUserStore();
+  const colorMode = computed(() => user.info.upDownColor || 'GREEN_UP');
   const { t } = useI18n();
   const query = ref('');
   const symbol = ref('BTCUSDT');
@@ -187,6 +190,14 @@
 
   .negative {
     color: #dc2626;
+  }
+
+  .red-up .positive {
+    color: #dc2626;
+  }
+
+  .red-up .negative {
+    color: #16a34a;
   }
 
   .market-meta {

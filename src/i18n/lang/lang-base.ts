@@ -1,5 +1,15 @@
 export type langType = {
   title: string;
+  profile: {
+    title: string;
+    name: string;
+    country: string;
+    countryHint: string;
+    introduction: string;
+    color: string;
+    greenUp: string;
+    redUp: string;
+  };
   subscriptions: {
     title: string;
     dca: string;

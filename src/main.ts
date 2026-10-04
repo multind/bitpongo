@@ -34,6 +34,7 @@ async function bootstrap() {
   const userStore = useUserStore(store);
   installPushLifecycle(userStore, router);
   if (userStore.token) void initializeSessionTimeZone();
+  if (userStore.token) void userStore.syncProfile();
 }
 
 void bootstrap();
