@@ -15,6 +15,10 @@ export type langType = {
     historyFailed: string;
   };
   profile: {
+    avatar: string;
+    uploadAvatar: string;
+    removeAvatar: string;
+    avatarHint: string;
     title: string;
     name: string;
     country: string;
@@ -23,6 +27,21 @@ export type langType = {
     color: string;
     greenUp: string;
     redUp: string;
+  };
+  sessions: {
+    title: string;
+    hint: string;
+    refresh: string;
+    failed: string;
+    empty: string;
+    current: string;
+    other: string;
+    firstSeen: string;
+    lastSeen: string;
+    expires: string;
+    revoke: string;
+    confirm: string;
+    currentWarning: string;
   };
   subscriptions: {
     title: string;

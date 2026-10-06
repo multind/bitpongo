@@ -1,5 +1,6 @@
 <template>
   <main class="alerts-page">
+    <Avatar editable />
     <form class="alert-card" @submit.prevent="save">
       <h1>{{ t('profile.title') }}</h1>
       <label for="profile-name">{{ t('profile.name') }}</label>
@@ -24,6 +25,7 @@
   </main>
 </template>
 <script setup lang="ts">
+  import Avatar from './Avatar.vue';
   import { computed, onMounted, onUnmounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { getUserProfile, saveUserProfile, type UserProfile } from '@/api/profile';

@@ -110,6 +110,11 @@ export const routes = [
         meta: { title: 'profile.title', border: true },
       },
       {
+        path: '/member/devices',
+        component: () => import('@/views/member/devices/index.vue'),
+        meta: { title: 'sessions.title', border: true },
+      },
+      {
         name: 'memberAccount',
         path: '/member/account',
         component: () => import('@/views/member/account/index.vue'),

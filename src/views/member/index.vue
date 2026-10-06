@@ -2,7 +2,7 @@
   <div v-if="getUserInfo">
     <div class="avatar-wrap" v-if="getUserInfo">
       <nut-avatar class="avatar" size="50">
-        <img src="../../assets/logo.png" alt="avatar" />
+        <Avatar />
       </nut-avatar>
       <div class="member-detail">
         <div class="nickname">
@@ -13,6 +13,9 @@
       </div>
     </div>
     <nut-cell-group>
+      <nut-cell :title="t('sessions.title')" is-link @click="router.push('/member/devices')">
+        <template #icon><Setting /></template>
+      </nut-cell>
       <nut-cell :title="t('profile.title')" is-link @click="router.push('/member/profile')">
         <template #icon><Setting /></template>
       </nut-cell>
@@ -108,6 +111,7 @@
 </template>
 
 <script setup lang="ts">
+  import Avatar from './profile/Avatar.vue';
   import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
   import { useI18n } from 'vue-i18n';
