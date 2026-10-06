@@ -115,6 +115,17 @@ export const routes = [
         meta: { title: 'sessions.title', border: true },
       },
       {
+        path: '/member/security',
+        component: () => import('@/views/member/security/index.vue'),
+        meta: { title: 'security.title', border: true },
+      },
+      {
+        path: '/recover',
+        component: () => import('@/views/member/security/index.vue'),
+        props: { recovery: true },
+        meta: { title: 'security.recovery', border: true },
+      },
+      {
         name: 'memberAccount',
         path: '/member/account',
         component: () => import('@/views/member/account/index.vue'),

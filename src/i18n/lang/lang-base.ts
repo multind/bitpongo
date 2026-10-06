@@ -14,6 +14,30 @@ export type langType = {
     loadFailed: string;
     historyFailed: string;
   };
+  security: Record<
+    | 'title'
+    | 'recovery'
+    | 'logoutHint'
+    | 'oldPassword'
+    | 'newPassword'
+    | 'confirmPassword'
+    | 'passwordHint'
+    | 'changePassword'
+    | 'changeEmail'
+    | 'email'
+    | 'newEmail'
+    | 'bindingHint'
+    | 'emailUnavailable'
+    | 'sendCode'
+    | 'resend'
+    | 'codeSent'
+    | 'code'
+    | 'resetPassword'
+    | 'backLogin'
+    | 'mismatch'
+    | 'failed',
+    string
+  >;
   profile: {
     avatar: string;
     uploadAvatar: string;

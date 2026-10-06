@@ -62,6 +62,9 @@
       </template>
     </nut-button>
     <p class="register-link">
+      <router-link to="/recover">{{ t('security.recovery') }}</router-link>
+    </p>
+    <p class="register-link">
       {{ t('login.noAccount') }}
       <button type="button" @click="router.push('/register')">{{ t('login.goRegister') }}</button>
     </p>

@@ -1,5 +1,8 @@
 <template>
   <main class="account-settings">
+    <section
+      ><router-link to="/member/security">{{ t('security.title') }}</router-link></section
+    >
     <section class="timezone-settings">
       <h1>{{ t('account.timeZoneTitle') }}</h1>
       <p class="subtitle">{{ t('account.timeZoneDescription') }}</p>
@@ -23,37 +26,37 @@
     </section>
 
     <section class="deletion-settings">
-    <h1>{{ t('account.deleteTitle') }}</h1>
-    <p class="subtitle">{{ t('account.deleteWarning') }}</p>
+      <h1>{{ t('account.deleteTitle') }}</h1>
+      <p class="subtitle">{{ t('account.deleteWarning') }}</p>
 
-    <section class="account-form">
-      <label class="field-label" for="account-password">{{ t('account.passwordLabel') }}</label>
-      <nut-input
-        id="account-password"
-        v-model="password"
-        class="account-password"
-        data-test="account-password"
-        type="password"
-        autocomplete="current-password"
-        :placeholder="t('account.passwordPlaceholder')"
-        :disabled="loading"
-      />
-      <nut-checkbox v-model="acknowledged" data-test="account-confirmation" :disabled="loading">
-        {{ t('account.acknowledge') }}
-      </nut-checkbox>
-      <nut-button
-        block
-        class="delete-button"
-        color="#d93025"
-        size="large"
-        data-test="delete-account"
-        :disabled="!canSubmit || loading"
-        :loading="loading"
-        @click="requestConfirmation"
-      >
-        {{ t('account.deleteButton') }}
-      </nut-button>
-    </section>
+      <section class="account-form">
+        <label class="field-label" for="account-password">{{ t('account.passwordLabel') }}</label>
+        <nut-input
+          id="account-password"
+          v-model="password"
+          class="account-password"
+          data-test="account-password"
+          type="password"
+          autocomplete="current-password"
+          :placeholder="t('account.passwordPlaceholder')"
+          :disabled="loading"
+        />
+        <nut-checkbox v-model="acknowledged" data-test="account-confirmation" :disabled="loading">
+          {{ t('account.acknowledge') }}
+        </nut-checkbox>
+        <nut-button
+          block
+          class="delete-button"
+          color="#d93025"
+          size="large"
+          data-test="delete-account"
+          :disabled="!canSubmit || loading"
+          :loading="loading"
+          @click="requestConfirmation"
+        >
+          {{ t('account.deleteButton') }}
+        </nut-button>
+      </section>
     </section>
   </main>
 </template>
