@@ -64,6 +64,20 @@ it('shows email unavailable and blocks requesting a code when SMTP is not config
   await view.get('[data-send-code]').trigger('click');
   expect(api.requestEmailCode).not.toHaveBeenCalled();
 });
+it('disables email verification until the current password is provided', async () => {
+  render();
+  await flushPromises();
+  await view.get('#security-email').setValue('new@example.com');
+  expect((view.get('[data-send-code]').element as HTMLButtonElement).disabled).toBe(true);
+  await view.get('#old-password').setValue('OriginalPass!1');
+  expect((view.get('[data-send-code]').element as HTMLButtonElement).disabled).toBe(false);
+});
+it('shows one recovery heading instead of duplicating the page title', async () => {
+  render(true);
+  await flushPromises();
+  expect(view.get('h1').text()).toBe('Forgot password?');
+  expect(view.find('h2').exists()).toBe(false);
+});
 it('requests a reset challenge and completes recovery using the returned opaque ID', async () => {
   render(true);
   await flushPromises();

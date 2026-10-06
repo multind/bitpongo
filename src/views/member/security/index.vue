@@ -14,7 +14,7 @@
         <button :disabled="busy || !user.token">{{ t('security.changePassword') }}</button>
       </form>
       <form data-email-form @submit.prevent="saveEmailOrReset">
-        <h2>{{ t(recovery ? 'security.recovery' : 'security.changeEmail') }}</h2>
+        <h2 v-if="!recovery">{{ t('security.changeEmail') }}</h2>
         <p v-if="!emailEnabled" role="status">{{ t('security.emailUnavailable') }}</p>
         <label for="security-email">{{ t(recovery ? 'security.email' : 'security.newEmail') }}</label>
         <input
@@ -27,7 +27,12 @@
           @input="clearChallenge"
         />
         <p v-if="!recovery" class="meta">{{ t('security.bindingHint') }}</p>
-        <button type="button" data-send-code :disabled="busy || !emailEnabled || seconds > 0 || !email.trim()" @click="sendCode">
+        <button
+          type="button"
+          data-send-code
+          :disabled="busy || !emailEnabled || seconds > 0 || !email.trim() || (!recovery && (!oldPassword || !user.token))"
+          @click="sendCode"
+        >
           {{ seconds > 0 ? t('security.resend', { seconds }) : t('security.sendCode') }}
         </button>
         <p v-if="sent" role="status">{{ t('security.codeSent') }}</p>
