@@ -68,13 +68,23 @@
   const conditions = ['CROSS', 'CROSS_UP', 'CROSS_DOWN', 'ABOVE', 'BELOW', 'CHANNEL_OUTSIDE'];
   const frequencies = ['ONCE', 'EVERY_TIME', 'PER_MINUTE', 'EACH_CANDLE', 'CANDLE_CLOSE'];
   const intervals = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w'];
-  const validPrice = (value: string | null) => value !== null && /^\d+(\.\d{1,18})?$/.test(value) && Number(value) > 0;
+  const validPrice = (value: string | null) =>
+    value !== null && /^\d+(\.\d{1,18})?$/.test(value) && /[1-9]/.test(value) && value.split('.')[0]!.replace(/^0+/, '').length <= 20;
+  const scaledPrice = (value: string) => {
+    const [whole, fraction = ''] = value.split('.');
+    return (whole!.replace(/^0+/, '') || '0') + fraction.padEnd(18, '0');
+  };
+  const lowerThan = (left: string, right: string) => {
+    const a = scaledPrice(left);
+    const b = scaledPrice(right);
+    return a.length === b.length ? a < b : a.length < b.length;
+  };
   async function submit() {
     if (busy.value) return;
     if (
       !form.name.trim() ||
       (form.condition === 'CHANNEL_OUTSIDE'
-        ? !validPrice(form.lower) || !validPrice(form.upper) || Number(form.lower) >= Number(form.upper)
+        ? !validPrice(form.lower) || !validPrice(form.upper) || !lowerThan(form.lower!, form.upper!)
         : !validPrice(form.target))
     ) {
       error.value = 'alerts.invalid';
