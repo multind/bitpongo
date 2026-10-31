@@ -1,11 +1,14 @@
 <template>
-  <main class="alerts-page"
-    ><article class="alert-card">
+  <main class="alerts-page article-page"
+    ><article class="alert-card article-document">
       <p v-if="loading" role="status">{{ t('common.loading') }}</p>
       <template v-if="article"
-        ><h1>{{ article.title }}</h1
-        ><p class="meta">{{ formatInstant(article.publishedAt) }}</p
-        ><p class="article-body">{{ article.body }}</p></template
+        ><header class="article-heading"
+          ><h1>{{ article.title }}</h1
+          ><p v-if="article.summary" class="article-summary">{{ article.summary }}</p
+          ><time class="meta" :datetime="article.publishedAt">{{ formatInstant(article.publishedAt) }}</time></header
+        >
+        <p class="article-body">{{ article.body }}</p></template
       >
       <p v-if="error" role="alert">{{ t('content.loadFailed') }}</p
       ><button v-if="error" :disabled="loading" @click="load">{{ t('market.retry') }}</button>
@@ -49,7 +52,38 @@
 <style scoped lang="scss">
   @use '../alerts/shared.scss';
 
+  .article-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .article-document {
+    padding: 1.25rem;
+  }
+
+  .article-heading {
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  h1 {
+    margin: 0 0 0.875rem;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .article-summary {
+    margin: 0 0 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: #666;
+    overflow-wrap: anywhere;
+  }
+
   .article-body {
+    margin: 0;
+    font-size: 1rem;
     line-height: 1.7;
     overflow-wrap: anywhere;
     white-space: pre-wrap;

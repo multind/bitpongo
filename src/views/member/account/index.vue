@@ -1,43 +1,89 @@
 <template>
-  <main class="account-settings">
-    <section
-      ><router-link to="/member/security">{{ t('security.title') }}</router-link></section
-    >
-    <section class="timezone-settings">
-      <h1>{{ t('account.timeZoneTitle') }}</h1>
+  <component :is="embedded ? 'section' : 'main'" class="account-settings" :class="{ embedded }">
+    <h1 v-if="!embedded" class="page-heading">{{ t('member.account') }}</h1>
+    <router-link v-if="!embedded" class="security-entry" to="/member/security">
+      <span>{{ t('security.title') }}</span
+      ><span aria-hidden="true">›</span>
+    </router-link>
+    <section v-if="!section || section === 'timezone'" class="timezone-settings settings-card" aria-labelledby="account-timezone-heading">
+      <h2 id="account-timezone-heading">{{ t('account.timeZoneTitle') }}</h2>
       <p class="subtitle">{{ t('account.timeZoneDescription') }}</p>
-      <label class="field-label" for="timezone-mode">{{ t('account.timeZoneMode') }}</label>
-      <select id="timezone-mode" v-model="timeZoneMode" data-test="timezone-mode" class="timezone-mode" :disabled="timeZoneLoading">
-        <option value="FOLLOW_DEVICE">{{ t('account.followDevice') }}</option>
-        <option value="FIXED">{{ t('account.fixedTimeZone') }}</option>
-      </select>
+      <button
+        ref="modeTrigger"
+        type="button"
+        class="timezone-trigger"
+        data-test="timezone-mode"
+        aria-haspopup="dialog"
+        :aria-expanded="modeVisible"
+        :disabled="timeZoneLoading"
+        @click="openMode"
+      >
+        <NutCell
+          :title="t('account.timeZoneMode')"
+          :desc="t(timeZoneMode === 'FIXED' ? 'account.fixedTimeZone' : 'account.followDevice')"
+          is-link
+        />
+      </button>
+      <NutPopup v-model:visible="modeVisible" position="bottom" round @opened="modeCancel?.focus()" @closed="modeTrigger?.focus()">
+        <section
+          class="timezone-sheet"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="t('account.timeZoneMode')"
+          @keydown.tab="trapSheetTab"
+          @keydown.esc="modeVisible = false"
+        >
+          <header class="timezone-toolbar">
+            <button ref="modeCancel" type="button" data-test="timezone-mode-cancel" @click="modeVisible = false">{{
+              t('common.cancel')
+            }}</button>
+            <h3>{{ t('account.timeZoneMode') }}</h3>
+            <button type="button" data-test="timezone-mode-confirm" :disabled="timeZoneLoading" @click="confirmMode">{{
+              t('common.confirm')
+            }}</button>
+          </header>
+          <div class="timezone-options" role="radiogroup" :aria-label="t('account.timeZoneMode')">
+            <label v-for="mode in timeZoneModes" :key="mode.value" class="timezone-option">
+              <span>{{ t(mode.label) }}</span
+              ><input v-model="draftMode" type="radio" name="timezone-mode" :value="mode.value" />
+            </label>
+          </div>
+        </section>
+      </NutPopup>
       <TimeZoneSelect
         v-if="timeZoneMode === 'FIXED'"
         v-model="fixedTimeZone"
         label-key="account.fixedTimeZone"
         hint-key="account.fixedTimeZoneHint"
+        :disabled="timeZoneLoading"
       />
       <p class="effective-timezone" data-test="effective-timezone">
         {{ t('account.effectiveTimeZone', { zone: effectiveTimeZone }) }}
       </p>
-      <nut-button block color="#101010" data-test="save-timezone" :disabled="timeZoneLoading" @click="saveTimeZone">
+      <nut-button block color="#1765cf" data-test="save-timezone" :disabled="timeZoneLoading" @click="saveTimeZone">
         {{ t('account.saveTimeZone') }}
       </nut-button>
     </section>
 
-    <section class="deletion-settings">
-      <h1>{{ t('account.deleteTitle') }}</h1>
-      <p class="subtitle">{{ t('account.deleteWarning') }}</p>
+    <section
+      v-if="!section || section === 'deletion'"
+      class="deletion-settings settings-card"
+      aria-labelledby="account-deletion-heading"
+      aria-describedby="account-deletion-warning"
+    >
+      <h2 id="account-deletion-heading">{{ t('account.deleteTitle') }}</h2>
+      <p id="account-deletion-warning" class="subtitle">{{ t('account.deleteWarning') }}</p>
 
       <section class="account-form">
         <label class="field-label" for="account-password">{{ t('account.passwordLabel') }}</label>
-        <nut-input
+        <input
           id="account-password"
           v-model="password"
           class="account-password"
           data-test="account-password"
           type="password"
           autocomplete="current-password"
+          aria-describedby="account-deletion-warning"
           :placeholder="t('account.passwordPlaceholder')"
           :disabled="loading"
         />
@@ -58,18 +104,23 @@
         </nut-button>
       </section>
     </section>
-  </main>
+  </component>
 </template>
 
 <script setup lang="ts">
+  defineProps<{ embedded?: boolean; section?: 'timezone' | 'deletion' }>();
   import { computed, onMounted, ref } from 'vue';
   import { useRouter } from 'vue-router';
   import { useI18n } from 'vue-i18n';
-  import { showDialog, showToast } from '@nutui/nutui';
+  import { Cell as NutCell, Popup as NutPopup, showDialog, showToast } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/cell/index.css';
+  import '@nutui/nutui/dist/packages/popup/index.css';
+  import '@nutui/nutui/dist/packages/overlay/index.css';
   import { useUserStore } from '@/store/modules/user';
   import { getTimeZonePreference, saveTimeZonePreference, type DisplayTimeZoneMode } from '@/api';
   import { displayTimeZone, getAppContext, setDisplayTimeZonePreference } from '@/mobile/app-context';
   import TimeZoneSelect from '@/views/list/components/TimeZoneSelect.vue';
+  import { trapSheetTab } from '@/views/list/components/timezone-sheet';
 
   const { t } = useI18n();
   const router = useRouter();
@@ -82,6 +133,26 @@
   const fixedTimeZone = ref(getAppContext()?.timeZone || 'UTC');
   const effectiveTimeZone = ref(displayTimeZone());
   const timeZoneLoading = ref(false);
+  const modeVisible = ref(false);
+  const modeTrigger = ref<HTMLButtonElement>();
+  const modeCancel = ref<HTMLButtonElement>();
+  const draftMode = ref<DisplayTimeZoneMode>('FOLLOW_DEVICE');
+  const timeZoneModes = [
+    { value: 'FOLLOW_DEVICE', label: 'account.followDevice' },
+    { value: 'FIXED', label: 'account.fixedTimeZone' },
+  ] as const;
+
+  function openMode() {
+    if (timeZoneLoading.value) return;
+    draftMode.value = timeZoneMode.value;
+    modeVisible.value = true;
+  }
+
+  function confirmMode() {
+    if (timeZoneLoading.value) return;
+    timeZoneMode.value = draftMode.value;
+    modeVisible.value = false;
+  }
 
   async function loadTimeZone() {
     timeZoneLoading.value = true;
@@ -149,40 +220,67 @@
 </script>
 
 <style scoped lang="scss">
+  @use '@/views/list/components/timezone-sheet.scss';
+
+  .account-settings.embedded {
+    padding: 0;
+  }
+
   .account-settings {
-    padding: 1.25rem;
+    padding: 1rem 0.75rem;
   }
 
   h1 {
     margin: 0;
-    font-size: 1.625rem;
+    font-size: 1.25rem;
     line-height: 1.25;
     color: #101010;
   }
 
+  h2 {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+
+  .settings-card {
+    padding: 1.25rem;
+    margin-top: 1rem;
+    background: #fff;
+    border-radius: 0.875rem;
+  }
+
+  .security-entry {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.75rem;
+    padding: 0.75rem 1.25rem;
+    margin-top: 1rem;
+    color: #333;
+    text-decoration: none;
+    background: #fff;
+    border-radius: 0.875rem;
+  }
+
   .subtitle {
     margin: 0.5rem 0 0;
-    font-size: 1rem;
+    font-size: 0.875rem;
     line-height: 1.5;
     color: #666;
   }
 
   .account-form {
-    margin-top: 2.5rem;
+    margin-top: 1.25rem;
   }
 
   .deletion-settings {
-    margin-top: 3rem;
+    border: 1px solid #f0d3d0;
   }
 
-  .timezone-mode {
-    box-sizing: border-box;
-    width: 100%;
-    min-height: 44px;
-    padding: 0 0.75rem;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+  .timezone-settings :deep(.timezone-field) {
+    margin: 1rem 0;
   }
 
   .effective-timezone {
@@ -192,7 +290,7 @@
 
   .field-label {
     display: block;
-    margin: 0 0 0.75rem;
+    margin: 1rem 0 0.75rem;
     font-size: 1rem;
     font-weight: 600;
     line-height: 1.4;
@@ -200,7 +298,15 @@
   }
 
   .account-password {
-    --nut-input-font-size: 1rem;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.75rem;
+    font: inherit;
+    color: #333;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 0.625rem;
   }
 
   .nut-checkbox {

@@ -1,41 +1,32 @@
 <template>
-  <nut-row type="flex" justify="space-evenly" style="margin-top: 30px; margin-bottom: 10px">
-    <nut-col align="center" span="6">
-      <img style="border-radius: 15px" src="../../../assets/logo.png" height="80" width="80" alt="" />
-    </nut-col>
-  </nut-row>
-
-  <nut-row type="flex" justify="space-evenly">
-    <nut-col align="center" span="12">
-      <text>Bitpongo</text>
-    </nut-col>
-  </nut-row>
-
-  <nut-row type="flex" justify="space-evenly" style="margin-top: 10px">
-    <nut-col align="center" span="12">
-      <text style="font-size: 14px; color: #2f2f2f">{{ t('about.version', { version: appVersion }) }}</text>
-    </nut-col>
-  </nut-row>
-
-  <nut-row type="flex" justify="space-evenly" style="margin-top: 10px; margin-bottom: 30px">
-    <nut-col align="center" span="16">
-      <text style="font-size: 14px; color: #2f2f2f">{{ t('about.publishTime', { time: buildTime }) }}</text>
-    </nut-col>
-  </nut-row>
-
-  <nut-cell-group>
-    <RouterLink class="about-source" to="/help"><nut-cell :title="t('content.help')" is-link /></RouterLink>
-    <nut-cell :title="t('about.developer')" sub-title="Designed with ❤ by iMastermind.io"></nut-cell>
-    <nut-cell :title="t('about.contact')" sub-title="https://iMastermind.io"></nut-cell>
-    <a class="about-source" data-test="about-privacy" href="/privacy">
-      <nut-cell :title="t('privacy.title')" is-link></nut-cell>
-    </a>
-    <a class="about-source" data-test="about-source" href="https://github.com/multind/bitpongo">
-      <nut-cell :title="t('about.openSource')" sub-title="MIT License · github.com/multind/bitpongo" is-link></nut-cell>
-    </a>
-    <nut-cell :title="t('about.copyright')" sub-title="Copyright © 2026 Bitpongo."></nut-cell>
-  </nut-cell-group>
-  <AppVersionCheck />
+  <main class="about-page">
+    <header class="about-brand">
+      <img src="../../../assets/logo.png" width="80" height="80" alt="" />
+      <h1>Bitpongo</h1>
+      <p>{{ t('about.version', { version: appVersion }) }}</p>
+      <p>{{ t('about.publishTime', { time: buildTime }) }}</p>
+    </header>
+    <nav class="about-links" :aria-label="t('member.about')">
+      <a data-test="about-privacy" href="/privacy"
+        ><span>{{ t('privacy.title') }}</span
+        ><span aria-hidden="true">›</span></a
+      >
+      <a data-test="about-terms" href="/agreement"
+        ><span>{{ t('member.agreement') }}</span
+        ><span aria-hidden="true">›</span></a
+      >
+      <a data-test="about-source" href="https://github.com/multind/bitpongo" target="_blank" rel="noopener noreferrer">
+        <span>{{ t('about.openSource') }}<small>MIT License · github.com/multind/bitpongo</small></span
+        ><span aria-hidden="true">›</span>
+      </a>
+    </nav>
+    <AppVersionCheck />
+    <footer>
+      <p>Designed with ❤ by iMastermind.io</p>
+      <a href="https://iMastermind.io" target="_blank" rel="noopener noreferrer">https://iMastermind.io</a>
+      <p>Copyright © 2026 Bitpongo.</p>
+    </footer>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -48,7 +39,74 @@
 </script>
 
 <style scoped lang="scss">
-  .about-source {
+  .about-page {
+    padding: 1rem 0.75rem;
+    color: #333;
+  }
+
+  h1 {
+    margin: 1rem 0 0.25rem;
+    font-size: 1.5rem;
+  }
+
+  .about-brand {
+    padding: 1rem 0 1.75rem;
+    text-align: center;
+  }
+
+  .about-brand img {
+    border-radius: 1.125rem;
+  }
+
+  .about-brand p {
+    margin: 0.5rem 0;
+    font-size: 0.875rem;
+    color: #777;
+    overflow-wrap: anywhere;
+  }
+
+  .about-links {
+    padding: 0 1rem;
+    background: #fff;
+    border-radius: 0.875rem;
+  }
+
+  .about-links a {
+    box-sizing: border-box;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 3.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .about-links a:last-child {
+    border-bottom: 0;
+  }
+
+  small {
+    display: block;
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    color: #777;
+    overflow-wrap: anywhere;
+  }
+
+  footer {
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: #777;
+    text-align: center;
+  }
+
+  footer p {
+    margin: 0.5rem 0;
+  }
+
+  a {
     color: inherit;
     text-decoration: none;
   }

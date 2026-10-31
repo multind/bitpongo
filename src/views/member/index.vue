@@ -1,7 +1,7 @@
 <template>
-  <div v-if="getUserInfo">
+  <div v-if="getUserInfo" class="member-home">
     <div class="avatar-wrap" v-if="getUserInfo">
-      <nut-avatar class="avatar" size="50">
+      <nut-avatar class="avatar" size="64">
         <Avatar />
       </nut-avatar>
       <div class="member-detail">
@@ -9,46 +9,52 @@
           <span> {{ userStore.info.name || getUserInfo }} </span>
         </div>
         <p v-if="userStore.info.name" class="member-email">{{ getUserInfo }}</p>
-        <div class="info"> {{ t('member.slogan') }} </div>
+        <div class="info"> {{ userStore.info.introduction?.trim() || t('member.slogan') }} </div>
       </div>
     </div>
-    <nut-cell-group>
-      <nut-cell :title="t('sessions.title')" is-link @click="router.push('/member/devices')">
-        <template #icon><Setting /></template>
-      </nut-cell>
+    <nut-cell-group class="member-menu">
       <nut-cell :title="t('profile.title')" is-link @click="router.push('/member/profile')">
-        <template #icon><Setting /></template>
+        <template #icon><My /></template>
       </nut-cell>
-      <nut-cell :title="t('content.help')" is-link @click="router.push('/help')"
-        ><template #icon><Issue /></template
-      ></nut-cell>
-      <nut-cell :title="`&nbsp;${t('member.exchangeInfo')}`" is-link @click="goExchangeInfo">
-        <template #icon>
-          <Link />
-        </template>
-      </nut-cell>
-      <nut-cell :title="`&nbsp;${t('member.noticeInfo')}`" is-link @click="goNoticeInfo">
+      <button class="member-entry" type="button" data-test="member-security" @click="router.push('/member/security')">
+        <nut-cell :title="t('security.title')" is-link>
+          <template #icon
+            ><svg class="member-security-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <rect x="5" y="10" width="14" height="11" rx="2" />
+              <path d="M8 10V6a4 4 0 0 1 8 0v4M12 14v3" /></svg
+          ></template>
+        </nut-cell>
+      </button>
+      <button class="member-entry" type="button" data-test="member-preferences" @click="router.push('/member/preferences')">
+        <nut-cell :title="t('preferences.title')" is-link>
+          <template #icon><Setting /></template>
+        </nut-cell>
+      </button>
+      <nut-cell :title="t('member.noticeInfo')" is-link @click="goNoticeInfo">
         <template #icon>
           <Notice />
         </template>
       </nut-cell>
-      <nut-cell :title="`&nbsp;${t('member.account')}`" is-link @click="goAccountSettings">
-        <template #icon>
-          <Setting />
-        </template>
-      </nut-cell>
-      <nut-cell :title="`&nbsp;${t('member.about')}`" is-link @click="goAbout">
-        <template #icon>
-          <Issue />
-        </template>
-      </nut-cell>
-      <nut-cell :title="`&nbsp;${t('language.label')}`" is-link @click="languagePopup = true">
+      <nut-cell :title="t('notificationMethods.title')" is-link @click="router.push('/member/notification-methods')">
         <template #icon>
           <Message />
         </template>
       </nut-cell>
     </nut-cell-group>
-    <nut-cell is-link @click="goLogout">
+    <nut-cell-group class="member-menu">
+      <nut-cell :title="t('member.exchangeInfo')" is-link @click="goExchangeInfo">
+        <template #icon><Link /></template>
+      </nut-cell>
+      <nut-cell :title="t('member.about')" is-link @click="goAbout">
+        <template #icon>
+          <Issue />
+        </template>
+      </nut-cell>
+      <nut-cell :title="t('content.help')" is-link @click="router.push('/help')">
+        <template #icon><Issue /></template>
+      </nut-cell>
+    </nut-cell-group>
+    <nut-cell class="member-logout" is-link @click="goLogout">
       <template #title>
         <text style="color: red">{{ t('member.signOut') }}</text>
       </template>
@@ -115,7 +121,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
   import { useI18n } from 'vue-i18n';
-  import { Issue, Link, Message, Notice, Setting } from '@nutui/icons-vue';
+  import { Issue, Link, Message, My, Notice, Setting } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
   import { computed, ref } from 'vue';
   import { switchLang, type LocaleKey } from '@/i18n';
@@ -144,9 +150,6 @@
   const goNoticeInfo = () => {
     router.push('/member/notice');
   };
-  const goAccountSettings = () => {
-    router.push('/member/account');
-  };
   const goAbout = () => {
     router.push('/member/about');
   };
@@ -174,17 +177,85 @@
 </script>
 
 <style scoped lang="scss">
+  .member-home {
+    padding: 1rem 0.75rem 1.5rem;
+  }
+
+  .member-menu {
+    margin: 0 0 1rem;
+    overflow: hidden;
+    border-radius: 0.875rem;
+  }
+
+  .member-menu :deep(.nut-cell) {
+    align-items: center;
+    min-height: 3.5rem;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  .member-menu :deep(.nut-icon) {
+    flex-shrink: 0;
+    margin-right: 0.75rem;
+    color: #6d6b68;
+  }
+
+  .member-security-icon,
+  .member-menu :deep(.member-line-icon) {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.75rem;
+    color: #6d6b68;
+  }
+
+  .member-entry {
+    display: block;
+    width: 100%;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    background: #fff;
+    border: 0;
+  }
+
+  .member-entry:focus-visible {
+    outline: 2px solid #1765cf;
+    outline-offset: -2px;
+  }
+
+  .member-email {
+    margin: 0.375rem 0;
+    font-size: 0.875rem;
+    color: #777;
+    overflow-wrap: anywhere;
+  }
+
+  .member-logout {
+    min-height: 3.5rem;
+    border-radius: 0.875rem;
+  }
+
+  .member-logout :deep(.nut-cell__icon) {
+    width: 1.25rem;
+    margin-right: 0.75rem;
+  }
+
   .avatar-wrap {
     display: flex;
+    gap: 1rem;
     align-items: center;
-    margin: 40px 10px;
+    margin: 1rem 0 2rem;
 
     .member-detail {
-      margin-left: 20px;
+      min-width: 0;
 
       .nickname {
-        font-size: 32px;
+        font-size: 1.25rem;
         font-weight: bold;
+        overflow-wrap: anywhere;
 
         .nut-button {
           margin-left: 20px;
@@ -192,9 +263,10 @@
       }
 
       .info {
-        margin-top: 10px;
-        font-size: 24px;
-        color: #2f2f2f;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: #777;
       }
     }
   }

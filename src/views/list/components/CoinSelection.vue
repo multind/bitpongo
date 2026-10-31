@@ -1,7 +1,7 @@
 <template>
   <nut-row class="row-content" type="flex" justify="space-between" wrap="nowrap">
     <div class="coin-icons">
-      <nut-avatar-group size="small" max-count="8" z-index="left">
+      <nut-avatar-group size="small" max-count="6" z-index="left">
         <nut-avatar size="small" v-for="i in props.strategy.coins.length" :key="i">
           <img :src="props.strategy.coins[i - 1]?.icon" :alt="props.strategy.coins[i - 1]?.symbol" />
         </nut-avatar>

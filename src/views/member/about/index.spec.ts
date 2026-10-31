@@ -54,6 +54,12 @@ describe('About view', () => {
     expect(privacyLink.text()).toContain('Privacy Policy');
   });
 
+  it('shows the brand heading and an actual terms link', () => {
+    const wrapper = mountView();
+    expect(wrapper.get('h1').text()).toBe('Bitpongo');
+    expect(wrapper.get('[data-test="about-terms"]').attributes('href')).toBe('/agreement');
+  });
+
   it('shows iMastermind.io as the developer and contact website', () => {
     const wrapper = mountView();
 

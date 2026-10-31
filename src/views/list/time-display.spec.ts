@@ -2,13 +2,14 @@ import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import type * as VueRouter from 'vue-router';
+
 import { i18n } from '@/i18n';
 import { setDisplayTimeZonePreference } from '@/mobile/app-context';
 import PlanCard from './components/PlanCard.vue';
 
-vi.mock('chart.js/auto', () => ({ Chart: vi.fn() }));
 vi.mock('vue-router', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('vue-router')>()),
+  ...(await importOriginal<typeof VueRouter>()),
   useRouter: () => ({ push: vi.fn() }),
 }));
 

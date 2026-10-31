@@ -1,5 +1,11 @@
 <template>
-  <nut-navbar :title="t($route.meta.title as string)" :left-show="!tabBarVisible" @click-back="goBack" fixed />
+  <nut-navbar
+    v-if="!$route.meta.pageHeader"
+    :title="t($route.meta.title as string)"
+    :left-show="!tabBarVisible"
+    @click-back="goBack"
+    fixed
+  />
   <div class="main-page" :class="{ tabbar: tabBarVisible, border: showBorder }">
     <RouterView v-slot="{ Component }" v-if="$route.meta.keepAlive">
       <keep-alive>
@@ -16,8 +22,7 @@
 <script lang="ts" setup>
   import { useI18n } from 'vue-i18n'; // 添加这行
   import { useRouter } from 'vue-router';
-  // import { Home, Horizontal, My } from '@nutui/icons-vue';
-  import { Home, Horizontal, My } from '@nutui/icons-vue';
+  import { Category, My, Notice, Shop } from '@nutui/icons-vue';
 
   defineOptions({
     name: 'BasicLayoutPage',
@@ -25,9 +30,9 @@
   const { t } = useI18n(); // 添加这行
   const tabItem = [
     // { key: 'home', icon: Home },
-    { key: 'list', icon: Horizontal },
-    { key: 'market', icon: Home },
-    { key: 'alerts', icon: Horizontal },
+    { key: 'list', icon: Category },
+    { key: 'market', icon: Shop },
+    { key: 'alerts', icon: Notice },
     { key: 'member', icon: My },
   ];
 

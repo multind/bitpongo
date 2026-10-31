@@ -1,12 +1,48 @@
 <template>
   <section :class="{ 'alert-card': editable, 'compact-avatar': !editable }">
     <h2 v-if="editable">{{ t('profile.avatar') }}</h2>
-    <img :src="image || logo" :alt="t('profile.avatar')" class="user-avatar" @error="image = null" />
+    <img v-if="ready || !user.token || error" :src="image || logo" :alt="t('profile.avatar')" class="user-avatar" @error="image = null" />
+    <span v-else class="user-avatar avatar-loading" aria-hidden="true"></span>
     <template v-if="editable">
-      <label class="avatar-upload">
-        {{ t('profile.uploadAvatar') }}
-        <input type="file" accept="image/png,image/jpeg" :disabled="busy || !ready" @change="upload" />
-      </label>
+      <button v-if="native" type="button" class="avatar-upload" :disabled="busy || !ready" @click="chooseNative">{{
+        t('profile.uploadAvatar')
+      }}</button>
+      <button
+        ref="presetTrigger"
+        type="button"
+        :disabled="busy || !ready"
+        aria-haspopup="dialog"
+        :aria-expanded="presetOpen"
+        @click="presetOpen = true"
+        >{{ t('profile.choosePresetAvatar') }}</button
+      >
+      <NutPopup v-model:visible="presetOpen" position="bottom" round @opened="presetClose?.focus()" @closed="presetTrigger?.focus()">
+        <section
+          class="avatar-sheet"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="t('profile.choosePresetAvatar')"
+          @keydown.tab="trapSheetTab"
+          @keydown.esc="presetOpen = false"
+        >
+          <header
+            ><h3>{{ t('profile.choosePresetAvatar') }}</h3
+            ><button ref="presetClose" type="button" :disabled="busy" @click="presetOpen = false">{{ t('common.cancel') }}</button></header
+          >
+          <div class="avatar-presets">
+            <button
+              v-for="(url, name) in presets"
+              :key="name"
+              type="button"
+              :disabled="busy || !ready"
+              :aria-label="`${t('profile.choosePresetAvatar')} ${name}`"
+              @click="choosePreset(url)"
+              ><img :src="url" alt=""
+            /></button>
+          </div>
+          <p v-if="error" role="alert">{{ t('common.saveFailed') }}</p>
+        </section>
+      </NutPopup>
       <p class="meta">{{ t('profile.avatarHint') }}</p>
       <button v-if="image" type="button" data-remove :disabled="busy || !ready" @click="remove">{{ t('profile.removeAvatar') }}</button>
       <button v-if="!ready && user.token && !busy" type="button" @click="load">{{ t('market.retry') }}</button>
@@ -20,6 +56,16 @@
   import { useUserStore } from '@/store/modules/user';
   import { getAvatar, uploadAvatar, deleteAvatar } from '@/api/avatar';
   import logo from '@/assets/logo.png';
+  import { hasNativeChannel, pickNativeAvatar } from '@/mobile/bridge';
+  import { Popup as NutPopup } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/popup/index.css';
+  import '@nutui/nutui/dist/packages/overlay/index.css';
+  import { trapSheetTab } from '@/views/list/components/timezone-sheet';
+  const native = hasNativeChannel();
+  const presetOpen = ref(false);
+  const presetTrigger = ref<HTMLButtonElement>();
+  const presetClose = ref<HTMLButtonElement>();
+  const presets = import.meta.glob<string>('../../../assets/avatars/*.png', { eager: true, import: 'default' });
   defineProps<{ editable?: boolean }>();
   const { t } = useI18n();
   const user = useUserStore();
@@ -51,16 +97,37 @@
       if (current(id)) busy.value = false;
     }
   }
-  async function upload(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    input.value = '';
-    if (!file || busy.value || !ready.value || !user.token) return;
-    if (!['image/png', 'image/jpeg'].includes(file.type) || file.size > 2 * 1024 * 1024) {
-      error.value = 'invalid';
-      return;
+  async function chooseNative() {
+    if (busy.value || !ready.value || !user.token) return;
+    const id = generation;
+    busy.value = true;
+    try {
+      const data = await pickNativeAvatar();
+      if (!data || !current(id)) return;
+      const blob = await (await fetch(data)).blob();
+      if (!current(id)) return;
+      busy.value = false;
+      await change(() => uploadAvatar(new File([blob], 'avatar.jpg', { type: blob.type })));
+    } catch {
+      if (current(id)) error.value = 'failed';
+    } finally {
+      if (current(id)) busy.value = false;
     }
-    await change(() => uploadAvatar(file));
+  }
+  async function choosePreset(url: string) {
+    if (busy.value || !ready.value || !user.token) return;
+    const id = generation;
+    busy.value = true;
+    try {
+      const blob = await (await fetch(url)).blob();
+      if (!current(id)) return;
+      busy.value = false;
+      if (await change(() => uploadAvatar(new File([blob], 'avatar.png', { type: 'image/png' })))) presetOpen.value = false;
+    } catch {
+      if (current(id)) error.value = 'failed';
+    } finally {
+      if (current(id)) busy.value = false;
+    }
   }
   async function change(operation: () => ReturnType<typeof getAvatar>) {
     if (busy.value || !ready.value || !user.token) return;
@@ -69,12 +136,16 @@
     error.value = '';
     try {
       const result = await operation();
-      if (current(id)) image.value = result.imageData;
+      if (current(id)) {
+        image.value = result.imageData;
+        return true;
+      }
     } catch {
       if (current(id)) error.value = 'failed';
     } finally {
       if (current(id)) busy.value = false;
     }
+    return false;
   }
   const remove = () => change(deleteAvatar);
   watch(() => user.token, load, { immediate: true, flush: 'sync' });
@@ -85,11 +156,62 @@
 <style scoped lang="scss">
   @use '../../alerts/shared.scss';
 
+  .avatar-sheet {
+    padding: 1.25rem 1.25rem max(1.25rem, env(safe-area-inset-bottom));
+    background: #fff;
+  }
+
+  .avatar-sheet header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .avatar-sheet h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .avatar-presets {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+  }
+
+  .avatar-presets button {
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+  }
+
+  .avatar-presets img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
   .user-avatar {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
+  }
+
+  .avatar-loading {
+    display: block;
+    background: #f1e8e0;
+  }
+
+  .alert-card .avatar-loading {
+    width: 4rem;
+    height: 4rem;
+    margin: 0.875rem 0;
   }
 
   .compact-avatar {
@@ -99,17 +221,35 @@
 
   .alert-card .user-avatar {
     display: block;
-    width: 1.2rem;
-    height: 1.2rem;
-    margin-bottom: 0.2rem;
+    width: 4rem;
+    height: 4rem;
+    margin: 0.875rem 0;
+  }
+
+  .alert-card {
+    padding: 1.25rem;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
   }
 
   .avatar-upload {
     display: block;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .alert-card .meta {
+    color: #666;
   }
 
   .avatar-upload input {
     display: block;
     max-width: 100%;
+    min-height: 2.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
   }
 </style>

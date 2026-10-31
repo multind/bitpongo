@@ -20,6 +20,7 @@ type NativeCommand =
   | 'saveImage'
   | 'shareImage'
   | 'saveCanvasImage'
+  | 'pickAvatar'
   | 'pushGetStatus'
   | 'pushRequestPermission'
   | 'pushSyncSession'
@@ -105,6 +106,10 @@ function validateImageRequest(request: ImageRequest): ImageRequest {
 
 export function hasNativeChannel(): boolean {
   return findChannel() !== null;
+}
+
+export function pickNativeAvatar(): Promise<string | null> {
+  return invokeNative('pickAvatar', {}, null, 120_000);
 }
 
 export function getNativeContext(): Promise<NativeContext | null> {

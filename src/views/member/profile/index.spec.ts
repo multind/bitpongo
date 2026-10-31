@@ -6,6 +6,7 @@ import Profile from './index.vue';
 import { useUserStore } from '@/store/modules/user';
 const api = vi.hoisted(() => ({ getUserProfile: vi.fn(), saveUserProfile: vi.fn() }));
 vi.mock('@/api/profile', () => api);
+vi.mock('@/api/avatar', () => ({ getAvatar: () => Promise.resolve({ imageData: null }), uploadAvatar: vi.fn(), deleteAvatar: vi.fn() }));
 let wrapper: ReturnType<typeof mount> | undefined;
 afterEach(() => {
   wrapper?.unmount();
@@ -26,7 +27,8 @@ it('persists allowed profile fields and updates the logged-in nickname only afte
   const view = render();
   await flushPromises();
   await view.get('#profile-name').setValue('Bob');
-  await view.get('#profile-color').setValue('RED_UP');
+  expect(view.find('#profile-color').exists()).toBe(false);
+  api.getUserProfile.mockResolvedValue({ ...initial, upDownColor: 'RED_UP' });
   await view.get('form').trigger('submit');
   await flushPromises();
   expect(api.saveUserProfile).toHaveBeenCalledWith({ ...initial, name: 'Bob', upDownColor: 'RED_UP' });
@@ -45,6 +47,18 @@ it('keeps unsaved edits and previous account state when save fails', async () =>
   expect(useUserStore().info.name).toBe('Alice');
   expect(view.get('#profile-name').element).toHaveProperty('value', 'Bob');
   expect(view.find('[role="alert"]').exists()).toBe(true);
+});
+it('selects a country from the searchable list and preserves the code', async () => {
+  api.getUserProfile.mockResolvedValue({ ...initial });
+  const view = render();
+  await flushPromises();
+  expect(view.get('#profile-country').text()).toContain('HK');
+  await view.get('#profile-country').trigger('click');
+  await view.get('input[type="search"]').setValue('Japan');
+  await view.get('input[value="JP"]').setValue(true);
+  await view.get('[data-test="sheet-confirm"]').trigger('click');
+  expect(view.get('#profile-country').text()).toContain('JP');
+  expect(view.get('footer button[type="submit"]').attributes('disabled')).toBeUndefined();
 });
 it('prevents submitting an empty nickname or default data when initial loading fails', async () => {
   api.getUserProfile.mockRejectedValue(new Error('offline'));

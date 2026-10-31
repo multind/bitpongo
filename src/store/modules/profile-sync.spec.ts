@@ -10,9 +10,9 @@ beforeEach(() => {
 it('restores saved market colors for an existing login', async () => {
   const user = useUserStore();
   user.setSession({ token: 'session', info: { id: 1, name: 'Old', email: 'alice@example.com' } });
-  vi.mocked(getUserProfile).mockResolvedValue({ name: 'Alice', country: '', introduction: '', upDownColor: 'RED_UP' });
+  vi.mocked(getUserProfile).mockResolvedValue({ name: 'Alice', country: '', introduction: 'Hello', upDownColor: 'RED_UP' });
   await user.syncProfile();
-  expect(user.info).toEqual({ id: 1, name: 'Alice', email: 'alice@example.com', upDownColor: 'RED_UP' });
+  expect(user.info).toEqual({ id: 1, name: 'Alice', email: 'alice@example.com', introduction: 'Hello', upDownColor: 'RED_UP' });
 });
 it('does not restore private profile data after logout while a request is pending', async () => {
   const user = useUserStore();

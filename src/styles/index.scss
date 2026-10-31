@@ -34,6 +34,19 @@ select {
   width: 10px;
 }
 
+// Retain a semantic page heading without repeating the navigation title visually.
+:root .page-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip-path: inset(50%);
+}
+
 html,
 body,
 h1,

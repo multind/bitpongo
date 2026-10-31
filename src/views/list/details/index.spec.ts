@@ -309,7 +309,7 @@ describe('plan details actions', () => {
     await flushPromises();
 
     expect(mocks.getPlanExecutions).toHaveBeenCalledWith('7', 0, 20);
-    expect(wrapper.findAll('.custom-tab-item')[3].text()).toContain('执行历史');
+    expect(wrapper.findAll('.custom-tab-item')[3].text()).toContain('执行记录');
     await wrapper.findAll('.custom-tab-item')[3].trigger('click');
     await nextTick();
 

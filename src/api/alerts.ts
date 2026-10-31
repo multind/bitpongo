@@ -14,6 +14,7 @@ export interface AlertRule {
   triggeredCount: number;
   lastTriggeredAt: string | null;
   createdAt: string;
+  channels?: string[] | null;
 }
 export interface AlertPage<T> {
   items: T[];
@@ -32,6 +33,8 @@ export interface AlertEvent {
   price: string | null;
   occurredAt: string;
   readAt: string | null;
+  confirmedAt: string | null;
+  confirmationRequired: boolean;
 }
 export type AlertCreate = Pick<
   AlertRule,
@@ -39,6 +42,9 @@ export type AlertCreate = Pick<
 >;
 export function listAlerts(params: { q?: string; status?: string; page?: number; size?: number }) {
   return http.get<AlertPage<AlertRule>>('/alerts', { params });
+}
+export function getAlertCapabilities() {
+  return http.get<{ perAlertChannels: boolean }>('/alerts/capabilities');
 }
 export function createAlert(data: AlertCreate) {
   return http.post<number>('/alerts', data);
@@ -69,6 +75,9 @@ export function readAlertEvent(id: number) {
 }
 export function readAllAlertEvents() {
   return http.put<void>('/alerts/events/read-all');
+}
+export function confirmAlertEvent(id: number) {
+  return http.put<void>(`/alerts/events/${id}/confirm`);
 }
 export function deleteAlertEvent(id: number) {
   return http.delete<void>(`/alerts/events/${id}`);

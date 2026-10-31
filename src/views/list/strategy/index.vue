@@ -1,44 +1,114 @@
 <template>
-  <CoinSelection :strategy="strategy" @update:selectedCoins="updateSelectedCoins" />
+  <main class="dca-create-page">
+    <section class="dca-form-card">
+      <CoinSelection :strategy="strategy" @update:selectedCoins="updateSelectedCoins" />
 
-  <nut-divider dashed></nut-divider>
+      <div class="dca-field"><ExchangeSelection :strategy="strategy" @update:strategy="updateExchangeAndCheck" /></div>
 
-  <ExchangeSelection :strategy="strategy" @update:strategy="updateExchangeAndCheck" />
+      <nut-row class="dca-field">
+        <nut-col span="24">
+          <nut-cell :title="t('exchange.availableBalance')">
+            <template #link>
+              <span v-if="isLoading">
+                <Loading color="red" />
+              </span>
+            </template>
+            <template #desc>
+              <span v-if="!isLoading" style="color: red">{{ availableAmount }}</span>
+            </template>
+          </nut-cell>
+        </nut-col>
+      </nut-row>
 
-  <nut-row>
-    <nut-col span="24">
-      <nut-cell :title="t('exchange.availableBalance')">
-        <template #link>
-          <span v-if="isLoading">
-            <Loading color="red" />
-          </span>
-        </template>
-        <template #desc>
-          <span v-if="!isLoading" style="color: red">{{ availableAmount }}</span>
-        </template>
-      </nut-cell>
-    </nut-col>
-  </nut-row>
+      <div class="dca-field"><StrategyBasicInfo :strategy="strategy" @update:strategy="updateStrategy" /></div>
+    </section>
+    <section class="dca-form-card">
+      <div class="dca-setting"><FrequencySetting :strategy="strategy" @update:strategy="updateStrategy" /></div>
 
-  <StrategyBasicInfo :strategy="strategy" @update:strategy="updateStrategy" />
+      <div class="dca-setting"><PriceRangeSetting :strategy="strategy" /></div>
 
-  <FrequencySetting :strategy="strategy" @update:strategy="updateStrategy" />
+      <div class="dca-setting"><CoinDistribution :strategy="strategy" @confirm="onDistributionConfirm" /></div>
 
-  <PriceRangeSetting :strategy="strategy" />
-
-  <CoinDistribution :strategy="strategy" @confirm="onDistributionConfirm" />
-
-  <CoinAverageDown :strategy="strategy" @confirm="onAverageDownConfirm" />
-
-  <StrategyCreation :strategy="strategy" @create="onCreateStrategy" @update:strategy="updateStrategy" />
+      <div class="dca-setting"><CoinAverageDown :strategy="strategy" @confirm="onAverageDownConfirm" /></div>
+    </section>
+    <div class="dca-create-action"
+      ><StrategyCreation :strategy="strategy" @create="onCreateStrategy" @update:strategy="updateStrategy"
+    /></div>
+  </main>
 </template>
+
+<style scoped lang="scss">
+  .dca-create-page {
+    padding: 1rem 0.5rem 1.5rem;
+    color: #232323;
+  }
+
+  .dca-form-card {
+    padding: 1rem;
+    margin-bottom: 0.875rem;
+    background: #fff;
+    border: 1px solid #f1e8e0;
+    border-radius: 1rem;
+  }
+
+  .dca-field {
+    margin-top: 1rem;
+  }
+
+  .dca-setting + .dca-setting {
+    margin-top: 0.875rem;
+  }
+
+  .dca-setting :deep(.timezone-field) {
+    margin-top: 0.875rem;
+    margin-bottom: 0;
+  }
+
+  .dca-form-card > :deep(.nut-row) {
+    margin-top: 0.75rem;
+  }
+
+  .dca-form-card > :deep(.nut-row:first-child) {
+    margin-top: 0;
+  }
+
+  .dca-field > :deep(.nut-row > .nut-col > .nut-cell),
+  .dca-setting > :deep(.nut-row > .nut-col > .nut-cell),
+  .dca-setting > :deep(.nut-row > .nut-cell) {
+    min-height: 2.8rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0;
+    font-size: 0.875rem;
+    background: #f5f1ee;
+    border-radius: 0.6rem;
+    box-shadow: none;
+  }
+
+  .dca-field > :deep(.nut-row > .nut-col > .custom-input) {
+    min-height: 2.8rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    background: #f5f1ee;
+    border-radius: 0.6rem;
+  }
+
+  .dca-create-action > :deep(.nut-row .nut-button) {
+    width: 100%;
+    min-height: 3rem;
+    font-size: 0.9rem;
+    background: #1989fa !important;
+    border-color: #1989fa !important;
+    border-radius: 0.75rem;
+  }
+</style>
 
 <script setup lang="ts">
   import { onMounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { useRouter } from 'vue-router';
+  import { useRoute, useRouter } from 'vue-router';
   import { showToast } from '@nutui/nutui';
   import { checkExchange, createStrategy } from '@/api';
+  import type { PresetItem } from '@/api/presets';
   import CoinSelection from '../components/CoinSelection.vue';
   import StrategyBasicInfo from '../components/StrategyBasicInfo.vue';
   import FrequencySetting from '../components/FrequencySetting.vue';
@@ -66,6 +136,9 @@
   });
 
   const router = useRouter();
+  const route = useRoute();
+  const coinFiles = import.meta.glob<string>('../../../assets/coins/*.png', { eager: true, import: 'default' });
+  const coinIcons = Object.fromEntries(Object.entries(coinFiles).map(([path, url]) => [path.split('/').pop()!.replace('.png', ''), url]));
 
   // 更新选中的币种
   const updateSelectedCoins = (coins: Coin[]) => {
@@ -173,8 +246,40 @@
     }
   };
 
+  const applyPreset = (preset: PresetItem) => {
+    const params = preset.params;
+    strategy.value = {
+      ...strategy.value,
+      name: params.name ?? preset.name,
+      instalment: params.instalment == null ? strategy.value.instalment : String(params.instalment),
+      frequency: params.frequency ?? strategy.value.frequency,
+      cron: params.cron ?? strategy.value.cron,
+      condition: params.condition ?? strategy.value.condition,
+      schedule_timezone: params.scheduleTimezone ?? strategy.value.schedule_timezone,
+      coins: (params.coins ?? []).map((coin) => ({
+        symbol: coin.symbol,
+        icon: coinIcons[coin.symbol] ?? '',
+        checked: true,
+        min: coin.min == null ? null : Number(coin.min),
+        max: coin.max == null ? null : Number(coin.max),
+        proportion: coin.proportion == null ? null : Number(coin.proportion),
+        average_down: coin.averageDown,
+      })),
+    };
+  };
+
   // 初始化默认币种
-  onMounted(() => {
+  onMounted(async () => {
+    const presetKey = route.query.presetKey;
+    if (typeof presetKey === 'string' && presetKey) {
+      try {
+        const { getPreset } = await import('@/api/presets');
+        applyPreset(await getPreset(presetKey));
+        showToast.success(t('presets.dcaRedirect'));
+      } catch {
+        showToast.fail(t('presets.loadFailed'));
+      }
+    }
     if (strategy.value.coins.length === 0) {
       strategy.value.coins = [
         {

@@ -1,9 +1,16 @@
 <template>
   <div class="login">
-    <h1>{{ t('login.welcome') }}</h1>
-    <nut-form ref="ruleForm" :model-value="formData" style="margin: 40px 0">
-      <nut-form-item label="" required prop="name" :rules="[{ required: true, message: t('login.usernameRequired') }]">
-        <nut-input v-model="formData.name" :placeholder="t('login.usernamePlaceholder')" type="text">
+    <header class="auth-heading"
+      ><img data-test="auth-brand" src="../../assets/logo.png" alt="Bitpongo" /><h1>{{ t('login.welcome') }}</h1></header
+    >
+    <nut-form ref="ruleForm" :model-value="formData" class="auth-panel" label-position="top">
+      <nut-form-item
+        :label="t('register.emailLabel')"
+        required
+        prop="name"
+        :rules="[{ required: true, message: t('login.usernameRequired') }]"
+      >
+        <nut-input v-model="formData.name" :placeholder="t('login.usernamePlaceholder')" type="email" autocomplete="username">
           <template #left>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <g fill="none">
@@ -31,8 +38,13 @@
           </template>
         </nut-input>
       </nut-form-item>
-      <nut-form-item label="" required prop="pwd" :rules="[{ required: true, message: t('login.passwordRequired') }]">
-        <nut-input v-model="formData.pwd" :placeholder="t('login.passwordPlaceholder')" type="password">
+      <nut-form-item
+        :label="t('register.passwordLabel')"
+        required
+        prop="pwd"
+        :rules="[{ required: true, message: t('login.passwordRequired') }]"
+      >
+        <nut-input v-model="formData.pwd" :placeholder="t('login.passwordPlaceholder')" type="password" autocomplete="current-password">
           <template #left>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 56 56">
               <path
@@ -52,10 +64,10 @@
       </nut-cell>
     </div>
 
-    <nut-space fill style="margin: 20px 10px">
-      <text style="font-size: 13px; color: #5f5f5f">{{ t('login.agreePrefix') }}</text>
-      <text style="font-size: 13px; color: #101010; text-decoration: underline" @click="agreement">{{ t('login.agreement') }}</text>
-    </nut-space>
+    <p class="auth-agreement"
+      >{{ t('login.agreePrefix') }}
+      <button type="button" data-test="login-agreement" @click="agreement">{{ t('login.agreement') }}</button></p
+    >
     <nut-button block size="large" type="info" @click="submit" color="#101010">
       <template #default>
         <text style="font-size: 16px; font-weight: bold; color: whitesmoke"> {{ t('login.submit') }} </text>
@@ -144,6 +156,8 @@
 </script>
 
 <style scoped lang="scss">
+  @use './auth.scss';
+
   .login {
     padding: 1.25rem;
   }
@@ -166,7 +180,7 @@
       border-radius: 4px;
 
       .error-text {
-        font-size: 24px;
+        font-size: 0.875rem;
         color: #e34b4b;
       }
     }
@@ -177,8 +191,8 @@
   }
 
   .register-link {
-    margin-top: 28px;
-    font-size: 26px;
+    margin-top: 1.25rem;
+    font-size: 0.9375rem;
     color: #666;
     text-align: center;
 

@@ -5,20 +5,7 @@ module.exports = {
     {
       customSyntax: 'postcss-html',
       files: ['*.(html|vue)', '**/*.(html|vue)'],
-      rules: {
-        'selector-pseudo-class-no-unknown': [
-          true,
-          {
-            ignorePseudoClasses: ['global', 'deep'],
-          },
-        ],
-        'selector-pseudo-element-no-unknown': [
-          true,
-          {
-            ignorePseudoElements: ['v-deep', 'v-global', 'v-slotted'],
-          },
-        ],
-      },
+      // ✅ 原来的 rules 已删掉，统一放到顶层 rules
     },
     {
       customSyntax: 'postcss-scss',
@@ -28,6 +15,19 @@ module.exports = {
   ],
   plugins: ['stylelint-order', '@stylistic/stylelint-plugin', 'stylelint-prettier', 'stylelint-scss'],
   rules: {
+    // ✅ 新增：对所有文件生效，.scss 里的 :deep 不再报错
+    'selector-pseudo-class-no-unknown': [
+      true,
+      {
+        ignorePseudoClasses: ['global', 'deep'],
+      },
+    ],
+    'selector-pseudo-element-no-unknown': [
+      true,
+      {
+        ignorePseudoElements: ['v-deep', 'v-global', 'v-slotted'],
+      },
+    ],
     'at-rule-no-deprecated': null,
     'at-rule-no-unknown': [
       true,
@@ -120,7 +120,6 @@ module.exports = {
     'scss/operator-no-newline-after': null,
     'selector-class-pattern':
       '^(?:(?:o|c|u|t|s|is|has|_|js|qa)-)?[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*(?:__[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*)?(?:--[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*)?(?:[.+])?$',
-
     'selector-not-notation': null,
   },
 };

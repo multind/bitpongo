@@ -22,9 +22,13 @@ it('submits distinct channel bounds differing only at the eighteenth decimal', a
   wrapper = mount(AlertForm, { global: { plugins: [router, i18n] } });
   await flushPromises();
   await wrapper.get('#alert-name').setValue('Precise range');
-  await wrapper.get('#alert-condition').setValue('CHANNEL_OUTSIDE');
+  await wrapper.get('[data-test="wizard-next"]').trigger('click');
+  await wrapper.get('#alert-condition').trigger('click');
+  await wrapper.get('input[value="CHANNEL_OUTSIDE"]').setValue(true);
+  await wrapper.get('[data-test="sheet-confirm"]').trigger('click');
   await wrapper.get('#alert-lower').setValue('100.123456789012345677');
   await wrapper.get('#alert-upper').setValue('100.123456789012345678');
+  for (let i = 0; i < 3; i++) await wrapper.get('[data-test="wizard-next"]').trigger('click');
   await wrapper.get('form').trigger('submit');
   await flushPromises();
   expect(createAlert).toHaveBeenCalledWith(expect.objectContaining({ lower: '100.123456789012345677', upper: '100.123456789012345678' }));
@@ -56,5 +60,6 @@ it('loads existing rule fields for editing instead of an empty creation form', a
   wrapper = mount(AlertForm, { global: { plugins: [router, i18n] } });
   await flushPromises();
   expect((wrapper.get('#alert-name').element as HTMLInputElement).value).toBe('Existing alert');
+  await wrapper.get('[data-test="wizard-next"]').trigger('click');
   expect((wrapper.get('#alert-target').element as HTMLInputElement).value).toBe('123');
 });

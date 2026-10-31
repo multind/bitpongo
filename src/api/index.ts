@@ -8,6 +8,7 @@ export interface UserInfo {
   name: string;
   email: string;
   upDownColor?: MarketColorMode;
+  introduction?: string;
 }
 
 export interface AuthSession {
@@ -106,6 +107,11 @@ export function createStrategy(data: Strategy) {
 
 export function activePlanList() {
   return http.get('/plans/list/active');
+}
+export function planPage(page = 0) {
+  return http.get<{ items: any[]; total: number; activeTotal: number; hasMore: boolean }>('/plans/list/page', {
+    params: { page, size: 10 },
+  });
 }
 
 export function updatePlanStatus(id: string, status: string) {

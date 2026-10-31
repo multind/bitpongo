@@ -91,6 +91,7 @@ describe('registration view', () => {
   it('renders four visible localized field labels', () => {
     const { wrapper } = mountView();
     const fields = wrapper.findAll('.register-field');
+    expect(wrapper.get('[data-test="auth-brand"]').attributes('alt')).toBe('Bitpongo');
 
     expect(fields).toHaveLength(4);
     expect(fields.map((field) => field.find('.stub-label').text())).toEqual(['昵称', '邮箱', '密码', '确认密码']);

@@ -1,140 +1,87 @@
 <template>
   <div class="plan-container">
-    <nut-row type="flex" wrap="nowrap" :gutter="10">
-      <nut-col align="center" :span="6">
-        <nut-avatar-group max-count="2" z-index="left" span="-20" size="20">
-          <nut-avatar v-for="(coin, index) in props.plan.coins" :key="index" size="35">
-            <img :src="getCoinIconUrl(coin.symbol)" :alt="`${coin.symbol}`" />
-          </nut-avatar>
-        </nut-avatar-group>
-      </nut-col>
-      <nut-col align="left" :span="20">
-        <nut-row>
-          <nut-col span="8">
-            <text style="font-size: 14px">{{ plan.strategy.name }}</text>
-          </nut-col>
-        </nut-row>
-        <nut-row>
-          <nut-col span="8">
-            <text style="font-size: 12px; color: #2f2f2f" :style="{ color: plan.status === 'stop' ? '#FFA900' : '' }">
-              {{ plan.status === 'stop' ? t('planCard.paused') : runTimeText }}
-            </text>
-          </nut-col>
-        </nut-row>
-      </nut-col>
-      <nut-col align="right" :span="8">
-        <nut-button class="plan-action-btn" size="small" @click="handleCoinClick('shareButton')">
-          <template #icon>
-            <Share />
-          </template>
-          {{ t('planCard.share') }}
-        </nut-button>
-      </nut-col>
-    </nut-row>
-
-    <nut-row align="flex-start" type="flex" justify="space-around" wrap>
-      <nut-col :span="12">
-        <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #2f2f2f">{{ t('planCard.totalInvested') }}</text>
-          <text style="font-size: 15px">{{ plan.total_funds }}</text>
-        </nut-space>
-      </nut-col>
-      <nut-col align="right" :span="12">
-        <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #2f2f2f">{{ t('planCard.totalReturn') }}</text>
-          <text style="font-size: 15px">{{ plan.total_revenue }} ({{ plan.total_ratio }}%)</text>
-        </nut-space>
-      </nut-col>
-    </nut-row>
-
-    <nut-row align="flex-start" type="flex" justify="flex-start" flex-wrap="wrap">
-      <nut-col align="left" :span="8">
-        <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #2f2f2f">{{ t('planCard.coinProportion') }}</text>
-          <text style="font-size: 15px; border-bottom: 1px dashed #999" @click="handleCoinClick('coinProportion')">
-            {{ coinProportionText }}
-          </text>
-        </nut-space>
-      </nut-col>
-      <nut-col align="center-left" :span="8">
-        <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #2f2f2f">{{ t('planCard.frequencyTriggered') }}</text>
-          <text style="font-size: 15px">{{ plan.strategy.frequency }} / {{ plan.triggered_count }}</text>
-        </nut-space>
-      </nut-col>
-      <nut-col align="left" :span="8">
-        <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #2f2f2f">{{ t('planCard.perCycleAmount') }}</text>
-          <text style="font-size: 15px">{{ plan.strategy.instalment }}</text>
-        </nut-space>
-      </nut-col>
-      <nut-col align="center-left" :span="8">
-        <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #2f2f2f">{{ t('common.exchange') }}</text>
-          <text style="font-size: 15px">Binance</text>
-        </nut-space>
-      </nut-col>
-      <nut-col align="left" :span="8">
-        <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #2f2f2f">{{ t('planCard.avgPrice') }}</text>
-          <text style="font-size: 15px; border-bottom: 1px dashed #999" @click="handleCoinClick('coinAverage')">{{ coinAverageText }}</text>
-        </nut-space>
-      </nut-col>
-      <nut-col align="center-left" :span="8">
-        <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <text style="font-size: 12px; color: #2f2f2f">{{ t('planCard.nextBuyTime') }}</text>
-          <text data-test="next-buy-time" style="font-size: 15px">{{ nextBuyTimeText.primary }}</text>
-          <text v-if="nextBuyTimeText.secondary" style="font-size: 11px; color: #777">{{ nextBuyTimeText.secondary }}</text>
-        </nut-space>
-      </nut-col>
-    </nut-row>
-
-    <nut-row>
-      <nut-col :span="24">
-        <canvas :id="'myChart-' + plan.id"></canvas>
-      </nut-col>
-    </nut-row>
-
-    <nut-row style="margin-top: 5px" type="flex" justify="end" flex-wrap="wrap">
-      <nut-col align="right" :span="6">
-        <nut-button class="plan-action-btn" size="small" @click="handleClick(plan.status === 'active' ? 'stop' : 'active')">
-          <template #icon>
-            <PlayStop v-if="plan.status === 'active'" />
-            <PlayStart v-else />
-          </template>
-          {{ plan.status === 'active' ? t('planCard.pause') : t('planCard.start') }}
-        </nut-button>
-      </nut-col>
-      <nut-col align="right" :span="6">
-        <nut-button class="plan-action-btn" size="small" @click="handleClick('close')">
-          <template #icon>
-            <CheckDisabled />
-          </template>
-          {{ t('planCard.stop') }}
-        </nut-button>
-      </nut-col>
-      <nut-col align="right" :span="6">
-        <nut-button class="plan-action-btn" size="small" @click="goToDetails">
-          <template #icon>
-            <Order />
-          </template>
-          {{ t('planCard.details') }}
-        </nut-button>
-      </nut-col>
-    </nut-row>
+    <div class="plan-head">
+      <div v-if="plan.coins?.length" class="plan-coins">
+        <img
+          v-for="(coin, index) in plan.coins.slice(0, 2)"
+          :key="coin.symbol"
+          class="plan-coin"
+          :class="{ stacked: index !== 0 }"
+          :src="getCoinIconUrl(coin.symbol)"
+          :alt="coin.symbol"
+        />
+      </div>
+      <img v-else class="plan-coin" :src="getCoinIconUrl('BTC')" alt="" />
+      <div class="plan-title">
+        <strong>{{ plan.strategy.name }}</strong>
+        <span>{{ t('details.dcaStrategyTag') }}</span>
+      </div>
+      <div class="plan-head-right">
+        <button type="button" class="plan-share" :aria-label="t('planCard.share')" @click="handleCoinClick('shareButton')">
+          <Share />
+        </button>
+        <span class="plan-status" :class="{ active: plan.status !== 'stop' }">
+          {{ plan.status === 'stop' ? t('planCard.paused') : t('list.active') }}
+        </span>
+      </div>
+    </div>
+    <p class="plan-runtime">{{ runTimeText }}</p>
+    <dl class="plan-stats">
+      <div>
+        <dt>{{ t('planCard.totalInvested') }}</dt>
+        <dd>{{ plan.total_funds }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('planCard.totalReturn') }}</dt>
+        <dd>{{ plan.total_revenue }} ({{ plan.total_ratio }}%)</dd>
+      </div>
+      <div>
+        <dt>{{ t('planCard.coin') }}</dt>
+        <dd class="plan-link" @click="handleCoinClick('coinProportion')">{{ coinProportionText }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('planCard.frequencyTriggered') }}</dt>
+        <dd>{{ plan.strategy.frequency }} / {{ plan.triggered_count }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('planCard.perCycleAmount') }}</dt>
+        <dd>{{ plan.strategy.instalment }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('common.exchange') }}</dt>
+        <dd>Binance</dd>
+      </div>
+      <div>
+        <dt>{{ t('planCard.avgPrice') }}</dt>
+        <dd class="plan-link" @click="handleCoinClick('coinAverage')">{{ coinAverageText }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('planCard.nextBuyTime') }}</dt>
+        <dd data-test="next-buy-time">{{ nextBuyTimeText.primary }}</dd>
+        <dd v-if="nextBuyTimeText.secondary" class="plan-secondary">{{ nextBuyTimeText.secondary }}</dd>
+      </div>
+    </dl>
+    <DcaChart :values="chartValues" :labels="chartLabels" :aria-label="t('planCard.chartLabel')" :empty-text="t('planCard.noChartData')" />
+    <div class="plan-actions">
+      <button type="button" class="plan-action" @click="handleClick(plan.status === 'active' ? 'stop' : 'active')">
+        {{ plan.status === 'active' ? t('planCard.pause') : t('planCard.start') }}
+      </button>
+      <button type="button" class="plan-action danger" @click="handleClick('close')">{{ t('planCard.stop') }}</button>
+      <button type="button" class="plan-action" @click="goToDetails">{{ t('planCard.details') }}</button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted } from 'vue';
+  import { computed } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { CheckDisabled, Order, PlayStart, PlayStop, Share } from '@nutui/icons-vue';
-  import { Chart } from 'chart.js/auto';
+  import { Share } from '@nutui/icons-vue';
   import { useRouter } from 'vue-router';
 
   import { calculateRunTime, formatScheduleInstant, parseInstant } from '@/utils/timeUtils';
   import { displayTimeZone } from '@/mobile/app-context';
   import { updatePlanStatus } from '@/api';
+  import DcaChart from './DcaChart.vue';
 
   interface Props {
     plan: any;
@@ -188,56 +135,7 @@
     }
   });
 
-  function numbers() {
-    const data: number[] = [];
-    props.plan.snapshots.map((snapshot: any) => {
-      data.push(snapshot.value);
-    });
-    return data;
-  }
-
-  const generateData = () => numbers();
-  const data = {
-    labels: chartLabels.value,
-    datasets: [
-      {
-        data: generateData(),
-        borderColor: 'green',
-        fill: true,
-      },
-    ],
-  };
-
-  onMounted(() => {
-    const ctx = document.getElementById('myChart-' + props.plan.id);
-    if (ctx) {
-      new Chart(ctx as HTMLCanvasElement, {
-        type: 'line',
-        data: data,
-        options: {
-          plugins: {
-            filler: {
-              propagate: true,
-            },
-            title: {
-              display: false,
-            },
-            legend: {
-              display: false,
-            },
-          },
-          interaction: {
-            intersect: true,
-          },
-          elements: {
-            line: {
-              tension: 0.4,
-            },
-          },
-        },
-      });
-    }
-  });
+  const chartValues = computed(() => (props.plan?.snapshots ?? []).map((snapshot: any) => Number(snapshot.value)));
 
   // 计算运行时间文本
   const runTimeText = computed(() => {
@@ -321,36 +219,150 @@
 </script>
 
 <style lang="scss" scoped>
-  .plan-action-btn {
-    min-width: 76px;
-    white-space: nowrap;
-  }
-
-  ::v-deep(.plan-action-btn .nut-button__warp) {
-    white-space: nowrap;
-  }
-
   .plan-container {
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #f5f5f5;
-    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: #fff;
+    border: 1px solid #f1e8e0;
+    border-radius: 1rem;
   }
 
-  ::v-deep(.nut-avatar-20) {
-    position: absolute;
-    right: 0;
-    bottom: 0;
+  .plan-head {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+
+  .plan-coins {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .plan-coin {
+    flex-shrink: 0;
+    width: 2.2rem;
+    height: 2.2rem;
+    object-fit: cover;
+    border: 2px solid #fff;
+    border-radius: 50%;
+  }
+
+  .plan-coin.stacked {
+    margin-left: -0.6rem;
+  }
+
+  .plan-title {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .plan-title strong {
+    display: block;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+  }
+
+  .plan-title span {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.65rem;
+    color: #9a8d82;
+  }
+
+  .plan-head-right {
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  .plan-share {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    font-size: 26px;
-    line-height: 24px;
-    color: white;
-    text-align: center;
-    background: red;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: #615a53;
+    background: transparent;
+    border: 0;
     border-radius: 50%;
+  }
+
+  .plan-share svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .plan-status {
+    flex-shrink: 0;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.65rem;
+    color: #81766b;
+    background: #eee8e2;
+    border-radius: 0.3rem;
+  }
+
+  .plan-status.active {
+    color: #328642;
+    background: #e7f4e8;
+  }
+
+  .plan-runtime {
+    margin: 0.55rem 0 0;
+    font-size: 0.7rem;
+    color: #8a8681;
+  }
+
+  .plan-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem 0.75rem;
+    margin: 0.75rem 0 0;
+  }
+
+  .plan-stats dt {
+    font-size: 0.65rem;
+    color: #8a8681;
+  }
+
+  .plan-stats dd {
+    margin: 0.15rem 0 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .plan-stats .plan-secondary {
+    margin-top: 0.1rem;
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: #8a8681;
+  }
+
+  .plan-link {
+    cursor: pointer;
+    border-bottom: 1px dashed #999;
+  }
+
+  .plan-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+
+  .plan-action {
+    flex: 1;
+    min-height: 2.2rem;
+    font: inherit;
+    font-size: 0.75rem;
+    color: #1989fa;
+    background: #f5f1ee;
+    border: 0;
+    border-radius: 0.55rem;
+  }
+
+  .plan-action.danger {
+    color: #b93d31;
   }
 </style>

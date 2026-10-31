@@ -1,0 +1,119 @@
+.timezone-trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: #fff;
+  border: 0;
+  border-radius: 0.75rem;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  :deep(.nut-cell) {
+    min-height: 2.75rem;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  :deep(.nut-cell__title) {
+    min-width: 0;
+    font-size: 0.9375rem;
+  }
+
+  :deep(.nut-cell__value) {
+    min-width: 0;
+    font-size: 0.875rem;
+    color: #666;
+    overflow-wrap: anywhere;
+  }
+}
+
+.timezone-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 75vh;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  color: #333;
+  background: #fff;
+}
+
+.timezone-toolbar {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+
+  h3 {
+    min-width: 0;
+    margin: 0;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  button {
+    min-height: 2.75rem;
+    padding: 0.5rem;
+    font: inherit;
+    color: #1765cf;
+    cursor: pointer;
+    background: none;
+    border: 0;
+  }
+
+  button:disabled {
+    color: #777;
+    cursor: default;
+  }
+}
+
+.timezone-search {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: calc(100% - 2rem);
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  margin: 0.75rem 1rem;
+  font: inherit;
+  border: 1px solid #ddd;
+  border-radius: 0.625rem;
+}
+
+.timezone-options {
+  min-height: 0;
+  padding: 0 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.timezone-option {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.75rem;
+  padding: 0.75rem 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+
+  span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  input {
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    accent-color: #1765cf;
+  }
+}

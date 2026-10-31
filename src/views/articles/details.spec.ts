@@ -24,3 +24,19 @@ it('renders content as text rather than executing stored HTML', async () => {
   expect(wrapper.text()).toContain('<img src=x onerror=alert(1)>');
   expect(wrapper.find('img').exists()).toBe(false);
 });
+it('shows the supplied summary and semantic publication date without inventing metadata', async () => {
+  api.getArticle.mockResolvedValue({
+    slug: 'notifications',
+    kind: 'HELP',
+    title: 'Notifications',
+    summary: 'Configure delivery preferences',
+    body: 'First paragraph.\n\nSecond paragraph.',
+    publishedAt: '2026-10-04T00:00:00Z',
+  });
+  wrapper = mount(Details, { global: { plugins: [i18n] } });
+  await flushPromises();
+  expect(wrapper.text()).toContain('Configure delivery preferences');
+  expect(wrapper.get('time').attributes('datetime')).toBe('2026-10-04T00:00:00Z');
+  expect(wrapper.find('img').exists()).toBe(false);
+  expect(wrapper.get('.article-body').text()).toContain('Second paragraph.');
+});

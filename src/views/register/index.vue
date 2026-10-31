@@ -1,9 +1,11 @@
 <template>
   <main class="register">
-    <h1>{{ t('register.title') }}</h1>
-    <p class="subtitle">{{ t('register.subtitle') }}</p>
+    <header class="auth-heading"
+      ><img data-test="auth-brand" src="../../assets/logo.png" alt="Bitpongo" /><h1>{{ t('register.title') }}</h1
+      ><p class="subtitle">{{ t('register.subtitle') }}</p></header
+    >
 
-    <nut-form class="form" :model-value="form" label-position="top">
+    <nut-form class="form auth-panel" :model-value="form" label-position="top">
       <nut-form-item class="register-field" :label="t('register.nameLabel')">
         <nut-input v-model="form.name" data-test="register-name" :placeholder="t('register.namePlaceholder')" type="text" />
       </nut-form-item>
@@ -42,10 +44,12 @@
         <nut-checkbox v-model="form.agreed" data-test="register-agreement" style="
 
 --nut-checkbox-margin-right: 0" @click.stop />
-        <span>{{ t('register.agreePrefix') }}</span>
-        <button class="link" data-test="register-agreement-link" type="button" @click.stop="router.push('/agreement')">
-          {{ t('register.agreement') }}
-        </button>
+        <span class="agreement-copy"
+          >{{ t('register.agreePrefix') }}
+          <button class="link" data-test="register-agreement-link" type="button" @click.stop="router.push('/agreement')">
+            {{ t('register.agreement') }}
+          </button></span
+        >
       </div>
 
       <nut-button
@@ -126,6 +130,8 @@
 </script>
 
 <style scoped lang="scss">
+  @use '../login/auth.scss';
+
   .register {
     padding: 1.25rem;
   }
@@ -192,11 +198,20 @@
 
   .link {
     padding: 0;
+    font: inherit;
     color: #101010;
     text-decoration: underline;
     cursor: pointer;
     background: transparent;
     border: 0;
+  }
+
+  .agreement-row :deep(.nut-checkbox) {
+    flex-shrink: 0;
+  }
+
+  .agreement-copy {
+    min-width: 0;
   }
 
   .login-link {

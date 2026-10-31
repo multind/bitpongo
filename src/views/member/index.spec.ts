@@ -15,6 +15,7 @@ vi.mock('vue-router', async (importOriginal) => {
 });
 
 vi.mock('@nutui/nutui', () => ({ showDialog: vi.fn() }));
+vi.mock('@/api/avatar', () => ({ getAvatar: () => Promise.resolve({ imageData: null }), uploadAvatar: vi.fn(), deleteAvatar: vi.fn() }));
 
 const ButtonStub = defineComponent({
   inheritAttrs: false,
@@ -42,7 +43,7 @@ function mountMemberView(userInfo: { name?: string; email?: string } = {}) {
         'nut-row': { template: '<div><slot /></div>' },
         'nut-col': { template: '<div><slot /></div>' },
         'nut-cell-group': { template: '<div><slot /></div>' },
-        'nut-cell': { template: '<button><slot name="icon" /><slot />{{ title }}</button>', props: ['title'] },
+        'nut-cell': { template: '<div><slot name="icon" /><slot />{{ title }}</div>', props: ['title'] },
         Setting: true,
         Link: true,
         Notice: true,
@@ -98,5 +99,15 @@ describe('guest member view', () => {
     expect(wrapper.text()).toContain('me***@example.com');
     expect(wrapper.find('[data-test="guest-welcome"]').exists()).toBe(false);
     expect(wrapper.find('[data-test="guest-login"]').exists()).toBe(false);
+  });
+
+  it('opens preferences and security from separate member rows', async () => {
+    const wrapper = mountMemberView({ name: 'Member', email: 'member@example.com' });
+    expect(wrapper.get('[data-test="member-preferences"]').element.tagName).toBe('BUTTON');
+    expect(wrapper.get('[data-test="member-security"]').element.tagName).toBe('BUTTON');
+    await wrapper.get('[data-test="member-preferences"]').trigger('click');
+    await wrapper.get('[data-test="member-security"]').trigger('click');
+    expect(mocks.push).toHaveBeenNthCalledWith(1, '/member/preferences');
+    expect(mocks.push).toHaveBeenNthCalledWith(2, '/member/security');
   });
 });

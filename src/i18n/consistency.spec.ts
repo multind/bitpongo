@@ -15,6 +15,11 @@ function flattenKeys(target: Record<string, unknown>, prefix = ''): string[] {
 }
 
 describe('i18n language packs', () => {
+  it('provides the load-more label used by alerts and running strategies in every locale', () => {
+    for (const lang of [zhCn, zhTw, enUs]) {
+      expect((lang.fng as Record<string, unknown>).loadMore).toEqual(expect.any(String));
+    }
+  });
   it('exposes identical key sets across all locales', () => {
     const keys = {
       'zh-cn': flattenKeys(zhCn).sort(),

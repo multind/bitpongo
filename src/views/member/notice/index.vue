@@ -1,25 +1,28 @@
 <template>
   <main class="notice-settings">
     <header
-      ><h1>{{ copy.title }}</h1
+      ><h1 class="page-heading">{{ copy.title }}</h1
       ><p>{{ copy.intro }}</p></header
     >
     <p v-if="!status.supported" role="status">{{ copy.unsupported }}</p>
     <p v-else-if="!status.configured || (setting && !setting.available)" role="status">{{ copy.unavailable }}</p>
-    <section v-if="status.supported" class="settings-card">
+    <section v-if="status.supported" class="settings-card" aria-labelledby="push-permission-heading">
+      <h2 id="push-permission-heading">{{ copy.diagnostics.permission }}</h2>
       <p>{{ permission === 'unavailable' ? copy.permissionUnavailable : copy[permission] }}</p>
       <p>{{ status.registered && !devicesLoaded ? copy.registrationUnknown : registered ? copy.registered : copy.unregistered }}</p>
-      <nut-button v-if="canEnableDevice" data-test="push-enable-device" :disabled="busy || registrationBusy" @click="requestPermission">{{
-        copy.permission
-      }}</nut-button>
-      <nut-button :disabled="settingsBusy" @click="openSettings">{{ copy.settings }}</nut-button>
+      <div class="permission-actions">
+        <nut-button v-if="canEnableDevice" data-test="push-enable-device" :disabled="busy || registrationBusy" @click="requestPermission">{{
+          copy.permission
+        }}</nut-button>
+        <nut-button :disabled="settingsBusy" @click="openSettings">{{ copy.settings }}</nut-button>
+      </div>
     </section>
     <p v-if="registrationBusy" role="status" data-test="push-registering">{{ stageCopy.pending }}</p>
     <p v-if="nativeError" role="alert" data-test="push-native-error">
       {{ copy.errors[nativeError] }} <code>({{ nativeError }})</code>
     </p>
-    <section v-if="status.supported || nativeError" class="settings-card push-diagnostics" data-test="push-diagnostics">
-      <h2>{{ copy.diagnostics.title }}</h2>
+    <details v-if="status.supported || nativeError" class="settings-card push-diagnostics" data-test="push-diagnostics">
+      <summary>{{ copy.diagnostics.title }}</summary>
       <p>{{ copy.diagnostics.help }}</p>
       <dl>
         <dt>{{ copy.diagnostics.supported }}</dt
@@ -42,24 +45,25 @@
         </template>
       </dl>
       <p v-if="status.diagnostics">{{ stageCopy.help }}</p>
-    </section>
+    </details>
     <p v-if="error" role="alert">{{ error }}</p
     ><p v-if="message" role="status">{{ message }}</p>
-    <section v-if="setting" class="settings-card">
+    <section v-if="setting" class="settings-card" aria-labelledby="push-preferences-heading">
+      <h2 id="push-preferences-heading">{{ copy.preferences }}</h2>
       <label v-for="key in preferenceKeys" :key="key" class="enabled-row"
         ><span>{{ copy[key] }}</span
         ><input v-model="setting[key]" type="checkbox" role="switch" :data-test="key" :disabled="busy"
       /></label>
       <p>{{ copy.soundHelp }}</p>
       <div class="actions">
-        <nut-button data-test="push-save" block color="#101010" :disabled="busy" @click="save">{{ copy.save }}</nut-button>
+        <nut-button data-test="push-save" block color="#1765cf" :disabled="busy" @click="save">{{ copy.save }}</nut-button>
         <nut-button data-test="push-test" block plain :disabled="busy || registrationBusy || !canTest" @click="sendTest">{{
           copy.test
         }}</nut-button>
       </div>
     </section>
-    <section class="settings-card">
-      <h2>{{ copy.devices }}</h2
+    <section class="settings-card" aria-labelledby="push-devices-heading">
+      <h2 id="push-devices-heading">{{ copy.devices }}</h2
       ><p v-if="!devicesLoaded">{{ copy.devicesUnavailable }}</p
       ><p v-else-if="!devices.length">{{ copy.none }}</p>
       <div v-for="device in devices" :key="device.installationId" class="device-row"
@@ -250,18 +254,20 @@
 </script>
 <style scoped lang="scss">
   .notice-settings {
-    padding: 1.25rem;
+    padding: 1rem 0.75rem;
     color: #333;
   }
 
   h1 {
     margin: 0;
-    font-size: 1.625rem;
+    font-size: 1.25rem;
     color: #101010;
   }
 
   h2 {
-    font-size: 1.125rem;
+    margin: 0 0 0.75rem;
+    font-size: 1.0625rem;
+    line-height: 1.5;
   }
 
   p {
@@ -271,7 +277,23 @@
   }
 
   .settings-card {
-    margin: 1.5rem 0;
+    padding: 1.25rem;
+    margin: 1rem 0;
+    background: #fff;
+    border-radius: 0.875rem;
+  }
+
+  .permission-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  summary {
+    min-height: 2.75rem;
+    font-weight: 600;
+    line-height: 2.75rem;
+    cursor: pointer;
   }
 
   .push-diagnostics {
@@ -308,13 +330,34 @@
   }
 
   .device-row span {
+    min-width: 0;
     overflow-wrap: anywhere;
   }
 
+  .device-row {
+    flex-wrap: wrap;
+    border-bottom: 1px solid #eee;
+  }
+
+  .device-row > span:first-child {
+    flex: 1 1 100%;
+  }
+
+  .enabled-row + .enabled-row {
+    border-top: 1px solid #eee;
+  }
+
+  .notice-settings :deep(.nut-button) {
+    height: auto;
+    min-height: 2.75rem;
+    white-space: normal;
+  }
+
   input {
+    flex-shrink: 0;
     width: 1.25rem;
     height: 1.25rem;
-    accent-color: #101010;
+    accent-color: #1765cf;
   }
 
   .actions {

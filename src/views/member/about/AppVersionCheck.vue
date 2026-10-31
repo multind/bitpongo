@@ -75,12 +75,14 @@
   }
 
   button {
+    width: 100%;
     min-height: 2.75rem;
     padding: 0.5rem 1rem;
     font: inherit;
+    text-align: left;
     background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 1.5rem;
+    border: 0;
+    border-radius: 0.625rem;
   }
 
   button:disabled {

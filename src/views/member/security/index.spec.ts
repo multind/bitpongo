@@ -18,7 +18,30 @@ vi.mock('vue-router', async (original) => ({ ...(await original<typeof VueRouter
 let view: ReturnType<typeof mount>;
 afterEach(() => {
   view?.unmount();
+  vi.useRealTimers();
   vi.resetAllMocks();
+});
+it('labels independent password and email forms and connects password guidance', async () => {
+  render();
+  await flushPromises();
+  expect(view.get('[data-password-form]').attributes('aria-labelledby')).toBe('security-password-heading');
+  expect(view.get('#security-password-heading').text()).toBe('Change password');
+  expect(view.get('[data-email-form]').attributes('aria-labelledby')).toBe('security-email-heading');
+  expect(view.get('#new-password').attributes('aria-describedby')).toBe('security-password-hint');
+  expect(view.get('#security-password-hint').text()).toContain('12–128');
+});
+it('blocks resending during the cooldown and allows it after sixty seconds', async () => {
+  vi.useFakeTimers();
+  render(true);
+  await flushPromises();
+  api.requestEmailCode.mockResolvedValue({ challengeId: 'opaque-id' });
+  await view.get('#security-email').setValue('alice@example.com');
+  await view.get('[data-send-code]').trigger('click');
+  await flushPromises();
+  expect(view.get('[data-send-code]').attributes('disabled')).toBeDefined();
+  expect(view.get('[data-send-code]').text()).toContain('60');
+  await vi.advanceTimersByTimeAsync(60000);
+  expect(view.get('[data-send-code]').attributes('disabled')).toBeUndefined();
 });
 function render(recovery = false, emailEnabled = true) {
   const pinia = createPinia();

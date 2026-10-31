@@ -47,6 +47,15 @@ it('searches in the selected language and offers real article routes', async () 
   expect(view.get('[data-test="article-link"]').attributes('href')).toBe('/articles/notifications');
   expect(api.saveSearchHistory).toHaveBeenCalledWith('notification');
 });
+it('renders dated result rows and identifies the current content section', async () => {
+  api.listArticles.mockResolvedValue({ items: [entry], hasMore: false });
+  api.getSearchHistory.mockResolvedValue([]);
+  const view = render();
+  await flushPromises();
+  expect(view.get('nav a[href="/help"]').attributes('aria-current')).toBe('page');
+  expect(view.get('time').attributes('datetime')).toBe('2026-10-04T00:00:00Z');
+  expect(view.get('[data-test="article-link"]').text()).toContain('Enable notifications');
+});
 it('keeps results when loading more fails and offers a retry', async () => {
   api.listArticles.mockResolvedValueOnce({ items: [entry], hasMore: true }).mockRejectedValueOnce(new Error('offline'));
   api.getSearchHistory.mockResolvedValue([]);
@@ -58,6 +67,17 @@ it('keeps results when loading more fails and offers a retry', async () => {
   expect(view.find('[role="alert"]').exists()).toBe(true);
   expect(view.get('[data-test="more"]').attributes('disabled')).toBeUndefined();
 });
+it('labels individual history removal and clears persisted history', async () => {
+  api.listArticles.mockResolvedValue({ items: [], hasMore: false });
+  api.getSearchHistory.mockResolvedValueOnce([{ id: 7, query: 'BTC alerts', searchedAt: '2026-10-04T00:00:00Z' }]).mockResolvedValue([]);
+  api.deleteSearchHistory.mockResolvedValue(undefined);
+  const view = render();
+  await flushPromises();
+  await view.get('button[aria-label="Remove: BTC alerts"]').trigger('click');
+  await flushPromises();
+  expect(api.deleteSearchHistory).toHaveBeenCalledExactlyOnceWith(7);
+  expect(view.text()).not.toContain('BTC alerts');
+});
 it('reloads content when switching from help to articles and hides another account history', async () => {
   api.listArticles.mockResolvedValue({ items: [entry], hasMore: false });
   api.getSearchHistory.mockResolvedValue([{ id: 1, query: 'Private search', searchedAt: '2026-10-04T00:00:00Z' }]);
@@ -65,6 +85,7 @@ it('reloads content when switching from help to articles and hides another accou
   await flushPromises();
   await view.setProps({ kind: 'ARTICLE' });
   await flushPromises();
+  expect(view.get('nav a[href="/articles"]').attributes('aria-current')).toBe('page');
   expect(api.listArticles).toHaveBeenLastCalledWith({ kind: 'ARTICLE', locale: 'en-us', q: '', page: 0 });
   await view.setProps({ kind: 'HELP' });
   await flushPromises();

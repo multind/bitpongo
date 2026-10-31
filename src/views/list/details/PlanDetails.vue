@@ -6,11 +6,13 @@
   <div v-else-if="plan" class="details-page" style="padding-right: 16px; padding-bottom: 96px; padding-left: 16px">
     <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 10px">
       <nut-col align="left" span="18">
-        <text style="font-size: 15px">{{ plan.strategy.name }}</text
+        <text class="details-name">{{ plan.strategy.name }}</text
         >&nbsp;<Edit width="13px" height="13px" @click="strategyNameHandler(plan.strategy.name)" />
       </nut-col>
       <nut-col align="right" span="6">
-        <text style="font-size: 15px">{{ plan.status === 'active' ? t('details.running') : t('details.paused') }}</text>
+        <text class="details-status" :class="{ active: plan.status === 'active' }">{{
+          plan.status === 'active' ? t('details.running') : t('details.paused')
+        }}</text>
       </nut-col>
     </nut-row>
 
@@ -523,7 +525,13 @@
   const updatingStrategyName = ref(false);
   const currentOrder = ref<any>(null);
   const value = ref('c1');
-  watch(() => route.query.tab, (tab) => { value.value = tab === 'trades' ? 'c3' : tab === 'executions' ? 'c4' : 'c1'; }, { immediate: true });
+  watch(
+    () => route.query.tab,
+    (tab) => {
+      value.value = tab === 'trades' ? 'c3' : tab === 'executions' ? 'c4' : 'c1';
+    },
+    { immediate: true },
+  );
   const list = ref([
     {
       title: t('details.tabs.returns'),
@@ -586,7 +594,9 @@
   // const { currentPrices, connect, disconnect } = useWebSocketBase();
   const { currentPrices, connect } = useWebSocketBase();
   let mounted = true;
-  onUnmounted(() => { mounted = false; });
+  onUnmounted(() => {
+    mounted = false;
+  });
 
   onMounted(async () => {
     if (!planId) {
@@ -827,6 +837,41 @@
 
   .details-page {
     box-sizing: border-box;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: #29382f;
+  }
+
+  .details-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .details-status {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.65rem;
+    color: #81766b;
+    background: #eee8e2;
+    border-radius: 0.3rem;
+  }
+
+  .details-status.active {
+    color: #328642;
+    background: #e7f4e8;
+  }
+
+  .details-page :deep(.nut-tab-pane) {
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid #f1e8e0;
+    border-radius: 1rem;
+  }
+
+  .details-page :deep(.nut-tag) {
+    color: #81766b;
+    background: #f5f1ee;
+    border: 0;
   }
 
   .plan-action-bar {
@@ -834,11 +879,11 @@
     box-sizing: border-box;
     width: 100%;
     max-width: 750px;
-    margin: 0 auto;
     padding: 10px 16px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom));
-    background-color: whitesmoke;
-    border-top: 1px solid #eee;
+    margin: 0 auto;
+    background-color: #fffaf5;
+    border-top: 1px solid #f1e8e0;
   }
 
   .empty-container {
@@ -854,12 +899,14 @@
   }
 
   .custom-title {
-    color: black;
+    font-size: 0.78rem;
+    color: #8a8681;
     cursor: pointer;
   }
 
   .custom-title.active {
-    color: cadetblue;
+    font-weight: 600;
+    color: #1989fa;
   }
 
   .execution-status {

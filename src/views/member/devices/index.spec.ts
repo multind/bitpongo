@@ -63,3 +63,24 @@ it('logs out locally only after the current session is revoked', async () => {
   expect(useUserStore().token).toBe('');
   expect(api.replace).toHaveBeenCalledWith('/login');
 });
+it('identifies the current session in a list and labels its absolute dates', async () => {
+  render(true);
+  await flushPromises();
+  expect(view.get('ul li').text()).toContain('Current session');
+  expect(view.get('dl').text()).toContain('2026-10-06');
+  expect(view.findAll('time').map((t) => t.attributes('datetime'))).toEqual([
+    '2026-10-06T00:00:00Z',
+    '2026-10-06T00:00:00Z',
+    '2026-11-05T00:00:00Z',
+  ]);
+});
+it('cancels revocation without changing the current login', async () => {
+  render(true);
+  await flushPromises();
+  await view.get('[data-revoke]').trigger('click');
+  expect(view.get('[role="group"]').text()).toContain('sign');
+  await view.get('[data-cancel]').trigger('click');
+  expect(view.find('[data-confirm]').exists()).toBe(false);
+  expect(api.revokeSession).not.toHaveBeenCalled();
+  expect(useUserStore().token).toBe('token');
+});

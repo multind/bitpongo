@@ -49,6 +49,18 @@ beforeEach(() => {
   mocks.testPush.mockResolvedValue({ queued: true });
 });
 describe('native notification settings', () => {
+  it('keeps registration errors outside collapsed diagnostics and names preference and device sections', async () => {
+    mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
+    const view = render();
+    await flushPromises();
+    const diagnostics = view.get('details[data-test="push-diagnostics"]');
+    expect(diagnostics.attributes('open')).toBeUndefined();
+    expect(diagnostics.get('summary').text()).toBe('Notification diagnostics');
+    expect(view.get('[data-test="push-native-error"]').element.closest('details')).toBeNull();
+    expect(view.get('[aria-labelledby="push-preferences-heading"]').get('h2').attributes('id')).toBe('push-preferences-heading');
+    expect(view.get('[aria-labelledby="push-devices-heading"]').get('h2').text()).toBe('Registered devices');
+    view.unmount();
+  });
   it('keeps preferences and system settings usable while registration is pending', async () => {
     let finish!: (value: typeof status) => void;
     mocks.pushSyncSession.mockReturnValue(

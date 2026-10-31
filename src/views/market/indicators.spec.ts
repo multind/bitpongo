@@ -20,8 +20,10 @@ it('shows stale history with attribution instead of presenting it as a current s
   wrapper = mount(Indicators, { global: { plugins: [i18n] } });
   await flushPromises();
   expect(wrapper.text()).toContain('40');
+  expect(wrapper.get('[role="meter"]').attributes('aria-valuenow')).toBe('40');
   expect(wrapper.get('[role="status"]').text()).toContain('outdated');
-  expect(wrapper.get('a').attributes('href')).toBe('https://alternative.me/crypto/fear-and-greed-index/');
+  expect(wrapper.get('.source').text()).toBe('Alternative.me');
+  expect(wrapper.find('a').exists()).toBe(false);
 });
 it('shows an explicit error without an invented zero index', async () => {
   api.getFearGreed.mockRejectedValue(new Error('offline'));
@@ -30,4 +32,16 @@ it('shows an explicit error without an invented zero index', async () => {
   await flushPromises();
   expect(wrapper.find('[role="alert"]').exists()).toBe(true);
   expect(wrapper.find('[data-test="index-value"]').exists()).toBe(false);
+});
+it('does not invent a zero when the provider returns no points', async () => {
+  api.getFearGreed.mockResolvedValue({
+    points: [],
+    fetchedAt: '2026-10-20T00:00:00Z',
+    stale: false,
+    sourceUrl: 'https://alternative.me/crypto/fear-and-greed-index/',
+  });
+  wrapper = mount(Indicators, { global: { plugins: [i18n] } });
+  await flushPromises();
+  expect(wrapper.find('[role="meter"]').exists()).toBe(false);
+  expect(wrapper.get('[data-test="index-empty"]').text()).toBeTruthy();
 });

@@ -33,7 +33,7 @@ export const useUserStore = defineStore('user', {
       try {
         const profile = await getUserProfile();
         if (token !== this.token || generation !== this.profileGeneration) return;
-        this.info = { ...this.info, name: profile.name, upDownColor: profile.upDownColor };
+        this.info = { ...this.info, name: profile.name, introduction: profile.introduction, upDownColor: profile.upDownColor };
       } catch {
         // A profile service outage must not invalidate an existing login.
       }

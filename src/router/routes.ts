@@ -12,7 +12,11 @@ export const routes = [
         meta: { title: 'content.articles', border: true },
       },
       { path: 'articles/:slug', component: () => import('@/views/articles/details.vue'), meta: { title: 'content.article', border: true } },
-      { path: 'alerts', component: () => import('@/views/alerts/index.vue'), meta: { title: 'tabbar.alerts', border: true } },
+      {
+        path: 'alerts',
+        component: () => import('@/views/alerts/index.vue'),
+        meta: { title: 'tabbar.alerts', border: true, pageHeader: true },
+      },
       { path: 'alerts/create', component: () => import('@/views/alerts/create.vue'), meta: { title: 'alerts.create', border: true } },
       { path: 'alerts/:id/edit', component: () => import('@/views/alerts/create.vue'), meta: { title: 'alerts.edit', border: true } },
       { path: 'alerts/events', component: () => import('@/views/alerts/events.vue'), meta: { title: 'alerts.inbox', border: true } },
@@ -28,12 +32,17 @@ export const routes = [
         path: 'market',
         name: 'market',
         component: () => import('@/views/market/index.vue'),
-        meta: { title: 'tabbar.market', border: true },
+        meta: { title: 'tabbar.market', border: true, pageHeader: true },
       },
       {
         path: 'market/indicators',
         component: () => import('@/views/market/indicators.vue'),
         meta: { title: 'indicators.fearGreed', border: true },
+      },
+      {
+        path: 'market/:symbol',
+        component: () => import('@/views/market/details.vue'),
+        meta: { title: 'market.candles', border: true },
       },
       // {
       //   path: 'home',
@@ -43,6 +52,21 @@ export const routes = [
       //     keepAlive: true,
       //   },
       // },
+      {
+        path: 'fng/details/:id',
+        component: () => import('@/views/fng/details.vue'),
+        meta: { title: 'fng.title', border: true },
+      },
+      {
+        path: 'fng/create',
+        component: () => import('@/views/fng/create.vue'),
+        meta: { title: 'fng.title', border: true },
+      },
+      {
+        path: 'presets',
+        component: () => import('@/views/presets/index.vue'),
+        meta: { title: 'presets.title', border: true },
+      },
       {
         path: 'list',
         component: () => import('@/views/list/index.vue'),
@@ -96,6 +120,15 @@ export const routes = [
         },
       },
       {
+        name: 'memberNotificationMethods',
+        path: '/member/notification-methods',
+        component: () => import('@/views/member/notification-methods/index.vue'),
+        meta: {
+          title: 'notificationMethods.title',
+          border: true,
+        },
+      },
+      {
         name: 'memberAbout',
         path: '/member/about',
         component: () => import('@/views/member/about/index.vue'),
@@ -103,6 +136,11 @@ export const routes = [
           title: 'member.about',
           border: false,
         },
+      },
+      {
+        path: '/member/preferences',
+        component: () => import('@/views/member/preferences/index.vue'),
+        meta: { title: 'preferences.title', border: true },
       },
       {
         path: '/member/profile',
