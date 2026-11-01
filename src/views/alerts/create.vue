@@ -81,7 +81,7 @@
               :options="intervals.map((value) => ({ value, label: value }))"
           /></template>
           <label for="alert-expiry">{{ t('alerts.expiry') }}</label
-          ><input id="alert-expiry" v-model="expiry" type="datetime-local" />
+          ><div class="expiry-field"><input id="alert-expiry" v-model="expiry" type="datetime-local" /></div>
           <p class="wizard-meta">{{ t('alerts.expiryHint') }}</p>
         </template>
         <dl v-if="step === 5" class="wizard-review" data-test="wizard-review">
@@ -302,4 +302,20 @@
 </script>
 <style scoped lang="scss">
   @use './wizard.scss';
+
+  .expiry-field {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 0.875rem;
+  }
+
+  #alert-expiry {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    appearance: none;
+    appearance: none;
+  }
 </style>

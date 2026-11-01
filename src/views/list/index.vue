@@ -141,127 +141,30 @@
     </div>
   </nut-popup>
 
-  <nut-popup v-model:visible="sharePopup" position="bottom" closeable round close-icon-position="top-left" :style="{ height: '75%' }">
-    <nut-row style="margin-top: 23px; text-align: center" type="flex">
-      <nut-col span="24">
-        <div style="font-size: 18px">{{ t('list.sharePage') }}</div>
-      </nut-col>
-    </nut-row>
-    <div id="capture" style="height: 460px; padding: 20px; margin: 15px; background-color: black; border: #999 solid 2px">
-      <nut-row>
-        <nut-col align="left" span="12">
-          <div style="display: flex; align-items: center">
-            <img style="margin-right: 10px; border-radius: 10px" src="../../assets/logo.png" height="30" width="30" alt="logo" />
-            <text style="font-size: 18px; color: white; text-align: left">{{ getUserInfo }}</text>
-          </div>
-        </nut-col>
-        <nut-col align="right" span="12">
-          <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-            <text style="font-size: 12px; color: #999; text-align: center">{{ currentTime.time }}</text>
-            <text style="font-size: 12px; color: #999; text-align: center">{{ currentTime.date }}</text>
-          </nut-space>
-        </nut-col>
-      </nut-row>
-
-      <img
-        style="position: absolute; top: 100px; right: 60px; z-index: 1; transform: rotate(20deg)"
-        src="../../assets/rocket.png"
-        height="250"
-        width="210"
-        alt="rocket"
-      />
-
-      <nut-row style="margin-top: 130px" type="flex" wrap="nowrap">
-        <nut-col span="24">
-          <div style="font-size: 22px; font-weight: bold; color: whitesmoke">Bitpongo</div>
-        </nut-col>
-      </nut-row>
-
-      <nut-row style="margin-top: 10px" type="flex" wrap="nowrap">
-        <nut-col span="24">
-          <div style="font-size: 15px; color: #999">{{ t('list.totalReturnRate') }}</div>
-        </nut-col>
-      </nut-row>
-      <nut-row>
-        <nut-col span="24">
-          <div style="font-size: 40px; font-weight: bold; color: greenyellow">{{ currentPlan?.total_ratio }}%</div>
-        </nut-col>
-      </nut-row>
-
-      <nut-row style="margin-top: 20px" type="flex" wrap="nowrap" :gutter="10">
-        <nut-col align="center" :span="5">
-          <nut-avatar-group max-count="2" z-index="left" span="-20" size="20">
-            <nut-avatar v-for="(coin, index) in currentPlan?.coins" :key="index" size="35">
-              <img :src="getCoinIconUrl(coin.symbol)" :alt="`${coin.symbol}`" />
-            </nut-avatar>
-          </nut-avatar-group>
-        </nut-col>
-        <nut-col align="left" :span="19">
-          <nut-row>
-            <nut-col span="8">
-              <text style="font-size: 14px; color: white">{{ currentPlan?.strategy.name }}</text>
-            </nut-col>
-          </nut-row>
-          <nut-row>
-            <nut-col span="8">
-              <text style="font-size: 12px; color: white" :style="{ color: currentPlan?.status === 'stop' ? '#FFA900' : 'white' }">
-                {{ currentPlan?.status === 'stop' ? t('list.paused') : t('list.active') }}
-              </text>
-            </nut-col>
-          </nut-row>
-        </nut-col>
-      </nut-row>
-
-      <nut-row style="margin-top: 20px" type="flex" justify="space-around" wrap>
-        <nut-col span="12">
-          <div style="font-size: 15px; color: #999">{{ t('planCard.avgPrice') }}</div>
-        </nut-col>
-        <nut-col align="right" span="12">
-          <div style="font-size: 16px; color: white">{{ coinAverageText }}</div>
-        </nut-col>
-      </nut-row>
-      <nut-row style="margin-top: 5px" type="flex" justify="space-around" wrap>
-        <nut-col span="12">
-          <div style="font-size: 15px; color: #999">{{ t('planCard.frequencyTriggered') }}</div>
-        </nut-col>
-        <nut-col align="right" span="12">
-          <div style="font-size: 16px; color: white">{{ currentPlan?.strategy.frequency }}</div>
-        </nut-col>
-      </nut-row>
-      <nut-row style="margin-top: 5px" type="flex" justify="space-around" wrap>
-        <nut-col span="12">
-          <div style="font-size: 15px; color: #999">{{ t('planCard.totalReturn') }}</div>
-        </nut-col>
-        <nut-col align="right" span="12">
-          <div style="font-size: 16px; color: greenyellow">{{ currentPlan?.total_revenue }} USDT</div>
-        </nut-col>
-      </nut-row>
-    </div>
-    <nut-row>
-      <nut-col align="center" span="5" @click="saveFile">
-        <nut-space direction="vertical" :style="{ '--nut-space-gap': '0px' }">
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              width: 40px;
-              height: 40px;
-              background-color: azure;
-              border-radius: 50%;
-            "
-          >
-            <Download width="20px" height="20px" />
-          </div>
-          <text style="font-size: 13px">{{ t('common.download') }}</text>
-        </nut-space>
-      </nut-col>
-    </nut-row>
+  <nut-popup
+    v-model:visible="sharePopup"
+    position="bottom"
+    closeable
+    round
+    close-icon-position="top-left"
+    :style="{ maxHeight: '90dvh', overflowY: 'auto' }"
+  >
+    <h2 class="share-heading">{{ t('list.sharePage') }}</h2>
+    <SharePoster
+      v-if="sharePopup"
+      :plan="currentPlan"
+      :username="getUserInfo"
+      :average="coinAverageText"
+      :date="currentTime.date"
+      :time="currentTime.time"
+      :coin-icon="getCoinIconUrl"
+      @download="saveFile"
+    />
   </nut-popup>
 </template>
 
 <script setup lang="ts">
-  import { Download } from '@nutui/icons-vue';
+  import SharePoster from './components/SharePoster.vue';
   import PageIcon from '@/components/PageIcon.vue';
   import { useI18n } from 'vue-i18n';
   import PlanCard from './components/PlanCard.vue';
@@ -481,6 +384,14 @@
 </script>
 
 <style lang="scss" scoped>
+  .share-heading {
+    margin: 1.2rem 3rem;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: #29382f;
+    text-align: center;
+  }
+
   .running-load-more {
     width: 100%;
     min-height: 2.75rem;

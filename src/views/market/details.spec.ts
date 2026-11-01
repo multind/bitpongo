@@ -21,7 +21,7 @@ const wrappers: ReturnType<typeof mount>[] = [];
 async function createView() {
   i18n.global.locale.value = 'en-us';
   vi.mocked(getMarketSymbols).mockResolvedValue([
-    { symbol: 'BTCUSDT', baseAsset: 'BTC', quoteAsset: 'USDT' },
+    { symbol: 'BTCUSDT', baseAsset: 'BTC', quoteAsset: 'USDT', priceTickSize: '0.01000000' },
     { symbol: 'ETHUSDT', baseAsset: 'ETH', quoteAsset: 'USDT' },
   ]);
   vi.mocked(getMarketTickers).mockResolvedValue([
@@ -51,7 +51,7 @@ describe('market browsing', () => {
     await flushPromises();
     view.findComponent(CandleChart).vm.$emit('selectPrice', 60500);
     await view.vm.$nextTick();
-    expect(view.get('.create-alert').attributes('href')).toContain('price=60500');
+    expect(view.get('.create-alert').attributes('href')).toContain('price=60500.00');
   });
   it('shows real ticker and candles', async () => {
     vi.mocked(getMarketCandles).mockResolvedValue([candle]);

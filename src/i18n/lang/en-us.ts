@@ -86,6 +86,7 @@ export const lang: langType = {
     market: 'Markets',
   },
   market: {
+    pricePrecisionUnavailable: 'Precision unavailable; enter the price manually',
     pickPrice: 'Select price on chart',
     stopPicking: 'Finish selecting',
     pickPriceHelp: 'Tap a price on the chart. You can edit it when creating the alert.',
@@ -238,7 +239,7 @@ export const lang: langType = {
     confirm: 'Confirm',
     favorite: 'Favorite',
     favorited: 'Favorited',
-    totalRevenue: 'Total revenue',
+    totalRevenue: 'Total return',
     exchangeLabel: 'Exchange',
     symbol: 'Symbol',
     runTime: 'Run time',

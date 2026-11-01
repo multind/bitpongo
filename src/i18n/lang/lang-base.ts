@@ -336,6 +336,7 @@ export type langType = {
     frequencies: Record<'ONCE' | 'EVERY_TIME' | 'EACH_CANDLE' | 'CANDLE_CLOSE' | 'PER_MINUTE', string>;
   };
   market: {
+    pricePrecisionUnavailable: string;
     pickPrice: string;
     stopPicking: string;
     pickPriceHelp: string;

@@ -4,18 +4,20 @@
     <img v-if="ready || !user.token || error" :src="image || logo" :alt="t('profile.avatar')" class="user-avatar" @error="image = null" />
     <span v-else class="user-avatar avatar-loading" aria-hidden="true"></span>
     <template v-if="editable">
-      <button v-if="native" type="button" class="avatar-upload" :disabled="busy || !ready" @click="chooseNative">{{
-        t('profile.uploadAvatar')
-      }}</button>
-      <button
-        ref="presetTrigger"
-        type="button"
-        :disabled="busy || !ready"
-        aria-haspopup="dialog"
-        :aria-expanded="presetOpen"
-        @click="presetOpen = true"
-        >{{ t('profile.choosePresetAvatar') }}</button
-      >
+      <div class="avatar-actions">
+        <button v-if="native" type="button" class="avatar-upload" :disabled="busy || !ready" @click="chooseNative">{{
+          t('profile.uploadAvatar')
+        }}</button>
+        <button
+          ref="presetTrigger"
+          type="button"
+          :disabled="busy || !ready"
+          aria-haspopup="dialog"
+          :aria-expanded="presetOpen"
+          @click="presetOpen = true"
+          >{{ t('profile.choosePresetAvatar') }}</button
+        >
+      </div>
       <NutPopup v-model:visible="presetOpen" position="bottom" round @opened="presetClose?.focus()" @closed="presetTrigger?.focus()">
         <section
           class="avatar-sheet"
@@ -43,8 +45,10 @@
           <p v-if="error" role="alert">{{ t('common.saveFailed') }}</p>
         </section>
       </NutPopup>
-      <p class="meta">{{ t('profile.avatarHint') }}</p>
-      <button v-if="image" type="button" data-remove :disabled="busy || !ready" @click="remove">{{ t('profile.removeAvatar') }}</button>
+      <p v-if="native" class="meta">{{ t('profile.avatarHint') }}</p>
+      <button v-if="image" type="button" class="avatar-remove" data-remove :disabled="busy || !ready" @click="remove">{{
+        t('profile.removeAvatar')
+      }}</button>
       <button v-if="!ready && user.token && !busy" type="button" @click="load">{{ t('market.retry') }}</button>
       <p v-if="error" role="alert">{{ error === 'invalid' ? t('profile.avatarHint') : t('common.saveFailed') }}</p>
     </template>
@@ -235,13 +239,49 @@
     font-size: 1rem;
   }
 
-  .avatar-upload {
-    display: block;
-    font-size: 0.875rem;
-    line-height: 1.5;
+  .avatar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-top: 1rem;
+  }
+
+  .avatar-actions button {
+    flex: 0 1 auto;
+    max-width: 100%;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.875rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: #34443a;
+    overflow-wrap: anywhere;
+    background: #fff;
+    border: 1px solid #e3e6e3;
+    border-radius: 0.75rem;
+  }
+
+  .avatar-actions .avatar-upload {
+    color: #1765cf;
+    background: #eaf4ff;
+    border-color: #d4e9ff;
+  }
+
+  .avatar-remove {
+    display: inline-block;
+    padding: 0.25rem 0;
+    margin-top: 0.75rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    color: #c34e44;
+    background: transparent;
+    border: 0;
   }
 
   .alert-card .meta {
+    margin: 0.75rem 0 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
     color: #666;
   }
 

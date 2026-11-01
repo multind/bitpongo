@@ -4,6 +4,7 @@ export interface MarketSymbol {
   symbol: string;
   baseAsset: string;
   quoteAsset: string;
+  priceTickSize?: string | null;
 }
 export interface MarketTicker {
   symbol: string;

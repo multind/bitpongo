@@ -48,12 +48,12 @@ describe('Bitpongo 品牌资产', () => {
   it('展示品牌图标的现有入口继续引用统一资源', () => {
     const member = readFileSync(resolve(process.cwd(), 'src/views/member/index.vue'), 'utf8');
     const about = readFileSync(resolve(process.cwd(), 'src/views/member/about/index.vue'), 'utf8');
-    const list = readFileSync(resolve(process.cwd(), 'src/views/list/index.vue'), 'utf8');
+    const poster = readFileSync(resolve(process.cwd(), 'src/views/list/components/SharePoster.vue'), 'utf8');
     const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8');
 
     expect(member).toContain('../../assets/logo.png');
     expect(about).toContain('../../../assets/logo.png');
-    expect(list).toContain('../../assets/logo.png');
+    expect(poster).toContain('../../../assets/logo.png');
     expect(html).toContain('href="/favicon.png"');
   });
 });

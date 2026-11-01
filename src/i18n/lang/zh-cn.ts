@@ -86,6 +86,7 @@ export const lang: langType = {
     member: '我的',
   },
   market: {
+    pricePrecisionUnavailable: '精度不可用，请在创建时手动输入价格',
     pickPrice: '在图表选价',
     stopPicking: '结束选价',
     pickPriceHelp: '点击图表中的价格位置，创建提醒时可再次修改。',
@@ -235,7 +236,7 @@ export const lang: langType = {
     confirm: '确认',
     favorite: '收藏',
     favorited: '已收藏',
-    totalRevenue: '总收益',
+    totalRevenue: '总收益率',
     exchangeLabel: '交易所',
     symbol: '交易对',
     runTime: '运行时间',

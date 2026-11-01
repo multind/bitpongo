@@ -70,7 +70,7 @@
           @select-price="selectedPrice = $event"
         />
         <p v-if="selectedPrice != null" class="market-meta"
-          >{{ t('market.selectedPrice') }}: {{ selectedPrice.toFixed(18).replace(/\.?0+$/, '') }} USDT</p
+          >{{ t('market.selectedPrice') }}: {{ selectedPriceText ? `${selectedPriceText} USDT` : t('market.pricePrecisionUnavailable') }}</p
         >
       </template>
       <p v-else>{{ t('market.empty') }}</p>
@@ -79,7 +79,7 @@
         class="create-alert"
         :to="{
           path: '/alerts/create',
-          query: { symbol, ...(selectedPrice == null ? {} : { price: selectedPrice.toFixed(18).replace(/\.?0+$/, '') }) },
+          query: { symbol, ...(selectedPriceText == null ? {} : { price: selectedPriceText }) },
         }"
         ><PageIcon name="plus" />{{ t('alerts.create') }}</RouterLink
       >
@@ -94,6 +94,7 @@
   import type { MarketSymbol, MarketTicker, MarketCandle } from '@/api/market';
   import { formatInstant } from '@/utils/timeUtils';
   import CandleChart from './components/CandleChart.vue';
+  import { formatChartPrice } from './chart-price';
   import CandleChartSkeleton from './components/CandleChartSkeleton.vue';
   import PageIcon from '@/components/PageIcon.vue';
   import SheetSelect from '@/components/SheetSelect.vue';
@@ -112,6 +113,11 @@
   const interval = ref('1h');
   const pickingPrice = ref(false);
   const selectedPrice = ref<number | null>(null);
+  const selectedPriceText = computed(() =>
+    selectedPrice.value == null
+      ? null
+      : formatChartPrice(selectedPrice.value, symbols.value.find((s) => s.symbol === symbol.value)?.priceTickSize),
+  );
   watch(symbol, () => {
     selectedPrice.value = null;
     pickingPrice.value = false;

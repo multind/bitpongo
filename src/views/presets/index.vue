@@ -260,7 +260,7 @@
   const ratio = (item: PresetItem) => {
     const value = number(item.totalRatio);
     if (value == null || !Number.isFinite(value)) return '—';
-    return `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
+    return `${value > 0 ? '+' : ''}${value.toFixed(4)}%`;
   };
   const ratioClass = (item: PresetItem) => {
     const value = number(item.totalRatio);
