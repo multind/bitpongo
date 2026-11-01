@@ -6,7 +6,6 @@
     <nut-form-item :label="t('common.exchange')" label-position="left" required prop="exchange">
       <nut-radio-group v-model="formData.exchange" direction="horizontal">
         <nut-radio label="binance" shape="button">{{ t('exchange.binanceName') }}</nut-radio>
-        <nut-radio label="okx" shape="button">{{ t('exchange.okxName') }}</nut-radio>
       </nut-radio-group>
     </nut-form-item>
     <nut-form-item :label="t('exchange.accessKey')" required label-position="left" prop="access_key">
@@ -27,7 +26,8 @@
         @blur="customBlurValidate('secret_key')"
       />
     </nut-form-item>
-    <nut-form-item :label="t('exchange.passwordLabel')" label-position="left" prop="password">
+    <!-- Only Binance is supported by the API today; the passphrase field is for OKX and stays hidden. -->
+    <nut-form-item v-if="formData.exchange === 'okx'" :label="t('exchange.passwordLabel')" label-position="left" prop="password">
       <nut-input v-model="formData.password" :placeholder="t('exchange.passwordPlaceholder')" type="text" clearable />
     </nut-form-item>
     <nut-cell-group>

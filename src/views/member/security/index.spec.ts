@@ -28,7 +28,7 @@ it('labels independent password and email forms and connects password guidance',
   expect(view.get('#security-password-heading').text()).toBe('Change password');
   expect(view.get('[data-email-form]').attributes('aria-labelledby')).toBe('security-email-heading');
   expect(view.get('#new-password').attributes('aria-describedby')).toBe('security-password-hint');
-  expect(view.get('#security-password-hint').text()).toContain('12–128');
+  expect(view.get('#security-password-hint').text()).toContain('8–128');
 });
 it('blocks resending during the cooldown and allows it after sixty seconds', async () => {
   vi.useFakeTimers();

@@ -30,6 +30,7 @@ export interface PresetParams {
   direction?: 'LONG' | 'SHORT';
   profitTargetPercent?: string;
   profitDrawdownPercent?: string;
+  stopLossPercent?: string | null;
   profitTargetType?: 'PERCENT' | 'USDT';
   maxOrders?: number;
   maxPositions?: number;
@@ -79,3 +80,20 @@ export const getPreset = (key: string) => http.get<PresetItem>(`/presets/${encod
 
 export const togglePresetFavorite = (key: string) =>
   http.post<{ favorite: boolean; followers: number }>(`/presets/${encodeURIComponent(key)}/favorite`);
+
+export interface PresetVisibility {
+  public: boolean;
+}
+
+/** Whether one of the current user's own strategies is listed in the strategy plaza (opt-in). */
+export function getPresetVisibility(type: PresetType, strategyId: number | string): Promise<PresetVisibility> {
+  return http.get<PresetVisibility>(`/presets/visibility/${type}/${strategyId}`);
+}
+
+export function updatePresetVisibility(
+  type: PresetType,
+  strategyId: number | string,
+  visible: boolean,
+): Promise<PresetVisibility> {
+  return http.put<PresetVisibility>(`/presets/visibility/${type}/${strategyId}`, { public: visible });
+}

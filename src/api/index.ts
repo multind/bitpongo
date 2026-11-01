@@ -97,7 +97,11 @@ export function exchangeDetails(id: string) {
   return http.get(`/exchanges/${id}`);
 }
 
-export function minimumAmount(data: { exchange_id: number; coins: string[] }) {
+/**
+ * Smallest whole-USDT instalment for which every coin's share meets the exchange minimum.
+ * Pass `proportions` (symbol -> %) so uneven splits are accounted for.
+ */
+export function minimumAmount(data: { exchange_id: number; coins: string[]; proportions?: Record<string, number> }) {
   return http.post('/exchanges/minimumAmount', data);
 }
 

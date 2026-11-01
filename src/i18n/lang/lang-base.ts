@@ -189,6 +189,8 @@ export type langType = {
     profitTargetHint: string;
     profitDrawdownPercent: string;
     profitDrawdownHint: string;
+    stopLossPercent: string;
+    stopLossHint: string;
     profitTargetType: string;
     maxOrders: string;
     maxOrdersHint: string;
@@ -246,6 +248,8 @@ export type langType = {
     statuses: Record<'PENDING_ENTRY' | 'OPENING' | 'OPEN' | 'CLOSING' | 'CLOSED' | 'FAILED', string>;
   };
   presets: {
+    visibilityTitle: string;
+    visibilityHint: string;
     title: string;
     entry: string;
     entryHint: string;
@@ -642,6 +646,8 @@ export type langType = {
     defaultName: string;
     selectExchangeFirst: string;
     instalmentRequired: string;
+    instalmentInteger: string;
+    instalmentBelowMinimum: string;
     frequencyRequired: string;
     coinsRequired: string;
     proportionTotal: string;

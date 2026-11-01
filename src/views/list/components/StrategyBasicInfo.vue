@@ -84,16 +84,18 @@
     async ([newExchangeId, newCoins]) => {
       instalmentPlaceholder.value = '';
       if (newExchangeId && newCoins && Array.isArray(newCoins)) {
-        // 查询最小定投金额的汇总
+        // 按币种比例查询满足交易所最小成交额的每期金额下限
         const minimumAmountSum = await minimumAmount({
           exchange_id: newExchangeId as number,
           coins: newCoins.map((coin: any) => coin.symbol),
+          proportions: Object.fromEntries(newCoins.map((coin: any) => [coin.symbol, Number(coin.proportion) || 0])),
         });
         if (minimumAmountSum) {
-          instalmentPlaceholder.value = `（> ${minimumAmountSum} USDT）`;
+          instalmentPlaceholder.value = `（≥ ${minimumAmountSum} USDT）`;
         }
       }
     },
+    { deep: true },
   );
 </script>
 

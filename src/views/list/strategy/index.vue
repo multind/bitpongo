@@ -107,7 +107,7 @@
   import { useI18n } from 'vue-i18n';
   import { useRoute, useRouter } from 'vue-router';
   import { showToast } from '@nutui/nutui';
-  import { checkExchange, createStrategy } from '@/api';
+  import { checkExchange, createStrategy, minimumAmount } from '@/api';
   import type { PresetItem } from '@/api/presets';
   import CoinSelection from '../components/CoinSelection.vue';
   import StrategyBasicInfo from '../components/StrategyBasicInfo.vue';
@@ -204,6 +204,11 @@
       showToast.fail(t('strategy.instalmentRequired'));
       return;
     }
+    // The API stores instalments as whole USDT.
+    if (!Number.isInteger(instalment)) {
+      showToast.fail(t('strategy.instalmentInteger'));
+      return;
+    }
     if (!strategy.value.cron) {
       showToast.fail(t('strategy.frequencyRequired'));
       return;
@@ -216,6 +221,22 @@
     if (totalProportion !== 100) {
       showToast.fail(t('strategy.proportionTotal'));
       return;
+    }
+
+    try {
+      const minimum = Number(
+        await minimumAmount({
+          exchange_id: Number(strategy.value.exchange_id),
+          coins: strategy.value.coins.map((coin) => coin.symbol),
+          proportions: Object.fromEntries(strategy.value.coins.map((coin) => [coin.symbol, Number(coin.proportion) || 0])),
+        }),
+      );
+      if (Number.isFinite(minimum) && instalment < minimum) {
+        showToast.fail(t('strategy.instalmentBelowMinimum', { amount: minimum }));
+        return;
+      }
+    } catch {
+      // If the exchange rules cannot be loaded, let the API decide.
     }
 
     const validatedStrategy = {

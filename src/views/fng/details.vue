@@ -19,6 +19,7 @@
           {{ strategy.direction === 'LONG' ? t('fng.long') : t('fng.short') }}
         </p>
         <p class="meta">{{ t('fngDetail.created') }} {{ formatInstant(strategy.createdAt) }}</p>
+        <PlazaVisibilitySwitch type="FNG" :strategy-id="strategyId" />
       </div>
       <div class="heading-actions">
         <button type="button" class="action-button" @click="toggleEnabled">{{
@@ -213,6 +214,7 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
+  import PlazaVisibilitySwitch from '@/components/PlazaVisibilitySwitch.vue';
   import { useRoute, useRouter } from 'vue-router';
   import { showDialog, showToast } from '@nutui/nutui';
   import { formatInstant } from '@/utils/timeUtils';
