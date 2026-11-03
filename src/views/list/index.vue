@@ -7,7 +7,17 @@
     </span>
     <PageIcon class="presets-chevron" name="chevron" />
   </RouterLink>
-  <nut-tabs class="plan-tabs" v-model="value" align="left" size="large" swipeable background="#fff" title-gutter="32" :ellipsis="false">
+  <nut-tabs
+    class="plan-tabs"
+    v-model="value"
+    align="left"
+    size="large"
+    swipeable
+    auto-height
+    background="#fff"
+    title-gutter="32"
+    :ellipsis="false"
+  >
     <nut-tab-pane :title="t('list.strategyTab')" pane-key="1">
       <nut-cell-group>
         <nut-cell class="strategy-choice" center :sub-title="t('list.costSubtitle')" is-link @click="() => toCreate(1)">
@@ -170,6 +180,7 @@
   import PlanCard from './components/PlanCard.vue';
   import { planPage } from '@/api';
   import { ref, onUnmounted } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
   import html2canvas from 'html2canvas';
   import { hasNativeChannel, saveCanvasImage } from '@/mobile/bridge';
@@ -180,7 +191,16 @@
   const { t } = useI18n();
   const userStore = useUserStore();
   const router = useRouter();
-  const value = ref('1');
+  const route = useRoute();
+  const value = computed({
+    get: () => (route.query.tab === 'running' ? '2' : '1'),
+    set: (tab: string) => {
+      const query = { ...route.query };
+      if (tab === '2') query.tab = 'running';
+      else delete query.tab;
+      void router.replace({ query });
+    },
+  });
   const plans = ref<any[]>([]);
   const fngStrategies = ref<FngStrategy[]>([]);
   const runningCount = ref(0);
