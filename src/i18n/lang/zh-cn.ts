@@ -107,6 +107,19 @@ export const lang: langType = {
     empty: '暂无行情数据',
   },
   notificationMethods: {
+    telegram: {
+      bind: '绑定 Telegram',
+      refreshLink: '重新生成绑定链接',
+      refresh: '刷新状态',
+      test: '发送测试消息',
+      unlink: '解绑',
+      unbound: '未绑定',
+      bound: '已绑定',
+      unavailable: 'Telegram 服务未配置',
+      instructions: '打开 Telegram 点击 Start，然后回来刷新状态。',
+      sent: '测试消息已发送',
+      failed: 'Telegram 操作失败',
+    },
     reminderEmail: {
       recipient: '接收邮箱',
       account: '使用账户邮箱',

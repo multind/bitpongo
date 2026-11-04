@@ -107,6 +107,19 @@ export const lang: langType = {
     empty: 'No market data available',
   },
   notificationMethods: {
+    telegram: {
+      bind: 'Bind Telegram',
+      refreshLink: 'Generate a new link',
+      refresh: 'Refresh status',
+      test: 'Send test message',
+      unlink: 'Unlink',
+      unbound: 'Not bound',
+      bound: 'Bound',
+      unavailable: 'Telegram service unavailable',
+      instructions: 'Open Telegram and tap Start, then refresh here.',
+      sent: 'Test message sent',
+      failed: 'Telegram action failed',
+    },
     reminderEmail: {
       recipient: 'Receiving email',
       account: 'Use account email',
