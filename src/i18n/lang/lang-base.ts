@@ -150,6 +150,10 @@ export type langType = {
     alerts: string;
   };
   notificationMethods: {
+    reminderEmail: Record<
+      'recipient' | 'account' | 'custom' | 'bindFirst' | 'bind' | 'sendCode' | 'code' | 'unavailable' | 'failed',
+      string
+    >;
     title: string;
     intro: string;
     available: string;

@@ -107,6 +107,17 @@ export const lang: langType = {
     empty: 'No market data available',
   },
   notificationMethods: {
+    reminderEmail: {
+      recipient: 'Receiving email',
+      account: 'Use account email',
+      custom: 'Use another email',
+      bindFirst: 'Bind an account email first.',
+      bind: 'Go to account security',
+      sendCode: 'Send verification code',
+      code: 'Verification code',
+      unavailable: 'Email service unavailable',
+      failed: 'Unable to update the receiving email. Try again.',
+    },
     title: 'Notification methods',
     intro:
       'Choose how reminders are delivered. Channels without a provider keep your preference and take effect once the provider is connected.',
