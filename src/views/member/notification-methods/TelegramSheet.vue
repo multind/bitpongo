@@ -6,12 +6,10 @@
     <p v-if="status">{{ label(!status.available ? 'unavailable' : status.bound ? 'bound' : 'unbound') }}</p>
     <p v-if="failed" role="alert">{{ label('failed') }}</p>
     <p v-if="sent" role="status">{{ label('sent') }}</p>
-    <button v-if="status?.available && !status.bound" :disabled="busy" @click="bind">{{ label(url ? 'refreshLink' : 'bind') }}</button>
-    <template v-if="url && !status?.bound">
-      <p>{{ label('instructions') }}</p>
-      <a :href="url" rel="noreferrer">{{ label('bind') }}</a>
-    </template>
+    <p v-if="url && !status?.bound">{{ label('instructions') }}</p>
     <div class="actions">
+      <a v-if="url && !status?.bound" class="primary-action" :href="url" rel="noreferrer">{{ label('bind') }}</a>
+      <button v-if="status?.available && !status.bound" :disabled="busy" @click="bind">{{ label(url ? 'refreshLink' : 'bind') }}</button>
       <button :disabled="busy" @click="refresh">{{ label('refresh') }}</button>
       <button v-if="status?.available && status.bound" :disabled="busy" @click="test">{{ label('test') }}</button>
       <button v-if="status?.bound" :disabled="busy" @click="unlink">{{ label('unlink') }}</button>
@@ -69,19 +67,19 @@
 
 <style scoped>
   .telegram-sheet {
+    display: grid;
+    gap: 0.75rem;
+    max-height: 85vh;
     padding: 1.25rem;
     padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    overflow-y: auto;
   }
 
-  header,
-  .actions {
+  header {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
     align-items: center;
-  }
-
-  header {
     justify-content: space-between;
   }
 
@@ -91,15 +89,32 @@
   }
 
   .actions {
-    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
   }
 
   button,
   a {
+    display: block;
     padding: 0.6rem 0.85rem;
+    line-height: 1.4;
     color: #1464c0;
+    text-align: center;
+    text-decoration: none;
     background: #f3f5f8;
     border: 0;
     border-radius: 0.5rem;
+  }
+
+  .primary-action {
+    color: #fff;
+    background: #1565c8;
   }
 </style>
