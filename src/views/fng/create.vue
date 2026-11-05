@@ -47,7 +47,7 @@
       <div class="two-col">
         <label class="field">
           <span>{{ t('fng.leverage') }}</span>
-          <input v-model.number="form.leverage" type="number" min="1" max="125" />
+          <input v-model.number="form.leverage" type="number" min="1" max="20" />
         </label>
         <label class="field">
           <span>{{ t('fng.bureauPeriod') }}</span>
@@ -76,6 +76,11 @@
           <span>{{ t('fng.profitDrawdownPercent') }}</span>
           <input v-model="form.profitDrawdownPercent" inputmode="decimal" />
           <small class="field-hint">{{ t('fng.profitDrawdownHint') }}</small>
+        </label>
+        <label class="field">
+          <span>{{ t('fng.stopLossPercent') }}</span>
+          <input v-model="form.stopLossPercent" inputmode="decimal" />
+          <small class="field-hint">{{ t('fng.stopLossHint') }}</small>
         </label>
       </div>
       <SheetSelect
@@ -175,6 +180,7 @@
     direction: 'LONG',
     profitTargetPercent: '10',
     profitDrawdownPercent: '5',
+    stopLossPercent: '30',
     profitTargetType: 'PERCENT',
     maxOrders: 10,
     maxPositions: 5,
@@ -252,6 +258,7 @@
     if (params.direction === 'LONG' || params.direction === 'SHORT') form.direction = params.direction;
     if (params.profitTargetPercent != null) form.profitTargetPercent = String(params.profitTargetPercent);
     if (params.profitDrawdownPercent != null) form.profitDrawdownPercent = String(params.profitDrawdownPercent);
+    if (params.stopLossPercent != null) form.stopLossPercent = String(params.stopLossPercent);
     if (params.profitTargetType === 'PERCENT' || params.profitTargetType === 'USDT') {
       form.profitTargetType = params.profitTargetType;
     }
@@ -312,13 +319,13 @@
     for (const value of [form.upperLimitInterval, form.lowerLimitInterval, form.bureauPeriod]) {
       if (!Number.isInteger(Number(value)) || Number(value) < 1 || Number(value) > 25) return t('fng.invalid');
     }
-    if (!Number.isInteger(Number(form.leverage)) || Number(form.leverage) < 1 || Number(form.leverage) > 125) return t('fng.invalid');
+    if (!Number.isInteger(Number(form.leverage)) || Number(form.leverage) < 1 || Number(form.leverage) > 20) return t('fng.invalid');
     for (const value of [form.maxOrders, form.maxPositions]) {
       if (!Number.isInteger(Number(value)) || Number(value) < 1 || Number(value) > 10000) return t('fng.invalid');
     }
     if (!(Number(form.basicAmount) > 0)) return t('fng.invalid');
     if (!(Number(form.increaseRatio) >= 0)) return t('fng.invalid');
-    for (const value of [form.profitTargetPercent, form.profitDrawdownPercent]) {
+    for (const value of [form.profitTargetPercent, form.profitDrawdownPercent, form.stopLossPercent]) {
       const number = Number(value);
       if (!Number.isFinite(number) || number <= 0 || number > 100) return t('fng.invalid');
     }

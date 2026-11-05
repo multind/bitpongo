@@ -161,7 +161,9 @@
           </nut-col>
         </nut-row>
 
-        <nut-divider :hairline="true" style="margin-top: 20px; margin-bottom: 20px" />
+        <nut-divider :hairline="true" style="margin-top: 20px; margin-bottom: 8px" />
+        <PlazaVisibilitySwitch v-if="planId" type="DCA" :strategy-id="planId" />
+        <nut-divider :hairline="true" style="margin-top: 8px; margin-bottom: 20px" />
         <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-bottom: 10px">
           <nut-col>
             <text style="font-size: 18px">{{ t('details.coinConfig') }}</text>
@@ -501,6 +503,7 @@
 <script setup lang="ts">
   import { useRoute, useRouter } from 'vue-router';
   import { useI18n } from 'vue-i18n';
+  import PlazaVisibilitySwitch from '@/components/PlazaVisibilitySwitch.vue';
   import { CheckDisabled, Edit, MoreX, PlayStart, PlayStop } from '@nutui/icons-vue';
   import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 

@@ -170,7 +170,8 @@
     { flush: 'sync' },
   );
   function validPassword() {
-    if (newPassword.value.length < 12 || newPassword.value.length > 128 || !newPassword.value.trim()) {
+    // Same rule as registration and the API: 8-128 characters with at least one letter and one digit.
+    if (!/^(?=.*[A-Za-z])(?=.*\d).{8,128}$/.test(newPassword.value)) {
       error.value = 'security.passwordHint';
       return false;
     }

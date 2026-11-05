@@ -16,6 +16,8 @@ export interface FngStrategyInput {
   direction: 'LONG' | 'SHORT';
   profitTargetPercent: string;
   profitDrawdownPercent: string;
+  /** Exit when the loss reaches this percentage of margin. Null only on strategies created before stop loss existed. */
+  stopLossPercent: string | null;
   profitTargetType: 'PERCENT' | 'USDT';
   maxOrders: number;
   maxPositions: number;
