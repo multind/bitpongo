@@ -6,10 +6,14 @@ import { showDialog, showToast } from '@nutui/nutui';
 import PlazaVisibilityAction from './PlazaVisibilityAction.vue';
 
 vi.mock('@/api/presets', () => ({ getPresetVisibility: vi.fn(), updatePresetVisibility: vi.fn() }));
-vi.mock('@nutui/nutui', () => ({ showDialog: vi.fn(), showToast: { fail: vi.fn() } }));
+vi.mock('@nutui/nutui', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  showDialog: vi.fn(),
+  showToast: { fail: vi.fn() },
+}));
 
 let view: ReturnType<typeof mount>;
-const action = () => view.get('button');
+const action = () => view.get('.plaza-action');
 const dialog = () => vi.mocked(showDialog).mock.lastCall![0];
 
 beforeEach(async () => {
@@ -22,6 +26,10 @@ beforeEach(async () => {
   await flushPromises();
 });
 afterEach(() => view.unmount());
+
+it('uses the same NutUI button as the other strategy actions', () => {
+  expect(action().classes()).toContain('nut-button');
+});
 
 it('shows existing copy and only changes the action after a successful save', async () => {
   const initial = action().text();

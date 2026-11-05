@@ -203,10 +203,10 @@
       </button>
     </section>
     <footer class="fng-action-bar">
-      <button type="button" class="action-button" @click="toggleEnabled">
+      <NutButton @click="toggleEnabled">
         {{ strategy.enabled ? t('fngDetail.pause') : t('fngDetail.resume') }}
-      </button>
-      <button type="button" class="action-button danger" @click="remove">{{ t('common.delete') }}</button>
+      </NutButton>
+      <NutButton @click="remove">{{ t('common.delete') }}</NutButton>
       <PlazaVisibilityAction type="FNG" :strategy-id="strategyId" />
     </footer>
   </main>
@@ -216,7 +216,7 @@
   import { useI18n } from 'vue-i18n';
   import PlazaVisibilityAction from '@/components/PlazaVisibilityAction.vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { showDialog, showToast } from '@nutui/nutui';
+  import { Button as NutButton, showDialog, showToast } from '@nutui/nutui';
   import { formatInstant } from '@/utils/timeUtils';
   import {
     deleteFngStrategy,
@@ -456,21 +456,12 @@
     border-top: 1px solid #f1e8e0;
   }
 
-  .action-button {
+  .fng-action-bar :deep(.nut-button) {
+    width: 100%;
     min-width: 0;
-    min-height: 44px;
-    padding: 4px 8px;
-    font: inherit;
-    font-size: 0.82rem;
-    color: #1989fa;
-    overflow-wrap: anywhere;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 24px;
-  }
-
-  .action-button.danger {
-    color: #b93d31;
+    height: 44px;
+    padding-inline: 6px;
+    font-size: 14px;
   }
 
   .detail-tabs {

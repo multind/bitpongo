@@ -1,13 +1,13 @@
 <template>
-  <button type="button" class="plaza-action" :disabled="!loaded || busy" :aria-busy="busy" @click="onAction">
+  <NutButton class="plaza-action" :disabled="!loaded || busy" :loading="busy" :aria-busy="busy" @click="onAction">
     {{ t(visible ? 'presets.withdrawAction' : 'presets.publishAction') }}
-  </button>
+  </NutButton>
 </template>
 
 <script setup lang="ts">
   import { onBeforeUnmount, ref, watch } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { showDialog, showToast } from '@nutui/nutui';
+  import { Button as NutButton, showDialog, showToast } from '@nutui/nutui';
   import { getPresetVisibility, updatePresetVisibility, type PresetType } from '@/api/presets';
 
   const props = defineProps<{ type: PresetType; strategyId: number | string }>();
@@ -67,23 +67,3 @@
     });
   }
 </script>
-
-<style scoped>
-  .plaza-action {
-    width: 100%;
-    min-width: 0;
-    min-height: 44px;
-    padding: 4px 8px;
-    font: inherit;
-    font-size: 14px;
-    color: #1766b3;
-    overflow-wrap: anywhere;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 24px;
-  }
-
-  .plaza-action:disabled {
-    opacity: 0.5;
-  }
-</style>

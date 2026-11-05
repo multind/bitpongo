@@ -13,7 +13,15 @@ vi.mock('@/api/fngStrategies', () => ({
   setFngStrategyEnabled: vi.fn(),
   deleteFngStrategy: vi.fn(),
 }));
-vi.mock('@nutui/nutui', () => ({ showDialog: vi.fn(), showToast: { success: vi.fn(), fail: vi.fn() } }));
+vi.mock('@nutui/nutui', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  showDialog: vi.fn(),
+  showToast: { success: vi.fn(), fail: vi.fn() },
+}));
+vi.mock('@/api/presets', () => ({
+  getPresetVisibility: vi.fn().mockResolvedValue({ public: false }),
+  updatePresetVisibility: vi.fn(),
+}));
 
 const strategy = {
   id: 1,
@@ -125,6 +133,7 @@ describe('F&G strategy details', () => {
     expect(view.text()).toContain('12.5');
     expect(view.text()).toContain('66.67%');
     expect(view.findAll('.detail-tab')).toHaveLength(4);
+    expect(view.findAll('.fng-action-bar .nut-button')).toHaveLength(3);
     await view.findAll('.detail-tab')[1].trigger('click');
     expect(view.text()).toContain('Upper limit');
     await view.findAll('.detail-tab')[2].trigger('click');

@@ -115,7 +115,7 @@ function mountDetails() {
         'nut-tag': PassthroughStub,
         'nut-tabs': TabsStub,
         'nut-tab-pane': TabPaneStub,
-        'nut-divider': PassthroughStub,
+        'nut-divider': defineComponent({ template: '<hr data-test="detail-divider" />' }),
         'nut-sticky': PassthroughStub,
         'nut-popup': PassthroughStub,
         'nut-pull-refresh': PullRefreshStub,
@@ -210,6 +210,14 @@ describe('plan details actions', () => {
     const style = getComputedStyle(wrapper.get('.details-page').element);
     expect(style.paddingLeft).toBe('16px');
     expect(style.paddingRight).toBe('16px');
+  });
+
+  it('does not leave empty separators between strategy information and coin configuration', async () => {
+    const wrapper = mountDetails();
+    await flushPromises();
+    const coinsHeading = wrapper.findAll('text').find((node) => node.text() === i18n.global.t('details.coinConfig'))!;
+    const previous = coinsHeading.element.parentElement!.parentElement!.previousElementSibling;
+    expect(previous?.matches('[data-test="detail-divider"]')).toBe(false);
   });
 
   it('keeps the plan actions fixed above the viewport bottom without covering tab content', async () => {
