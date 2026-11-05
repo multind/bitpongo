@@ -97,6 +97,7 @@ it('saves a per-alert selection of available notification channels', async () =>
   await next();
   await wrapper.get('[data-test="channel-bitpongo"]').setValue(false);
   await wrapper.get('[data-test="channel-email"]').setValue(true);
+  await wrapper.get('[data-test="channel-telegram"]').setValue(false);
   await next();
   await next();
   await wrapper.get('form').trigger('submit');

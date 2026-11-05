@@ -34,7 +34,7 @@
         }}</button>
       </form>
     </details>
-    <details class="security-menu-item" :open="recovery">
+    <details class="security-menu-item" :open="recovery || $route?.query.bindEmail === '1'">
       <summary v-if="!recovery">{{ t('security.changeEmail') }}</summary>
       <form
         class="alert-card security-card"

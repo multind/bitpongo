@@ -150,6 +150,14 @@ export type langType = {
     alerts: string;
   };
   notificationMethods: {
+    telegram: Record<
+      'bind' | 'refresh' | 'test' | 'unlink' | 'unbound' | 'bound' | 'unavailable' | 'instructions' | 'sent' | 'failed' | 'refreshLink',
+      string
+    >;
+    reminderEmail: Record<
+      'recipient' | 'account' | 'custom' | 'bindFirst' | 'bind' | 'sendCode' | 'code' | 'unavailable' | 'failed',
+      string
+    >;
     title: string;
     intro: string;
     available: string;

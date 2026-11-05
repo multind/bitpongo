@@ -46,7 +46,7 @@
           <p>{{ t('alerts.notificationHint') }}</p>
           <p class="wizard-meta">{{ t('wizard.deliveryHelp') }}</p>
           <template v-if="channelSettings">
-            <label v-for="key in ['bitpongo', 'email'] as const" :key="key">
+            <label v-for="key in ['bitpongo', 'email', 'telegram'] as const" :key="key">
               <input
                 v-model="selectedChannels"
                 type="checkbox"
@@ -267,7 +267,7 @@
         const capabilities = await getAlertCapabilities();
         if (!capabilities.perAlertChannels) throw new Error('Channel selection unavailable');
         channelSettings.value = await getNotificationChannels();
-        selectedChannels.value = (['bitpongo', 'email'] as const).filter(
+        selectedChannels.value = (['bitpongo', 'email', 'telegram'] as const).filter(
           (key) =>
             channelSettings.value![key].enabled &&
             channelSettings.value![key].available &&
@@ -315,7 +315,6 @@
     width: 100%;
     min-width: 0;
     max-width: 100%;
-    appearance: none;
     appearance: none;
   }
 </style>

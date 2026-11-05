@@ -15,6 +15,12 @@
             <small class="channel-status" :class="{ available: channelState(key).available }">{{
               channelState(key).available ? t('notificationMethods.available') : t('notificationMethods.unavailable')
             }}</small>
+            <button v-if="key === 'email'" class="setup-link recipient-link" type="button" @click="emailSheet = true">
+              {{ t('notificationMethods.reminderEmail.recipient') }}
+            </button>
+            <button v-if="key === 'telegram'" class="setup-link recipient-link" type="button" @click="telegramSheet = true">
+              {{ t('notificationMethods.configure') }}
+            </button>
           </div>
           <RouterLink v-if="key === 'bitpongo'" class="setup-link" to="/member/notice">{{ t('notificationMethods.configure') }}</RouterLink>
           <label v-else class="switch">
@@ -81,11 +87,25 @@
         {{ busy ? t('common.loading') : t('common.save') }}
       </button>
     </template>
+    <nut-popup v-model:visible="emailSheet" position="bottom" round>
+      <ReminderEmailSheet v-if="emailSheet" @close="emailSheet = false" />
+    </nut-popup>
+    <nut-popup v-model:visible="telegramSheet" position="bottom" round>
+      <TelegramSheet
+        v-if="telegramSheet"
+        @close="
+          telegramSheet = false;
+          load();
+        "
+      />
+    </nut-popup>
   </main>
 </template>
 <script setup lang="ts">
   import { onMounted, reactive, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
+  import ReminderEmailSheet from './ReminderEmailSheet.vue';
+  import TelegramSheet from './TelegramSheet.vue';
   import {
     getNotificationChannels,
     saveNotificationChannels,
@@ -94,6 +114,8 @@
   } from '@/api/notificationChannels';
 
   const { t } = useI18n();
+  const emailSheet = ref(false);
+  const telegramSheet = ref(false);
   const channelKeys = ['bitpongo', 'email', 'message', 'call', 'dingding', 'feishu', 'telegram'] as const;
   type ChannelKey = (typeof channelKeys)[number];
   type EditableKey = Exclude<ChannelKey, 'bitpongo'>;
