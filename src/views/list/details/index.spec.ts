@@ -28,6 +28,11 @@ vi.mock('@/api', () => ({
   updatePlanStatus: mocks.updatePlanStatus,
 }));
 
+vi.mock('@/api/presets', () => ({
+  getPresetVisibility: vi.fn().mockResolvedValue({ public: false }),
+  updatePresetVisibility: vi.fn(),
+}));
+
 vi.mock('@/utils/useWebSocket', () => ({
   useWebSocketBase: () => ({ currentPrices: {}, connect: mocks.connect }),
 }));
@@ -215,8 +220,8 @@ describe('plan details actions', () => {
     expect(actionStyle.position).toBe('fixed');
     expect(actionStyle.bottom).toBe('0px');
 
-    const pageStyle = getComputedStyle(wrapper.get('.details-page').element);
-    expect(Number.parseFloat(pageStyle.paddingBottom)).toBeGreaterThanOrEqual(80);
+    expect(wrapper.get('.details-page').attributes('style')).toContain('96px + env(safe-area-inset-bottom)');
+    expect(wrapper.get('.plan-action-bar .plaza-action').text()).toBe(i18n.global.t('presets.publishAction'));
 
     for (const tabIndex of [1, 2, 3]) {
       await wrapper.findAll('.custom-tab-item')[tabIndex].trigger('click');

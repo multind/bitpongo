@@ -3,7 +3,11 @@
     <text style="margin-left: 10px">{{ t('common.loading') }}</text>
   </div>
 
-  <div v-else-if="plan" class="details-page" style="padding-right: 16px; padding-bottom: 96px; padding-left: 16px">
+  <div
+    v-else-if="plan"
+    class="details-page"
+    style="padding-right: 16px; padding-bottom: calc(96px + env(safe-area-inset-bottom)); padding-left: 16px"
+  >
     <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 10px">
       <nut-col align="left" span="18">
         <text class="details-name">{{ plan.strategy.name }}</text
@@ -162,7 +166,6 @@
         </nut-row>
 
         <nut-divider :hairline="true" style="margin-top: 20px; margin-bottom: 8px" />
-        <PlazaVisibilitySwitch v-if="planId" type="DCA" :strategy-id="planId" />
         <nut-divider :hairline="true" style="margin-top: 8px; margin-bottom: 20px" />
         <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-bottom: 10px">
           <nut-col>
@@ -339,30 +342,18 @@
     </nut-tabs>
 
     <div class="plan-action-bar" style="position: fixed; right: 0; bottom: 0; left: 0">
-      <nut-row type="flex" :gutter="10">
-        <nut-col align="center" :span="12">
-          <nut-button v-if="plan.status === 'active'" :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('stop')">
-            <template #icon>
-              <PlayStop />
-            </template>
-            {{ t('planCard.pause') }}
-          </nut-button>
-          <nut-button v-else :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('active')">
-            <template #icon>
-              <PlayStart />
-            </template>
-            {{ t('planCard.resume') }}
-          </nut-button>
-        </nut-col>
-        <nut-col align="center" :span="12">
-          <nut-button :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('close')">
-            <template #icon>
-              <CheckDisabled />
-            </template>
-            {{ t('planCard.stop') }}
-          </nut-button>
-        </nut-col>
-      </nut-row>
+      <div class="plan-action-buttons">
+        <nut-button v-if="plan.status === 'active'" :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('stop')">
+          {{ t('planCard.pause') }}
+        </nut-button>
+        <nut-button v-else :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('active')">
+          {{ t('planCard.resume') }}
+        </nut-button>
+        <nut-button :disabled="updatingStatus" :loading="updatingStatus" @click="handleClick('close')">
+          {{ t('planCard.stop') }}
+        </nut-button>
+        <PlazaVisibilityAction v-if="planId" type="DCA" :strategy-id="planId" />
+      </div>
     </div>
   </div>
 
@@ -503,8 +494,8 @@
 <script setup lang="ts">
   import { useRoute, useRouter } from 'vue-router';
   import { useI18n } from 'vue-i18n';
-  import PlazaVisibilitySwitch from '@/components/PlazaVisibilitySwitch.vue';
-  import { CheckDisabled, Edit, MoreX, PlayStart, PlayStop } from '@nutui/icons-vue';
+  import PlazaVisibilityAction from '@/components/PlazaVisibilityAction.vue';
+  import { Edit, MoreX } from '@nutui/icons-vue';
   import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
   import { Chart } from 'chart.js/auto';
@@ -887,6 +878,19 @@
     margin: 0 auto;
     background-color: #fffaf5;
     border-top: 1px solid #f1e8e0;
+  }
+
+  .plan-action-buttons {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 8px;
+  }
+
+  .plan-action-buttons :deep(.nut-button) {
+    min-width: 0;
+    min-height: 44px;
+    padding-inline: 6px;
   }
 
   .empty-container {

@@ -247,6 +247,8 @@ export const lang: langType = {
   presets: {
     visibilityTitle: '展示到策略廣場',
     visibilityHint: '開啟後，其他用戶可在策略廣場看到此策略的參數和收益；預設不公開。',
+    publishAction: '展示',
+    withdrawAction: '取消展示',
     title: '策略廣場',
     entry: '策略廣場',
     entryHint: '查看公開展示的執行中策略，篩選排序後一鍵使用',

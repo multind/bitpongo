@@ -19,13 +19,6 @@
           {{ strategy.direction === 'LONG' ? t('fng.long') : t('fng.short') }}
         </p>
         <p class="meta">{{ t('fngDetail.created') }} {{ formatInstant(strategy.createdAt) }}</p>
-        <PlazaVisibilitySwitch type="FNG" :strategy-id="strategyId" />
-      </div>
-      <div class="heading-actions">
-        <button type="button" class="action-button" @click="toggleEnabled">{{
-          strategy.enabled ? t('fngDetail.pause') : t('fngDetail.resume')
-        }}</button>
-        <button type="button" class="action-button danger" @click="remove">{{ t('common.delete') }}</button>
       </div>
     </header>
 
@@ -209,12 +202,19 @@
         {{ executionsLoading ? t('common.loading') : t('fngDetail.loadMore') }}
       </button>
     </section>
+    <footer class="fng-action-bar">
+      <button type="button" class="action-button" @click="toggleEnabled">
+        {{ strategy.enabled ? t('fngDetail.pause') : t('fngDetail.resume') }}
+      </button>
+      <button type="button" class="action-button danger" @click="remove">{{ t('common.delete') }}</button>
+      <PlazaVisibilityAction type="FNG" :strategy-id="strategyId" />
+    </footer>
   </main>
 </template>
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import PlazaVisibilitySwitch from '@/components/PlazaVisibilitySwitch.vue';
+  import PlazaVisibilityAction from '@/components/PlazaVisibilityAction.vue';
   import { useRoute, useRouter } from 'vue-router';
   import { showDialog, showToast } from '@nutui/nutui';
   import { formatInstant } from '@/utils/timeUtils';
@@ -351,7 +351,7 @@
 </script>
 <style scoped lang="scss">
   .fng-details {
-    padding: 10px 16px 96px;
+    padding: 10px 16px calc(96px + env(safe-area-inset-bottom));
   }
 
   .page-state {
@@ -438,22 +438,35 @@
     color: #2f2f2f;
   }
 
-  .heading-actions {
-    display: flex;
-    flex-shrink: 0;
-    flex-direction: column;
-    gap: 0.4rem;
+  .fng-action-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    max-width: 750px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    margin: 0 auto;
+    background: #fffaf5;
+    border-top: 1px solid #f1e8e0;
   }
 
   .action-button {
-    min-width: 5rem;
-    min-height: 2.2rem;
+    min-width: 0;
+    min-height: 44px;
+    padding: 4px 8px;
     font: inherit;
     font-size: 0.82rem;
     color: #1989fa;
-    background: #f5f1ee;
-    border: 0;
-    border-radius: 0.55rem;
+    overflow-wrap: anywhere;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 24px;
   }
 
   .action-button.danger {

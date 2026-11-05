@@ -250,6 +250,8 @@ export const lang: langType = {
   presets: {
     visibilityTitle: 'Show in strategy square',
     visibilityHint: "When on, other users can see this strategy's settings and returns in the strategy square. Off by default.",
+    publishAction: 'Show',
+    withdrawAction: 'Unlist',
     title: 'Strategy square',
     entry: 'Strategy square',
     entryHint: 'Browse publicly shared running strategies, filter, sort, and use in one tap',

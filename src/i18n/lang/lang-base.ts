@@ -258,6 +258,8 @@ export type langType = {
   presets: {
     visibilityTitle: string;
     visibilityHint: string;
+    publishAction: string;
+    withdrawAction: string;
     title: string;
     entry: string;
     entryHint: string;
