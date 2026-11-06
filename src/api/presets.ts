@@ -26,7 +26,7 @@ export interface PresetParams {
   basicAmount?: string;
   increaseRatio?: string;
   leverage?: number;
-  bureauPeriod?: number;
+  maxTradeRounds?: number | null;
   direction?: 'LONG' | 'SHORT';
   profitTargetPercent?: string;
   profitDrawdownPercent?: string;
@@ -90,10 +90,6 @@ export function getPresetVisibility(type: PresetType, strategyId: number | strin
   return http.get<PresetVisibility>(`/presets/visibility/${type}/${strategyId}`);
 }
 
-export function updatePresetVisibility(
-  type: PresetType,
-  strategyId: number | string,
-  visible: boolean,
-): Promise<PresetVisibility> {
+export function updatePresetVisibility(type: PresetType, strategyId: number | string, visible: boolean): Promise<PresetVisibility> {
   return http.put<PresetVisibility>(`/presets/visibility/${type}/${strategyId}`, { public: visible });
 }

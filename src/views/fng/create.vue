@@ -50,9 +50,9 @@
           <input v-model.number="form.leverage" type="number" min="1" max="20" />
         </label>
         <label class="field">
-          <span>{{ t('fng.bureauPeriod') }}</span>
-          <input v-model.number="form.bureauPeriod" type="number" min="1" max="25" />
-          <small class="field-hint">{{ t('fng.bureauPeriodHint') }}</small>
+          <span>{{ t('fng.maxTradeRounds') }}</span>
+          <input v-model.number="form.maxTradeRounds" type="number" min="1" max="10000" step="1" />
+          <small class="field-hint">{{ t('fng.maxTradeRoundsHint') }}</small>
         </label>
       </div>
       <div class="toggle-field">
@@ -174,9 +174,7 @@
     basicAmount: '100',
     increaseRatio: '10',
     leverage: 1,
-    // One cycle runs from opening a position to the take-profit exit.
-    // bureauPeriod is the maximum cycle length in days (1-25).
-    bureauPeriod: 7,
+    maxTradeRounds: 7,
     direction: 'LONG',
     profitTargetPercent: '10',
     profitDrawdownPercent: '5',
@@ -254,7 +252,7 @@
     if (params.basicAmount != null) form.basicAmount = String(params.basicAmount);
     if (params.increaseRatio != null) form.increaseRatio = String(params.increaseRatio);
     if (params.leverage != null) form.leverage = Number(params.leverage);
-    if (params.bureauPeriod != null) form.bureauPeriod = Number(params.bureauPeriod);
+    if (params.maxTradeRounds != null) form.maxTradeRounds = Number(params.maxTradeRounds);
     if (params.direction === 'LONG' || params.direction === 'SHORT') form.direction = params.direction;
     if (params.profitTargetPercent != null) form.profitTargetPercent = String(params.profitTargetPercent);
     if (params.profitDrawdownPercent != null) form.profitDrawdownPercent = String(params.profitDrawdownPercent);
@@ -316,11 +314,11 @@
     const upper = Number(form.upperLimitValue);
     const lower = Number(form.lowerLimitValue);
     if (!Number.isFinite(upper) || !Number.isFinite(lower) || upper > 100 || lower < 0 || lower >= upper) return t('fng.invalid');
-    for (const value of [form.upperLimitInterval, form.lowerLimitInterval, form.bureauPeriod]) {
+    for (const value of [form.upperLimitInterval, form.lowerLimitInterval]) {
       if (!Number.isInteger(Number(value)) || Number(value) < 1 || Number(value) > 25) return t('fng.invalid');
     }
     if (!Number.isInteger(Number(form.leverage)) || Number(form.leverage) < 1 || Number(form.leverage) > 20) return t('fng.invalid');
-    for (const value of [form.maxOrders, form.maxPositions]) {
+    for (const value of [form.maxOrders, form.maxPositions, form.maxTradeRounds]) {
       if (!Number.isInteger(Number(value)) || Number(value) < 1 || Number(value) > 10000) return t('fng.invalid');
     }
     if (!(Number(form.basicAmount) > 0)) return t('fng.invalid');

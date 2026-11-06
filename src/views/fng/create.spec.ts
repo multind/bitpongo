@@ -57,7 +57,14 @@ describe('F&G strategy creation', () => {
     await wrapper.get('[data-test="fng-save"]').trigger('click');
     await flushPromises();
     expect(createFngStrategy).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'BTC F&G Alert', exchangeId: 1, symbol: 'BTCUSDT', upperLimitValue: 75, lowerLimitValue: 25 }),
+      expect.objectContaining({
+        name: 'BTC F&G Alert',
+        exchangeId: 1,
+        symbol: 'BTCUSDT',
+        upperLimitValue: 75,
+        lowerLimitValue: 25,
+        maxTradeRounds: 7,
+      }),
     );
     expect(router.currentRoute.value.path).toBe('/list');
   });
@@ -115,7 +122,7 @@ describe('F&G strategy creation', () => {
         basicAmount: '250',
         increaseRatio: '15',
         leverage: 3,
-        bureauPeriod: 9,
+        maxTradeRounds: 9,
         direction: 'SHORT',
         profitTargetPercent: '12',
         profitDrawdownPercent: '6',
@@ -151,7 +158,7 @@ describe('F&G strategy creation', () => {
         lowerLimitValue: 20,
         basicAmount: '250',
         leverage: 3,
-        bureauPeriod: 9,
+        maxTradeRounds: 9,
         direction: 'SHORT',
         maxOrders: 4,
         maxPositions: 2,

@@ -19,6 +19,7 @@
           {{ strategy.direction === 'LONG' ? t('fng.long') : t('fng.short') }}
         </p>
         <p class="meta">{{ t('fngDetail.created') }} {{ formatInstant(strategy.createdAt) }}</p>
+        <p v-if="roundBlockMessage" class="meta" role="status">{{ roundBlockMessage }}</p>
       </div>
     </header>
 
@@ -116,8 +117,8 @@
           ><dd>{{ strategy.leverage }}x</dd></div
         >
         <div
-          ><dt>{{ t('fng.bureauPeriod') }}</dt
-          ><dd>{{ strategy.bureauPeriod }} D</dd></div
+          ><dt>{{ t('fng.completedTradeRounds') }}</dt
+          ><dd>{{ strategy.completedTradeRounds }} / {{ strategy.maxTradeRounds ?? '—' }}</dd></div
         >
         <div
           ><dt>{{ t('fng.profitTargetPercent') }}</dt
@@ -144,6 +145,14 @@
           ><dd>{{ formatInstant(strategy.createdAt) }}</dd></div
         >
       </dl>
+      <form class="round-limit-form" @submit.prevent="saveRoundLimit">
+        <label>
+          {{ t('fng.maxTradeRounds') }}
+          <input v-model.number="roundLimit" type="number" min="1" max="10000" step="1" required data-test="fng-round-limit" />
+        </label>
+        <button type="submit" class="round-limit-save" :disabled="savingRoundLimit">{{ t('common.save') }}</button>
+        <small>{{ t('fng.maxTradeRoundsHint') }}</small>
+      </form>
     </section>
 
     <section v-else-if="value === 'c3'" class="detail-panel">
@@ -208,7 +217,7 @@
       </button>
     </section>
     <footer class="fng-action-bar">
-      <NutButton @click="toggleEnabled">
+      <NutButton :disabled="!strategy.enabled && !!roundBlockMessage" @click="toggleEnabled">
         {{ strategy.enabled ? t('fngDetail.pause') : t('fngDetail.resume') }}
       </NutButton>
       <NutButton @click="remove">{{ t('common.delete') }}</NutButton>
@@ -230,6 +239,7 @@
     getFngPositions,
     getFngStrategy,
     setFngStrategyEnabled,
+    setFngTradeRoundLimit,
     type FngExecution,
     type FngPerformance,
     type FngPosition,
@@ -241,6 +251,14 @@
   const router = useRouter();
   const strategyId = computed(() => Number(route.params.id));
   const strategy = ref<FngStrategy | null>(null);
+  const roundLimit = ref<number | ''>('');
+  const savingRoundLimit = ref(false);
+  const roundBlockMessage = computed(() => {
+    if (!strategy.value) return '';
+    const { maxTradeRounds, completedTradeRounds } = strategy.value;
+    if (maxTradeRounds == null) return t('fng.roundLimitRequired');
+    return completedTradeRounds >= maxTradeRounds ? t('fng.roundLimitReached') : '';
+  });
   const performance = ref<FngPerformance | null>(null);
   const positions = ref<FngPosition[]>([]);
   const executions = ref<FngExecution[]>([]);
@@ -285,6 +303,7 @@
     try {
       const [detail, summary] = await Promise.all([getFngStrategy(strategyId.value), getFngPerformance(strategyId.value)]);
       strategy.value = detail;
+      roundLimit.value = detail.maxTradeRounds ?? '';
       performance.value = summary;
       await Promise.all([loadPositions(true), loadExecutions(true)]);
     } catch {
@@ -336,6 +355,28 @@
     }
   }
 
+  async function saveRoundLimit() {
+    if (
+      !strategy.value ||
+      savingRoundLimit.value ||
+      typeof roundLimit.value !== 'number' ||
+      !Number.isInteger(roundLimit.value) ||
+      roundLimit.value < 1 ||
+      roundLimit.value > 10000
+    )
+      return;
+    savingRoundLimit.value = true;
+    try {
+      await setFngTradeRoundLimit(strategyId.value, roundLimit.value);
+      strategy.value = await getFngStrategy(strategyId.value);
+      roundLimit.value = strategy.value.maxTradeRounds ?? '';
+    } catch {
+      showToast.fail(t('fng.createFailed'));
+    } finally {
+      savingRoundLimit.value = false;
+    }
+  }
+
   function remove() {
     if (!strategy.value) return;
     showDialog({
@@ -357,6 +398,47 @@
 <style scoped lang="scss">
   .fng-details {
     padding: 10px 16px calc(4rem + env(safe-area-inset-bottom));
+  }
+
+  .round-limit-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: end;
+    margin-top: 0.75rem;
+  }
+
+  .round-limit-form label {
+    display: grid;
+    flex: 1 1 9rem;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+  }
+
+  .round-limit-form input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.45rem 0.55rem;
+    font: inherit;
+    border: 1px solid #d9d1c9;
+    border-radius: 0.4rem;
+  }
+
+  .round-limit-form small {
+    flex: 1 0 100%;
+    color: #74685d;
+  }
+
+  .round-limit-save {
+    padding: 0.45rem 0.75rem;
+    color: #fff;
+    background: #176bc4;
+    border: 0;
+    border-radius: 0.4rem;
+  }
+
+  .round-limit-save:disabled {
+    opacity: 0.6;
   }
 
   .page-state {

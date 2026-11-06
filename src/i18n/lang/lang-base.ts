@@ -189,8 +189,11 @@ export type langType = {
     basicAmount: string;
     increaseRatio: string;
     leverage: string;
-    bureauPeriod: string;
-    bureauPeriodHint: string;
+    maxTradeRounds: string;
+    maxTradeRoundsHint: string;
+    completedTradeRounds: string;
+    roundLimitRequired: string;
+    roundLimitReached: string;
     direction: string;
     startOrderType: string;
     profitTargetPercent: string;

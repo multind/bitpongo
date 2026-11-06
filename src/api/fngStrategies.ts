@@ -12,7 +12,7 @@ export interface FngStrategyInput {
   basicAmount: string;
   increaseRatio: string;
   leverage: number;
-  bureauPeriod: number;
+  maxTradeRounds: number;
   direction: 'LONG' | 'SHORT';
   profitTargetPercent: string;
   profitDrawdownPercent: string;
@@ -28,8 +28,10 @@ export function fngStrategyPage(page = 0) {
   });
 }
 
-export interface FngStrategy extends FngStrategyInput {
+export interface FngStrategy extends Omit<FngStrategyInput, 'maxTradeRounds'> {
   id: number;
+  maxTradeRounds: number | null;
+  completedTradeRounds: number;
   enabled: boolean;
   createdAt: string;
 }
@@ -41,6 +43,9 @@ export const createFngStrategy = (data: FngStrategyInput) => http.post<number>('
 export const updateFngStrategy = (id: number, data: FngStrategyInput) => http.put<void>(`/fng-strategies/${id}`, data);
 
 export const setFngStrategyEnabled = (id: number, enabled: boolean) => http.put<void>(`/fng-strategies/${id}/enabled`, { enabled });
+
+export const setFngTradeRoundLimit = (id: number, maxTradeRounds: number) =>
+  http.put<void>(`/fng-strategies/${id}/round-limit`, { maxTradeRounds });
 
 export const deleteFngStrategy = (id: number) => http.delete<void>(`/fng-strategies/${id}`);
 

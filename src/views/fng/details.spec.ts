@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import { i18n } from '@/i18n';
 import FngDetails from './details.vue';
-import { getFngExecutions, getFngPerformance, getFngPositions, getFngStrategy } from '@/api/fngStrategies';
+import { getFngExecutions, getFngPerformance, getFngPositions, getFngStrategy, setFngTradeRoundLimit } from '@/api/fngStrategies';
 
 vi.mock('@/api/fngStrategies', () => ({
   getFngStrategy: vi.fn(),
@@ -11,6 +11,7 @@ vi.mock('@/api/fngStrategies', () => ({
   getFngPositions: vi.fn(),
   getFngExecutions: vi.fn(),
   setFngStrategyEnabled: vi.fn(),
+  setFngTradeRoundLimit: vi.fn(),
   deleteFngStrategy: vi.fn(),
 }));
 vi.mock('@nutui/nutui', async (importOriginal) => ({
@@ -36,10 +37,12 @@ const strategy = {
   basicAmount: '100',
   increaseRatio: '10',
   leverage: 5,
-  bureauPeriod: 7,
+  maxTradeRounds: 7,
+  completedTradeRounds: 2,
   direction: 'LONG' as const,
   profitTargetPercent: '10',
   profitDrawdownPercent: '5',
+  stopLossPercent: '30',
   profitTargetType: 'PERCENT' as const,
   maxOrders: 2,
   maxPositions: 2,
@@ -55,7 +58,7 @@ async function mountView() {
     routes: [{ path: '/fng/details/:id', component: { template: '<div />' } }],
   });
   await router.push('/fng/details/1');
-  wrapper = mount(FngDetails, { global: { plugins: [i18n, router] } });
+  wrapper = mount(FngDetails, { attachTo: document.body, global: { plugins: [i18n, router] } });
   await flushPromises();
   return wrapper;
 }
@@ -127,6 +130,21 @@ afterEach(() => {
 });
 
 describe('F&G strategy details', () => {
+  it('lets a paused legacy strategy set an explicit round limit without resuming it', async () => {
+    vi.mocked(getFngStrategy)
+      .mockResolvedValueOnce({ ...strategy, maxTradeRounds: null, enabled: false })
+      .mockResolvedValueOnce({ ...strategy, maxTradeRounds: 4, enabled: false });
+    const view = await mountView();
+    expect(view.text()).toContain('Set a round limit in Strategy info before resuming.');
+    await view.findAll('.detail-tab')[1].trigger('click');
+    await view.get('[data-test="fng-round-limit"]').setValue('4');
+    await view.get('.round-limit-form button[type="submit"]').trigger('click');
+    await flushPromises();
+    expect(setFngTradeRoundLimit).toHaveBeenCalledWith(1, 4);
+    expect(view.text()).toContain('2 / 4');
+    expect(view.text()).toContain('Paused');
+  });
+
   it('shows remaining quantity and manual review for a partial close', async () => {
     const fixture = await getFngPositions(1);
     fixture.items[0] = {
@@ -151,6 +169,7 @@ describe('F&G strategy details', () => {
     expect(view.findAll('.fng-action-bar .nut-button')).toHaveLength(3);
     await view.findAll('.detail-tab')[1].trigger('click');
     expect(view.text()).toContain('Upper limit');
+    expect(view.text()).toContain('2 / 7');
     await view.findAll('.detail-tab')[2].trigger('click');
     expect(view.text()).toContain('60000');
     expect(view.text()).toContain('63000');
