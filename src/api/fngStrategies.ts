@@ -50,6 +50,7 @@ export interface FngPosition {
   side: 'LONG' | 'SHORT';
   status: string;
   quantity: string;
+  remainingQuantity?: string | null;
   margin: string;
   entryPrice: string | null;
   exitPrice: string | null;

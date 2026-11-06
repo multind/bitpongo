@@ -253,7 +253,9 @@ export type langType = {
     created: string;
     status: string;
     type: string;
-    statuses: Record<'PENDING_ENTRY' | 'OPENING' | 'OPEN' | 'CLOSING' | 'CLOSED' | 'FAILED', string>;
+    remainingQuantity: string;
+    closeReviewHint: string;
+    statuses: Record<'PENDING_ENTRY' | 'OPENING' | 'OPEN' | 'CLOSING' | 'CLOSE_PENDING' | 'CLOSE_REVIEW' | 'CLOSED' | 'FAILED', string>;
   };
   presets: {
     visibilityTitle: string;

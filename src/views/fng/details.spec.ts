@@ -127,6 +127,21 @@ afterEach(() => {
 });
 
 describe('F&G strategy details', () => {
+  it('shows remaining quantity and manual review for a partial close', async () => {
+    const fixture = await getFngPositions(1);
+    fixture.items[0] = {
+      ...fixture.items[0],
+      status: 'CLOSE_REVIEW',
+      remainingQuantity: '0.006',
+      closedAt: null,
+    };
+    const view = await mountView();
+    await view.findAll('.detail-tab')[2].trigger('click');
+    expect(view.text()).toContain('Close needs review');
+    expect(view.text()).toContain('Remaining to close');
+    expect(view.text()).toContain('0.006');
+  });
+
   it('shows performance and the four unified tabs', async () => {
     const view = await mountView();
     expect(view.text()).toContain('BTC F&G Alert');

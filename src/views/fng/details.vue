@@ -159,6 +159,10 @@
             ><dt>{{ t('fngDetail.quantity') }}</dt
             ><dd>{{ position.quantity }}</dd></div
           >
+          <div v-if="position.remainingQuantity != null">
+            <dt>{{ t('fngDetail.remainingQuantity') }}</dt>
+            <dd>{{ position.remainingQuantity }}</dd>
+          </div>
           <div>
             <dt>{{ t('fngDetail.price') }}</dt>
             <dd>{{ position.entryPrice ?? '—' }} → {{ position.exitPrice ?? '—' }}</dd>
@@ -178,6 +182,7 @@
             ><dd>{{ position.closedAt ? formatInstant(position.closedAt) : '—' }}</dd></div
           >
         </dl>
+        <p v-if="position.status === 'CLOSE_REVIEW'" class="close-review-note">{{ t('fngDetail.closeReviewHint') }}</p>
       </article>
       <button v-if="positionsHasMore" type="button" class="load-more" :disabled="positionsLoading" @click="loadPositions(false)">
         {{ positionsLoading ? t('common.loading') : t('fngDetail.loadMore') }}
@@ -603,6 +608,13 @@
     margin-left: auto;
     font-size: 0.75rem;
     color: #81766b;
+  }
+
+  .close-review-note {
+    margin: 0.75rem 0 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #8c4814;
   }
 
   .trade-stats {
