@@ -228,7 +228,7 @@ describe('plan details actions', () => {
     expect(actionStyle.position).toBe('fixed');
     expect(actionStyle.bottom).toBe('0px');
 
-    expect(wrapper.get('.details-page').attributes('style')).toContain('96px + env(safe-area-inset-bottom)');
+    expect(wrapper.get('.details-page').attributes('style')).toContain('4rem + env(safe-area-inset-bottom)');
     expect(wrapper.get('.plan-action-bar .plaza-action').text()).toBe(i18n.global.t('presets.publishAction'));
 
     for (const tabIndex of [1, 2, 3]) {

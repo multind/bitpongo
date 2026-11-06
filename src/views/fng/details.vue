@@ -351,7 +351,7 @@
 </script>
 <style scoped lang="scss">
   .fng-details {
-    padding: 10px 16px calc(96px + env(safe-area-inset-bottom));
+    padding: 10px 16px calc(4rem + env(safe-area-inset-bottom));
   }
 
   .page-state {
@@ -459,9 +459,9 @@
   .fng-action-bar :deep(.nut-button) {
     width: 100%;
     min-width: 0;
-    height: 44px;
+    height: 2.75rem;
     padding-inline: 6px;
-    font-size: 14px;
+    font-size: 1.0625rem;
   }
 
   .detail-tabs {

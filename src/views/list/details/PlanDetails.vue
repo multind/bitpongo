@@ -6,7 +6,7 @@
   <div
     v-else-if="plan"
     class="details-page"
-    style="padding-right: 16px; padding-bottom: calc(96px + env(safe-area-inset-bottom)); padding-left: 16px"
+    style="padding-right: 16px; padding-bottom: calc(4rem + env(safe-area-inset-bottom)); padding-left: 16px"
   >
     <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 10px">
       <nut-col align="left" span="18">
@@ -888,9 +888,9 @@
   .plan-action-buttons :deep(.nut-button) {
     width: 100%;
     min-width: 0;
-    height: 44px;
+    height: 2.75rem;
     padding-inline: 6px;
-    font-size: 14px;
+    font-size: 1.0625rem;
   }
 
   .empty-container {
