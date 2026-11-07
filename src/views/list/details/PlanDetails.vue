@@ -165,6 +165,8 @@
           </nut-col>
         </nut-row>
 
+        <nut-divider :hairline="true" style="margin-top: 20px; margin-bottom: 8px" />
+
         <nut-row type="flex" justify="space-between" wrap="nowrap" style="margin-top: 24px; margin-bottom: 10px">
           <nut-col>
             <text style="font-size: 18px">{{ t('details.coinConfig') }}</text>
