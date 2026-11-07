@@ -1,6 +1,33 @@
 import type { langType } from './lang-base';
 
 export const lang: langType = {
+  outboundWebhook: {
+    title: 'Webhook reminders',
+    intro: 'Send reminders to a DingTalk, Feishu, Slack or Discord channel.',
+    failed: 'Could not complete the operation. Check the configuration and retry.',
+    sent: 'Test notification sent.',
+    retry: 'Retry',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    confirmDelete: 'Delete this destination?',
+    remove: 'Delete',
+    edit: 'Edit',
+    disable: 'Disable',
+    enable: 'Enable',
+    test: 'Send test',
+    add: 'Add destination',
+    provider: 'Platform',
+    name: 'Destination name',
+    keep: 'Leave blank to keep the current value',
+    secret: 'Signing secret (optional)',
+    clearSecret: 'Remove the saved signing secret',
+    help: {
+      DINGTALK: 'Copy the URL from a DingTalk group custom bot. If it uses signature verification, enter its signing secret.',
+      FEISHU: 'Copy the webhook URL from a Feishu group custom bot. If signing is enabled, enter its signing secret.',
+      SLACK: 'In your Slack app, enable Incoming Webhooks and add a webhook to the channel you want.',
+      DISCORD: 'In Discord, open the channel settings, then Integrations → Webhooks, and copy the URL.',
+    },
+  },
   title: 'Bitpongo',
   release: {
     check: 'Check for App updates',

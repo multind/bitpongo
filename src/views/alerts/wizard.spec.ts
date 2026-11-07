@@ -6,6 +6,7 @@ import AlertForm from './create.vue';
 import { getAlert, createAlert, updateAlert, getAlertCapabilities } from '@/api/alerts';
 import { getMarketSymbols } from '@/api/market';
 import { getNotificationChannels } from '@/api/notificationChannels';
+import { getWebhookDestinations } from '@/api/webhookReminderDestinations';
 vi.mock('@/api/alerts', () => ({
   getAlert: vi.fn(),
   createAlert: vi.fn(),
@@ -14,6 +15,7 @@ vi.mock('@/api/alerts', () => ({
 }));
 vi.mock('@/api/market', () => ({ getMarketSymbols: vi.fn() }));
 vi.mock('@/api/notificationChannels', () => ({ getNotificationChannels: vi.fn() }));
+vi.mock('@/api/webhookReminderDestinations', () => ({ getWebhookDestinations: vi.fn() }));
 let wrapper: ReturnType<typeof mount>;
 const existing = {
   id: 1,
@@ -32,6 +34,7 @@ const existing = {
   createdAt: '2026-10-03T00:00:00Z',
 };
 beforeEach(() => {
+  vi.mocked(getWebhookDestinations).mockResolvedValue({ available: false, items: [] });
   vi.mocked(getAlertCapabilities).mockResolvedValue({ perAlertChannels: true });
   const channel = { enabled: true, available: true, level: 'Weak' as const, sequence: 0 };
   vi.mocked(getNotificationChannels).mockResolvedValue({
@@ -103,6 +106,26 @@ it('saves a per-alert selection of available notification channels', async () =>
   await wrapper.get('form').trigger('submit');
   await flushPromises();
   expect(createAlert).toHaveBeenCalledWith(expect.objectContaining({ channels: ['email'] }));
+});
+it('offers Webhook as an opt-in and saves it independently of App reminders', async () => {
+  vi.mocked(getWebhookDestinations).mockResolvedValue({
+    available: true,
+    items: [{ id: 3, provider: 'SLACK', name: 'Test', enabled: true, maskedUrl: 'https://hooks.slack.com/…' }],
+  });
+  await open();
+  await wrapper.get('#alert-name').setValue('Webhook alert');
+  await next();
+  await wrapper.get('#alert-target').setValue('100');
+  await next();
+  const webhook = wrapper.get<HTMLInputElement>('[data-test="channel-webhook"]');
+  expect(webhook.element.checked).toBe(false);
+  await webhook.setValue(true);
+  for (const key of ['bitpongo', 'email', 'telegram']) await wrapper.get(`[data-test="channel-${key}"]`).setValue(false);
+  await next();
+  await next();
+  await wrapper.get('form').trigger('submit');
+  await flushPromises();
+  expect(createAlert).toHaveBeenCalledWith(expect.objectContaining({ channels: ['webhook'] }));
 });
 it('shows contextual guidance throughout the price alert wizard', async () => {
   await open();

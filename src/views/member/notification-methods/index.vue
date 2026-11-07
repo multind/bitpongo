@@ -34,6 +34,16 @@
             <span class="track" aria-hidden="true" />
           </label>
         </div>
+        <div class="channel-row">
+          <span class="channel-badge" aria-hidden="true">WH</span>
+          <div class="channel-copy">
+            <strong>{{ t('outboundWebhook.title') }}</strong>
+            <span>{{ t('outboundWebhook.intro') }}</span>
+          </div>
+          <button class="setup-link" type="button" data-test="webhook-configure" @click="webhookSheet = true">
+            {{ t('notificationMethods.configure') }}
+          </button>
+        </div>
       </section>
       <!-- 感知设置暂不开放；现有偏好和顺序继续保留。
       <section class="settings-card" aria-labelledby="perception-heading">
@@ -92,6 +102,9 @@
     <nut-popup v-model:visible="emailSheet" position="bottom" round>
       <ReminderEmailSheet v-if="emailSheet" @close="emailSheet = false" />
     </nut-popup>
+    <nut-popup v-model:visible="webhookSheet" position="bottom" round>
+      <WebhookReminderSheet v-if="webhookSheet" @close="webhookSheet = false" />
+    </nut-popup>
     <nut-popup v-model:visible="telegramSheet" position="bottom" round>
       <TelegramSheet
         v-if="telegramSheet"
@@ -108,15 +121,17 @@
   import { useI18n } from 'vue-i18n';
   import ReminderEmailSheet from './ReminderEmailSheet.vue';
   import TelegramSheet from './TelegramSheet.vue';
+  import WebhookReminderSheet from './WebhookReminderSheet.vue';
   import { getNotificationChannels, saveNotificationChannels, type NotificationChannels } from '@/api/notificationChannels';
 
   const { t } = useI18n();
   const emailSheet = ref(false);
   const telegramSheet = ref(false);
-  const channelKeys = ['bitpongo', 'email', 'message', 'call', 'dingding', 'feishu', 'telegram'] as const;
+  const webhookSheet = ref(false);
+  const channelKeys = ['bitpongo', 'email', 'message', 'call', 'telegram'] as const;
   type ChannelKey = (typeof channelKeys)[number];
   type EditableKey = Exclude<ChannelKey, 'bitpongo'>;
-  const editableKeys: EditableKey[] = ['email', 'message', 'call', 'dingding', 'feishu', 'telegram'];
+  const editableKeys: EditableKey[] = ['email', 'message', 'call', 'telegram'];
 
   /*
   const perceptionOrder = ref<ChannelKey[]>([]);
@@ -155,8 +170,6 @@
     email: '@',
     message: 'SMS',
     call: 'TEL',
-    dingding: 'DD',
-    feishu: 'FS',
     telegram: 'TG',
   };
   const channels = ref<NotificationChannels | null>(null);
@@ -169,8 +182,6 @@
     email: false,
     message: false,
     call: false,
-    dingding: false,
-    feishu: false,
     telegram: false,
   });
   const confirmationEnabled = ref(false);
@@ -214,8 +225,8 @@
           emailEnabled: draft.email,
           messageEnabled: draft.message,
           callEnabled: draft.call,
-          dingdingEnabled: draft.dingding,
-          feishuEnabled: draft.feishu,
+          dingdingEnabled: channels.value!.dingding.enabled,
+          feishuEnabled: channels.value!.feishu.enabled,
           telegramEnabled: draft.telegram,
           confirmationEnabled: confirmationEnabled.value,
         }),

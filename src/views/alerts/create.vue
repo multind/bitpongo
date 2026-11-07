@@ -62,6 +62,16 @@
               />
               {{ t(`notificationMethods.channels.${key}`) }}
             </label>
+            <label v-if="webhookAvailable || selectedChannels.includes('webhook')">
+              <input
+                v-model="selectedChannels"
+                type="checkbox"
+                value="webhook"
+                data-test="channel-webhook"
+                @change="channelsChanged = true"
+              />
+              {{ t('outboundWebhook.title') }}
+            </label>
             <p class="wizard-meta">{{ t('wizard.channelHint') }}</p>
           </template>
         </section>
@@ -115,7 +125,9 @@
             ><dt>{{ t('wizard.delivery') }}</dt
             ><dd>{{
               channelSettings
-                ? selectedChannels.map((key) => t(`notificationMethods.channels.${key}`)).join('、') || '—'
+                ? selectedChannels
+                    .map((key) => t(key === 'webhook' ? 'outboundWebhook.title' : `notificationMethods.channels.${key}`))
+                    .join('、') || '—'
                 : t('wizard.defaultDelivery')
             }}</dd></div
           >
@@ -146,6 +158,7 @@
   import { getMarketSymbols } from '@/api/market';
   import type { MarketSymbol } from '@/api/market';
   import { getNotificationChannels } from '@/api/notificationChannels';
+  import { getWebhookDestinations } from '@/api/webhookReminderDestinations';
   import type { NotificationChannels } from '@/api/notificationChannels';
   import WizardSteps from './components/WizardSteps.vue';
   const { t } = useI18n();
@@ -170,6 +183,7 @@
   });
   const symbols = ref<MarketSymbol[]>([]);
   const channelSettings = ref<NotificationChannels | null>(null);
+  const webhookAvailable = ref(false);
   const selectedChannels = ref<string[]>([]);
   const channelsChanged = ref(false);
   const legacyChannels = ref(false);
@@ -267,6 +281,12 @@
         const capabilities = await getAlertCapabilities();
         if (!capabilities.perAlertChannels) throw new Error('Channel selection unavailable');
         channelSettings.value = await getNotificationChannels();
+        webhookAvailable.value = false;
+        void getWebhookDestinations()
+          .then((settings) => {
+            webhookAvailable.value = settings.available && settings.items.some((item) => item.enabled);
+          })
+          .catch(() => {});
         selectedChannels.value = (['bitpongo', 'email', 'telegram'] as const).filter(
           (key) =>
             channelSettings.value![key].enabled &&

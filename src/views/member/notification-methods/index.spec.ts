@@ -40,6 +40,13 @@ afterEach(() => {
 });
 
 describe('notification methods', () => {
+  it('replaces the legacy platform placeholders with one Webhook entry', async () => {
+    wrapper = mount(NotificationMethods, { global: { plugins: [i18n], stubs: { RouterLink: true } } });
+    await flushPromises();
+    expect(wrapper.findAll('[data-test="webhook-configure"]')).toHaveLength(1);
+    expect(wrapper.text()).not.toContain('DingTalk reminders');
+    expect(wrapper.text()).not.toContain('Feishu reminders');
+  });
   it('hides perception settings without saving a new channel order', async () => {
     wrapper = mount(NotificationMethods, { global: { plugins: [i18n], stubs: { RouterLink: true } } });
     await flushPromises();

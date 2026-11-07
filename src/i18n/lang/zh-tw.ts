@@ -1,6 +1,33 @@
 import type { langType } from './lang-base';
 
 export const lang: langType = {
+  outboundWebhook: {
+    title: 'Webhook 提醒',
+    intro: '將提醒傳送到釘釘、飛書、Slack 或 Discord。',
+    failed: '操作未完成，請檢查設定後重試。',
+    sent: '測試通知已傳送。',
+    retry: '重試',
+    enabled: '已啟用',
+    disabled: '已停用',
+    confirmDelete: '刪除這個接收目標？',
+    remove: '刪除',
+    edit: '編輯',
+    disable: '停用',
+    enable: '啟用',
+    test: '傳送測試',
+    add: '新增目標',
+    provider: '平台',
+    name: '目標名稱',
+    keep: '留空則保留原值',
+    secret: '簽名金鑰（選填）',
+    clearSecret: '清除已儲存的簽名金鑰',
+    help: {
+      DINGTALK: '複製釘釘群組自訂機器人的 Webhook 網址。如果機器人使用加簽，請填寫簽名金鑰。',
+      FEISHU: '複製飛書群組自訂機器人的 Webhook 網址。如果已啟用簽名驗證，請填寫簽名金鑰。',
+      SLACK: '在 Slack 應用程式中啟用 Incoming Webhooks，再為指定頻道新增 Webhook。',
+      DISCORD: '在 Discord 頻道設定中開啟「整合 → Webhooks」，建立並複製網址。',
+    },
+  },
   title: 'Bitpongo',
   release: {
     check: '檢查 App 更新',

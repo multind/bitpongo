@@ -1,4 +1,28 @@
 export type langType = {
+  outboundWebhook: Record<
+    | 'title'
+    | 'intro'
+    | 'failed'
+    | 'sent'
+    | 'retry'
+    | 'enabled'
+    | 'disabled'
+    | 'confirmDelete'
+    | 'remove'
+    | 'edit'
+    | 'disable'
+    | 'enable'
+    | 'test'
+    | 'add'
+    | 'provider'
+    | 'name'
+    | 'keep'
+    | 'secret'
+    | 'clearSecret',
+    string
+  > & {
+    help: Record<'DINGTALK' | 'FEISHU' | 'SLACK' | 'DISCORD', string>;
+  };
   title: string;
   release: { check: string; appOnly: string; failed: string; unavailable: string; update: string; current: string; store: string };
   content: {

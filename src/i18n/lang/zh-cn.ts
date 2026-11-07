@@ -1,6 +1,33 @@
 import type { langType } from './lang-base';
 
 export const lang: langType = {
+  outboundWebhook: {
+    title: 'Webhook 提醒',
+    intro: '将提醒发送到钉钉、飞书、Slack 或 Discord。',
+    failed: '操作未完成，请检查配置后重试。',
+    sent: '测试通知已发送。',
+    retry: '重试',
+    enabled: '已启用',
+    disabled: '已停用',
+    confirmDelete: '删除这个接收目标？',
+    remove: '删除',
+    edit: '编辑',
+    disable: '停用',
+    enable: '启用',
+    test: '发送测试',
+    add: '添加目标',
+    provider: '平台',
+    name: '目标名称',
+    keep: '留空则保留原值',
+    secret: '签名密钥（可选）',
+    clearSecret: '清除已保存的签名密钥',
+    help: {
+      DINGTALK: '复制钉钉群自定义机器人的 Webhook 地址。如果机器人使用加签，请填写签名密钥。',
+      FEISHU: '复制飞书群自定义机器人的 Webhook 地址。如果开启了签名校验，请填写签名密钥。',
+      SLACK: '在 Slack 应用中启用 Incoming Webhooks，再为指定频道添加 Webhook。',
+      DISCORD: '在 Discord 频道设置中打开「整合 → Webhooks」，创建并复制地址。',
+    },
+  },
   title: 'Bitpongo',
   release: {
     check: '检查 App 更新',
