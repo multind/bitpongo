@@ -17,35 +17,10 @@
         <nut-button :disabled="settingsBusy" @click="openSettings">{{ copy.settings }}</nut-button>
       </div>
     </section>
-    <p v-if="registrationBusy" role="status" data-test="push-registering">{{ stageCopy.pending }}</p>
+    <p v-if="registrationBusy" role="status" data-test="push-registering">{{ copy.pending }}</p>
     <p v-if="nativeError" role="alert" data-test="push-native-error">
-      {{ copy.errors[nativeError] }} <code>({{ nativeError }})</code>
+      {{ copy.errors[nativeError] }}
     </p>
-    <details v-if="status.supported || nativeError" class="settings-card push-diagnostics" data-test="push-diagnostics">
-      <summary>{{ copy.diagnostics.title }}</summary>
-      <p>{{ copy.diagnostics.help }}</p>
-      <dl>
-        <dt>{{ copy.diagnostics.supported }}</dt
-        ><dd>{{ status.supported === true ? copy.yes : copy.no }}</dd> <dt>{{ copy.diagnostics.configured }}</dt
-        ><dd>{{ status.configured === true ? copy.yes : copy.no }}</dd> <dt>{{ copy.diagnostics.session }}</dt
-        ><dd>{{ user.token && user.info.id ? copy.yes : copy.no }}</dd> <dt>{{ copy.diagnostics.permission }}</dt
-        ><dd>{{ permission }}</dd>
-        <dt>{{ copy.diagnostics.nativeRegistered }}</dt>
-        <dd data-test="push-native-registered">{{ status.registered === true ? copy.yes : copy.no }}</dd>
-        <dt>{{ copy.diagnostics.serverRegistered }}</dt>
-        <dd data-test="push-server-registered">{{ devicesLoaded ? (serverRegistered ? copy.yes : copy.no) : copy.unknown }}</dd>
-        <template v-if="status.diagnostics">
-          <dt>{{ stageCopy.stage }}</dt
-          ><dd data-test="push-stage">{{ stageLabel }}</dd> <dt>{{ stageCopy.code }}</dt
-          ><dd data-test="push-failure-code">{{ diagnosticCode }}</dd> <dt>{{ stageCopy.apns }}</dt
-          ><dd>{{ diagnosticBoolean(status.diagnostics.apnsReady) }}</dd> <dt>{{ stageCopy.fcm }}</dt
-          ><dd>{{ diagnosticBoolean(status.diagnostics.fcmReady) }}</dd> <dt>{{ stageCopy.request }}</dt
-          ><dd>{{ diagnosticBoolean(status.diagnostics.requestStarted) }}</dd> <dt>{{ stageCopy.http }}</dt
-          ><dd data-test="push-http-status">{{ diagnosticHttpStatus }}</dd>
-        </template>
-      </dl>
-      <p v-if="status.diagnostics">{{ stageCopy.help }}</p>
-    </details>
     <p v-if="error" role="alert">{{ error }}</p
     ><p v-if="message" role="status">{{ message }}</p>
     <section v-if="setting" class="settings-card" aria-labelledby="push-preferences-heading">
@@ -100,7 +75,6 @@
   import { displayTimeZone } from '@/mobile/app-context';
   import { useUserStore } from '@/store/modules/user';
   import { pushCopy } from './push-copy';
-  import { diagnosticLabel, pushStageCopy } from './push-stage-copy';
   import { pushLocale } from '@/api/push';
   const { locale } = useI18n();
   const copy = computed(() => pushCopy[locale.value as keyof typeof pushCopy] || pushCopy['en-us']);
@@ -109,14 +83,6 @@
   const devices = ref<PushDevice[]>([]);
   const devicesLoaded = ref(false);
   const status = ref({ ...unsupportedPush });
-  const stageCopy = computed(() => pushStageCopy[locale.value as keyof typeof pushStageCopy] || pushStageCopy['en-us']);
-  const stageLabel = computed(() => diagnosticLabel(status.value.diagnostics?.stage, stageCopy.value.stages, copy.value.unknown));
-  const diagnosticCode = computed(() => diagnosticLabel(status.value.diagnostics?.code, stageCopy.value.codes, copy.value.unknown));
-  const diagnosticBoolean = (value: unknown) => (value === true ? copy.value.yes : value === false ? copy.value.no : copy.value.unknown);
-  const diagnosticHttpStatus = computed(() => {
-    const value = status.value.diagnostics?.httpStatus;
-    return typeof value === 'number' && Number.isInteger(value) && value >= 100 && value <= 599 ? String(value) : copy.value.unknown;
-  });
   const permission = computed(() => {
     const value = status.value.permission;
     return ['authorized', 'provisional', 'denied', 'notDetermined'].includes(value) ? value : 'unavailable';
@@ -287,37 +253,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-  }
-
-  summary {
-    min-height: 2.75rem;
-    font-weight: 600;
-    line-height: 2.75rem;
-    cursor: pointer;
-  }
-
-  .push-diagnostics {
-    padding: 1rem;
-    overflow-wrap: anywhere;
-    background: #fafafa;
-    border: 1px solid #e5e5e5;
-    border-radius: 0.75rem;
-  }
-
-  .push-diagnostics dl {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0.5rem 1rem;
-    font-size: 0.875rem;
-  }
-
-  .push-diagnostics dd {
-    margin: 0;
-    text-align: right;
-  }
-
-  code {
-    overflow-wrap: anywhere;
   }
 
   .enabled-row,

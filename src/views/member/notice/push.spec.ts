@@ -49,13 +49,11 @@ beforeEach(() => {
   mocks.testPush.mockResolvedValue({ queued: true });
 });
 describe('native notification settings', () => {
-  it('keeps registration errors outside collapsed diagnostics and names preference and device sections', async () => {
+  it('hides diagnostics and keeps registration errors visible and names preference and device sections', async () => {
     mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
     const view = render();
     await flushPromises();
-    const diagnostics = view.get('details[data-test="push-diagnostics"]');
-    expect(diagnostics.attributes('open')).toBeUndefined();
-    expect(diagnostics.get('summary').text()).toBe('Notification diagnostics');
+    expect(view.find('[data-test="push-diagnostics"]').exists()).toBe(false);
     expect(view.get('[data-test="push-native-error"]').element.closest('details')).toBeNull();
     expect(view.get('[aria-labelledby="push-preferences-heading"]').get('h2').attributes('id')).toBe('push-preferences-heading');
     expect(view.get('[aria-labelledby="push-devices-heading"]').get('h2').text()).toBe('Registered devices');
@@ -86,7 +84,7 @@ describe('native notification settings', () => {
     expect(view.find('[data-test="push-registering"]').exists()).toBe(false);
     view.unmount();
   });
-  it.each(['en-us', 'zh-cn', 'zh-tw'])('shows safe registration stages and HTTP results in %s', async (locale) => {
+  it.each(['en-us', 'zh-cn', 'zh-tw'])('hides registration stages and HTTP results in %s', async (locale) => {
     mocks.locale.value = locale;
     mocks.pushGetStatus.mockResolvedValue({
       ...status,
@@ -105,9 +103,7 @@ describe('native notification settings', () => {
     });
     const view = render();
     await flushPromises();
-    expect(view.get('[data-test="push-stage"]').text()).toContain('registerHttp');
-    expect(view.get('[data-test="push-failure-code"]').text()).toContain('httpRejected');
-    expect(view.get('[data-test="push-http-status"]').text()).toBe('401');
+    expect(view.find('[data-test="push-diagnostics"]').exists()).toBe(false);
     expect(view.text()).not.toContain('secret-token');
     expect(view.text()).not.toContain('private-response');
   });
@@ -125,9 +121,7 @@ describe('native notification settings', () => {
     });
     const view = render();
     await flushPromises();
-    expect(view.get('[data-test="push-stage"]').text()).toBe('Unknown');
-    expect(view.get('[data-test="push-failure-code"]').text()).toBe('Unknown');
-    expect(view.get('[data-test="push-http-status"]').text()).toBe('Unknown');
+    expect(view.find('[data-test="push-diagnostics"]').exists()).toBe(false);
     expect(view.text()).not.toContain('secret-token');
     expect(view.text()).not.toContain('constructor');
   });
@@ -141,10 +135,8 @@ describe('native notification settings', () => {
       await flushPromises();
       await view.get('[data-test="push-enable-device"]').trigger('click');
       await flushPromises();
-      expect(view.get('[data-test="push-native-error"]').text()).toContain(code);
-      expect(view.get('[data-test="push-diagnostics"]').text()).toContain('authorized');
-      expect(view.get('[data-test="push-native-registered"]').text()).toBe('No');
-      expect(view.get('[data-test="push-server-registered"]').text()).toBe('No');
+      expect(view.get('[data-test="push-native-error"]').text()).not.toContain(code);
+      expect(view.get('[data-test="push-native-error"]').text()).not.toBe('');
       expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeDefined();
       expect(view.text()).not.toContain('Please try again');
     },
@@ -158,22 +150,23 @@ describe('native notification settings', () => {
     mocks.pushSyncSession.mockResolvedValue({ ...status, registered: false, error: 'registration_failed' });
     await view.get('[data-test="push-enable-device"]').trigger('click');
     await flushPromises();
-    expect(view.get('[data-test="push-native-error"]').text()).toContain('registration_failed');
+    expect(view.get('[data-test="push-native-error"]').text()).not.toContain('registration_failed');
+    expect(view.get('[data-test="push-native-error"]').text()).not.toBe('');
   });
   it('shows initial session sync failure rather than an earlier healthy status', async () => {
     mocks.pushSyncSession.mockResolvedValue({ ...status, registered: false, error: 'registration_failed' });
     const view = render();
     await flushPromises();
-    expect(view.get('[data-test="push-native-error"]').text()).toContain('registration_failed');
-    expect(view.get('[data-test="push-native-registered"]').text()).toBe('No');
+    expect(view.get('[data-test="push-native-error"]').text()).not.toContain('registration_failed');
+    expect(view.get('[data-test="push-native-error"]').text()).not.toBe('');
   });
   it('does not claim the server device is absent when the device list request fails', async () => {
     mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
     mocks.getPushDevices.mockRejectedValue(new Error('private-response'));
     const view = render();
     await flushPromises();
-    expect(view.get('[data-test="push-native-error"]').text()).toContain('token_unavailable');
-    expect(view.get('[data-test="push-server-registered"]').text()).toBe('Unknown');
+    expect(view.get('[data-test="push-native-error"]').text()).not.toContain('token_unavailable');
+    expect(view.get('[data-test="push-native-error"]').text()).not.toBe('');
     expect(view.text()).not.toContain('private-response');
     expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeDefined();
   });
@@ -183,7 +176,6 @@ describe('native notification settings', () => {
     mocks.getPushDevices.mockRejectedValue(new Error('offline'));
     await view.get('[data-test="push-refresh"]').trigger('click');
     await flushPromises();
-    expect(view.get('[data-test="push-server-registered"]').text()).toBe('Unknown');
     expect(view.find('[data-test="push-enable-device"]').exists()).toBe(false);
     expect(view.find('.device-row').exists()).toBe(false);
     expect(view.text()).not.toContain('This device is not registered');
@@ -199,27 +191,31 @@ describe('native notification settings', () => {
     expect(view.get('[role="alert"]').text()).toContain('Please try again');
     expect(view.text()).not.toContain('server-private-message');
   });
-  it('retains native diagnostics when the account settings API fails', async () => {
+  it('retains a user-facing registration error when the account settings API fails', async () => {
     mocks.getPushSettings.mockRejectedValue(new Error('network error with secret-jwt'));
     mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
     const view = render();
     await flushPromises();
-    expect(view.get('[data-test="push-native-error"]').text()).toContain('token_unavailable');
-    expect(view.get('[data-test="push-server-registered"]').text()).toBe('Unknown');
+    expect(view.get('[data-test="push-native-error"]').text()).not.toContain('token_unavailable');
+    expect(view.get('[data-test="push-native-error"]').text()).not.toBe('');
     expect(view.text()).not.toContain('secret-jwt');
   });
-  it.each(['en-us', 'zh-cn', 'zh-tw'])('renders safe diagnostics in %s and clears them after successful refresh', async (language) => {
-    mocks.locale.value = language;
-    mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
-    const view = render();
-    await flushPromises();
-    expect(view.get('[data-test="push-native-error"]').text()).toContain('token_unavailable');
-    mocks.pushGetStatus.mockResolvedValue({ ...status });
-    await view.get('[data-test="push-refresh"]').trigger('click');
-    await flushPromises();
-    expect(view.find('[data-test="push-native-error"]').exists()).toBe(false);
-    expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeUndefined();
-  });
+  it.each(['en-us', 'zh-cn', 'zh-tw'])(
+    'renders a user-facing registration error in %s and clears them after successful refresh',
+    async (language) => {
+      mocks.locale.value = language;
+      mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
+      const view = render();
+      await flushPromises();
+      expect(view.get('[data-test="push-native-error"]').text()).not.toContain('token_unavailable');
+      expect(view.get('[data-test="push-native-error"]').text()).not.toBe('');
+      mocks.pushGetStatus.mockResolvedValue({ ...status });
+      await view.get('[data-test="push-refresh"]').trigger('click');
+      await flushPromises();
+      expect(view.find('[data-test="push-native-error"]').exists()).toBe(false);
+      expect(view.get('[data-test="push-test"]').attributes('disabled')).toBeUndefined();
+    },
+  );
   it.each(['FCM-secret jwt-secret', '__proto__', 'constructor'])(
     'does not render unknown native error text or additional sensitive fields: %s',
     async (untrustedError) => {
@@ -234,7 +230,8 @@ describe('native notification settings', () => {
       });
       const view = render();
       await flushPromises();
-      expect(view.get('[data-test="push-native-error"]').text()).toContain('unknown_error');
+      expect(view.get('[data-test="push-native-error"]').text()).not.toContain('unknown_error');
+      expect(view.get('[data-test="push-native-error"]').text()).not.toBe('');
       for (const secret of [untrustedError, 'jwt-secret', 'FCM-secret', 'permission-secret', 'details-secret']) {
         expect(view.html()).not.toContain(secret);
       }
