@@ -130,6 +130,34 @@ afterEach(() => {
 });
 
 describe('F&G strategy details', () => {
+  it('prioritizes realized returns and groups strategy settings without mislabeling a USDT target', async () => {
+    vi.mocked(getFngStrategy).mockResolvedValue({ ...strategy, profitTargetType: 'USDT' });
+    vi.mocked(getFngPerformance).mockResolvedValue({
+      totalMargin: '0',
+      realizedPnl: '0',
+      winRate: '0',
+      totalTrades: 0,
+      openPositions: 0,
+      closedPositions: 0,
+      curve: [],
+    });
+    const view = await mountView();
+    expect(view.get('.heading-title .run-state').text()).toBe('Active');
+    expect(view.get('.returns-primary').text()).toMatch(/0\s*USDT/);
+    expect(view.find('.returns-primary .positive').exists()).toBe(false);
+    expect(view.find('.returns-card .empty-state').exists()).toBe(true);
+    const info = view.findAll('.detail-tab')[1];
+    await info.trigger('click');
+    expect(info.attributes('aria-pressed')).toBe('true');
+    expect(view.findAll('.info-group h2').map((heading) => heading.text())).toEqual([
+      'Entry conditions',
+      'Take profit & stop loss',
+      'Trade rounds',
+    ]);
+    expect(view.findAll('.info-group')[1].text()).toMatch(/10\s*USDT/);
+    expect(view.findAll('.info-group')[1].text()).toContain('30%');
+  });
+
   it('lets a paused legacy strategy set an explicit round limit without resuming it', async () => {
     vi.mocked(getFngStrategy)
       .mockResolvedValueOnce({ ...strategy, maxTradeRounds: null, enabled: false })

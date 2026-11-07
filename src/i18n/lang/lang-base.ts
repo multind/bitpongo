@@ -231,6 +231,10 @@ export type langType = {
     deleteConfirm: string;
   };
   fngDetail: {
+    entryConditions: string;
+    exitRules: string;
+    tradeRounds: string;
+    profitTarget: string;
     totalMargin: string;
     realizedPnl: string;
     winRate: string;

@@ -6,45 +6,48 @@
   </div>
   <main v-else class="fng-details">
     <header class="detail-heading">
-      <div class="heading-copy">
-        <p class="eyebrow">{{ t('fng.title') }}</p>
+      <div class="heading-title">
         <h1>{{ strategy.name }}</h1>
-        <div class="tag-row">
-          <span class="tag">{{ t('fng.listTitle') }}</span>
-          <span class="tag">{{ strategy.exchange }}</span>
-          <span class="run-state" :class="{ active: strategy.enabled }">{{ strategy.enabled ? t('list.active') : t('list.paused') }}</span>
-        </div>
-        <p class="meta">
-          {{ strategy.symbol }} · {{ t('fng.leverage') }} {{ strategy.leverage }}x · {{ t('fng.direction') }}
-          {{ strategy.direction === 'LONG' ? t('fng.long') : t('fng.short') }}
-        </p>
-        <p class="meta">{{ t('fngDetail.created') }} {{ formatInstant(strategy.createdAt) }}</p>
-        <p v-if="roundBlockMessage" class="meta" role="status">{{ roundBlockMessage }}</p>
+        <span class="run-state" :class="{ active: strategy.enabled }">{{ strategy.enabled ? t('list.active') : t('list.paused') }}</span>
       </div>
+      <div class="tag-row">
+        <span class="tag">F&amp;G</span>
+        <span class="tag exchange-tag">{{ strategy.exchange }}</span>
+      </div>
+      <div class="heading-meta">
+        <p>{{ strategy.symbol }} · {{ strategy.leverage }}x · {{ strategy.direction === 'LONG' ? t('fng.long') : t('fng.short') }}</p>
+        <p>{{ t('fngDetail.created') }} {{ formatInstant(strategy.createdAt) }}</p>
+      </div>
+      <p v-if="roundBlockMessage" class="round-notice" role="status">{{ roundBlockMessage }}</p>
     </header>
 
-    <nav class="detail-tabs" :aria-label="t('fng.title')">
+    <nav class="detail-tabs" :aria-label="t('list.details')">
       <button
         v-for="item in tabs"
         :key="item.key"
         type="button"
         class="detail-tab"
         :class="{ active: value === item.key }"
+        :aria-pressed="value === item.key"
         @click="value = item.key"
       >
         {{ t(item.label) }}
       </button>
     </nav>
 
-    <section v-if="value === 'c1'" class="detail-panel">
+    <section v-if="value === 'c1'" class="detail-panel detail-card returns-card">
+      <div class="returns-primary">
+        <h2>{{ t('fngDetail.realizedPnl') }}</h2>
+        <strong class="money-value" :class="pnlClass(performance?.realizedPnl)"
+          ><span>{{ performance?.realizedPnl ?? '0' }}</span> <small>USDT</small></strong
+        >
+      </div>
       <div class="summary-grid">
         <div>
           <span>{{ t('fngDetail.totalMargin') }}</span>
-          <strong>{{ performance?.totalMargin ?? '0' }} USDT</strong>
-        </div>
-        <div>
-          <span>{{ t('fngDetail.realizedPnl') }}</span>
-          <strong :class="pnlClass(performance?.realizedPnl)">{{ performance?.realizedPnl ?? '0' }} USDT</strong>
+          <strong class="money-value"
+            ><span>{{ performance?.totalMargin ?? '0' }}</span> <small>USDT</small></strong
+          >
         </div>
         <div>
           <span>{{ t('fngDetail.winRate') }}</span>
@@ -74,85 +77,94 @@
       <p v-else class="empty-state">{{ t('fngDetail.noPnlData') }}</p>
     </section>
 
-    <section v-else-if="value === 'c2'" class="detail-panel">
-      <dl class="info-grid">
-        <div
-          ><dt>{{ t('fng.symbol') }}</dt
-          ><dd>{{ strategy.symbol }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.exchange') }}</dt
-          ><dd>{{ strategy.exchange }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.direction') }}</dt
-          ><dd>{{ strategy.direction === 'LONG' ? t('fng.long') : t('fng.short') }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.upperLimitValue') }}</dt
-          ><dd>{{ strategy.upperLimitValue }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.upperLimitInterval') }}</dt
-          ><dd>{{ strategy.upperLimitInterval }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.lowerLimitValue') }}</dt
-          ><dd>{{ strategy.lowerLimitValue }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.lowerLimitInterval') }}</dt
-          ><dd>{{ strategy.lowerLimitInterval }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.basicAmount') }}</dt
-          ><dd>{{ strategy.basicAmount }} USDT</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.increaseRatio') }}</dt
-          ><dd>{{ strategy.increaseRatio }}%</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.leverage') }}</dt
-          ><dd>{{ strategy.leverage }}x</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.completedTradeRounds') }}</dt
-          ><dd>{{ strategy.completedTradeRounds }} / {{ strategy.maxTradeRounds ?? '—' }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.profitTargetPercent') }}</dt
-          ><dd>{{ strategy.profitTargetPercent }}%</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.profitDrawdownPercent') }}</dt
-          ><dd>{{ strategy.profitDrawdownPercent }}%</dd></div
-        >
-        <div>
-          <dt>{{ t('fng.profitTargetType') }}</dt>
-          <dd>{{ strategy.profitTargetType === 'PERCENT' ? t('fng.percent') : t('fng.usdt') }}</dd>
-        </div>
-        <div
-          ><dt>{{ t('fng.maxOrders') }}</dt
-          ><dd>{{ strategy.maxOrders }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fng.maxPositions') }}</dt
-          ><dd>{{ strategy.maxPositions }}</dd></div
-        >
-        <div
-          ><dt>{{ t('fngDetail.created') }}</dt
-          ><dd>{{ formatInstant(strategy.createdAt) }}</dd></div
-        >
-      </dl>
-      <form class="round-limit-form" @submit.prevent="saveRoundLimit">
-        <label>
-          {{ t('fng.maxTradeRounds') }}
-          <input v-model.number="roundLimit" type="number" min="1" max="10000" step="1" required data-test="fng-round-limit" />
-        </label>
-        <button type="submit" class="round-limit-save" :disabled="savingRoundLimit">{{ t('common.save') }}</button>
-        <small>{{ t('fng.maxTradeRoundsHint') }}</small>
-      </form>
+    <section v-else-if="value === 'c2'" class="detail-panel info-panel">
+      <section class="detail-card info-group">
+        <h2>{{ t('fngDetail.entryConditions') }}</h2>
+        <dl class="info-grid">
+          <div
+            ><dt>{{ t('fng.symbol') }}</dt
+            ><dd>{{ strategy.symbol }}</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.exchange') }}</dt
+            ><dd>{{ strategy.exchange }}</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.direction') }}</dt
+            ><dd>{{ strategy.direction === 'LONG' ? t('fng.long') : t('fng.short') }}</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.upperLimitValue') }}</dt
+            ><dd>{{ strategy.upperLimitValue }}</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.upperLimitInterval') }}</dt
+            ><dd>{{ strategy.upperLimitInterval }}</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.lowerLimitValue') }}</dt
+            ><dd>{{ strategy.lowerLimitValue }}</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.lowerLimitInterval') }}</dt
+            ><dd>{{ strategy.lowerLimitInterval }}</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.basicAmount') }}</dt
+            ><dd>{{ strategy.basicAmount }} USDT</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.increaseRatio') }}</dt
+            ><dd>{{ strategy.increaseRatio }}%</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.leverage') }}</dt
+            ><dd>{{ strategy.leverage }}x</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.maxOrders') }}</dt
+            ><dd>{{ strategy.maxOrders }}</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.maxPositions') }}</dt
+            ><dd>{{ strategy.maxPositions }}</dd></div
+          >
+        </dl>
+      </section>
+      <section class="detail-card info-group">
+        <h2>{{ t('fngDetail.exitRules') }}</h2>
+        <dl class="info-grid">
+          <div>
+            <dt>{{ t('fngDetail.profitTarget') }}</dt>
+            <dd>{{ strategy.profitTargetPercent }}{{ strategy.profitTargetType === 'PERCENT' ? '%' : ' USDT' }}</dd>
+          </div>
+          <div
+            ><dt>{{ t('fng.profitDrawdownPercent') }}</dt
+            ><dd>{{ strategy.profitDrawdownPercent }}%</dd></div
+          >
+          <div
+            ><dt>{{ t('fng.stopLossPercent') }}</dt
+            ><dd>{{ strategy.stopLossPercent == null ? '—' : `${strategy.stopLossPercent}%` }}</dd></div
+          >
+        </dl>
+      </section>
+      <section class="detail-card info-group">
+        <h2>{{ t('fngDetail.tradeRounds') }}</h2>
+        <dl class="info-grid">
+          <div
+            ><dt>{{ t('fng.completedTradeRounds') }}</dt
+            ><dd>{{ strategy.completedTradeRounds }} / {{ strategy.maxTradeRounds ?? '—' }}</dd></div
+          >
+        </dl>
+        <form class="round-limit-form" @submit.prevent="saveRoundLimit">
+          <label>
+            {{ t('fng.maxTradeRounds') }}
+            <input v-model.number="roundLimit" type="number" min="1" max="10000" step="1" required data-test="fng-round-limit" />
+          </label>
+          <button type="submit" class="round-limit-save" :disabled="savingRoundLimit">{{ t('common.save') }}</button>
+          <small>{{ t('fng.maxTradeRoundsHint') }}</small>
+        </form>
+      </section>
     </section>
 
     <section v-else-if="value === 'c3'" class="detail-panel">
@@ -282,7 +294,7 @@
   const pnlClass = (value: string | null | undefined) => {
     const number = Number(value);
     if (value == null || !Number.isFinite(number)) return '';
-    return number >= 0 ? 'positive' : 'negative';
+    return number > 0 ? 'positive' : number < 0 ? 'negative' : '';
   };
 
   const curvePoints = computed(() => {
@@ -397,7 +409,8 @@
 </script>
 <style scoped lang="scss">
   .fng-details {
-    padding: 10px 16px calc(4rem + env(safe-area-inset-bottom));
+    padding: 0.75rem 1rem calc(4.5rem + env(safe-area-inset-bottom));
+    color: #33413b;
   }
 
   .round-limit-form {
@@ -460,29 +473,17 @@
     border: 0;
   }
 
-  .detail-heading {
+  .heading-title {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     align-items: flex-start;
     justify-content: space-between;
-    margin-top: 10px;
-  }
-
-  .heading-copy {
-    min-width: 0;
-  }
-
-  .eyebrow {
-    margin: 0 0 0.25rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #917a69;
-    letter-spacing: 0.18em;
   }
 
   h1 {
+    min-width: 0;
     margin: 0;
-    font-size: 1.3rem;
+    font-size: 1rem;
     font-weight: 600;
     line-height: 1.4;
     overflow-wrap: anywhere;
@@ -497,21 +498,26 @@
   }
 
   .tag {
-    padding: 0 6px;
-    font-size: 0.72rem;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.75rem;
     line-height: 1.5;
-    color: #333;
-    background: #f5f5f5;
-    border-radius: 4px;
+    color: #6f645a;
+    background: #f5f1ee;
+    border-radius: 0.25rem;
+  }
+
+  .exchange-tag {
+    text-transform: capitalize;
   }
 
   .run-state {
-    padding: 0 6px;
-    font-size: 0.72rem;
+    flex-shrink: 0;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.75rem;
     line-height: 1.5;
     color: #81766b;
     background: #eee8e2;
-    border-radius: 4px;
+    border-radius: 0.25rem;
   }
 
   .run-state.active {
@@ -519,10 +525,28 @@
     background: #e7f4e8;
   }
 
-  .meta {
-    margin: 5px 0 0;
+  .heading-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    justify-content: space-between;
+    margin-top: 0.5rem;
     font-size: 0.82rem;
-    color: #2f2f2f;
+    color: #665e57;
+  }
+
+  .heading-meta p {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .round-notice {
+    padding: 0.55rem 0.75rem;
+    margin: 0.75rem 0 0;
+    font-size: 0.82rem;
+    color: #8c4814;
+    background: #fff1df;
+    border-radius: 0.5rem;
   }
 
   .fng-action-bar {
@@ -534,10 +558,10 @@
     box-sizing: border-box;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    gap: 0.375rem;
     width: 100%;
-    max-width: 750px;
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    max-width: 46.875rem;
+    padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom));
     margin: 0 auto;
     background: #fffaf5;
     border-top: 1px solid #f1e8e0;
@@ -546,37 +570,82 @@
   .fng-action-bar :deep(.nut-button) {
     width: 100%;
     min-width: 0;
-    height: 2.75rem;
-    padding-inline: 6px;
+    min-height: 2.75rem;
+    padding-inline: 0.25rem;
     font-size: 1.0625rem;
+    line-height: 1.2;
+    white-space: normal;
   }
 
   .detail-tabs {
-    display: flex;
-    gap: 20px;
-    padding: 0;
-    margin: 20px 0 0;
-    background: transparent;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 1rem 0 0;
+    background: #f2f2f2;
+    border-radius: 0.65rem;
   }
 
   .detail-tab {
-    flex: 0 0 auto;
-    min-height: auto;
-    padding: 10px 0;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0.375rem 0.125rem;
     font: inherit;
-    font-size: 0.9rem;
-    color: #000;
+    font-size: 0.8125rem;
+    line-height: 1.2;
+    color: #6c6864;
+    overflow-wrap: anywhere;
     background: transparent;
     border: 0;
   }
 
   .detail-tab.active {
-    color: cadetblue;
-    background: transparent;
+    font-weight: 600;
+    color: #176bc4;
   }
 
   .detail-panel {
-    padding: 10px 0;
+    margin-top: 0.625rem;
+  }
+
+  .detail-card,
+  .trade-card,
+  .execution-card {
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid #f1e8e0;
+    border-radius: 1rem;
+  }
+
+  .returns-primary {
+    padding-bottom: 0.8rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid #f1e8e0;
+  }
+
+  .returns-primary h2,
+  .info-group h2,
+  .section-title {
+    margin: 0 0 0.625rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .returns-primary strong {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .money-value {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.125rem 0.25rem;
+    align-items: baseline;
+    overflow-wrap: anywhere;
+  }
+
+  .money-value small {
+    font-size: 0.72em;
+    white-space: nowrap;
   }
 
   .summary-grid {
@@ -588,19 +657,23 @@
   .summary-grid span {
     display: block;
     font-size: 0.78rem;
-    color: #8a8681;
+    color: #6c6864;
+  }
+
+  .summary-grid strong:not(.money-value) {
+    display: block;
   }
 
   .summary-grid strong {
-    display: block;
     margin-top: 0.25rem;
     font-size: 1.05rem;
     overflow-wrap: anywhere;
   }
 
   .section-title {
-    margin: 1.25rem 0 0.6rem;
-    font-size: 1rem;
+    padding-top: 0.85rem;
+    margin-top: 0.85rem;
+    border-top: 1px solid #f1e8e0;
   }
 
   .curve-wrap {
@@ -619,11 +692,18 @@
   }
 
   .empty-state {
-    padding: 1rem 0;
+    padding: 1.5rem 0.5rem;
     margin: 0.5rem 0;
     font-size: 0.85rem;
-    color: #9a8d82;
+    color: #74685d;
     text-align: center;
+    background: #faf8f6;
+    border-radius: 0.5rem;
+  }
+
+  .info-panel {
+    display: grid;
+    gap: 0.625rem;
   }
 
   .info-grid {
@@ -635,7 +715,7 @@
 
   .info-grid dt {
     font-size: 0.78rem;
-    color: #8a8681;
+    color: #6c6864;
   }
 
   .info-grid dd {
@@ -643,14 +723,6 @@
     font-size: 0.92rem;
     font-weight: 600;
     overflow-wrap: anywhere;
-  }
-
-  .trade-card,
-  .execution-card {
-    padding: 0.85rem;
-    background: #fffaf5;
-    border: 1px solid #f1e8e0;
-    border-radius: 0.8rem;
   }
 
   .trade-card + .trade-card,
@@ -775,13 +847,6 @@
     background: #f5f1ee;
     border: 0;
     border-radius: 0.6rem;
-  }
-
-  @media (max-width: 350px) {
-    .summary-grid,
-    .info-grid {
-      grid-template-columns: 1fr;
-    }
   }
 
   :is(button, a, input):focus-visible {

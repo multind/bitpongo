@@ -220,6 +220,10 @@ export const lang: langType = {
     deleteConfirm: '删除这个 F&G 策略？',
   },
   fngDetail: {
+    entryConditions: '开仓条件',
+    exitRules: '止盈与止损',
+    tradeRounds: '交易周期',
+    profitTarget: '止盈目标',
     totalMargin: '累计保证金',
     realizedPnl: '已实现收益',
     winRate: '胜率',

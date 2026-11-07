@@ -55,7 +55,7 @@ export const routes = [
       {
         path: 'fng/details/:id',
         component: () => import('@/views/fng/details.vue'),
-        meta: { title: 'fng.title', border: true },
+        meta: { title: 'list.details', border: true },
       },
       {
         path: 'fng/create',

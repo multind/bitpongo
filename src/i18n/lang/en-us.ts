@@ -224,6 +224,10 @@ export const lang: langType = {
     deleteConfirm: 'Delete this F&G strategy?',
   },
   fngDetail: {
+    entryConditions: 'Entry conditions',
+    exitRules: 'Take profit & stop loss',
+    tradeRounds: 'Trade rounds',
+    profitTarget: 'Profit target',
     totalMargin: 'Total margin',
     realizedPnl: 'Realized PnL',
     winRate: 'Win rate',
