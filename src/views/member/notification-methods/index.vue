@@ -29,12 +29,13 @@
               type="checkbox"
               role="switch"
               :aria-label="t(`notificationMethods.channels.${key}`)"
-              :disabled="busy || !loaded"
+              :disabled="busy || !loaded || key === 'message' || key === 'call'"
             />
             <span class="track" aria-hidden="true" />
           </label>
         </div>
       </section>
+      <!-- 感知设置暂不开放；现有偏好和顺序继续保留。
       <section class="settings-card" aria-labelledby="perception-heading">
         <h2 id="perception-heading">{{ t('notificationMethods.perception') }}</h2>
         <p class="meta">{{ t('notificationMethods.perceptionHint') }}</p>
@@ -81,6 +82,7 @@
           </span>
         </label>
       </section>
+      -->
       <p v-if="error" class="feedback error" role="alert">{{ t('notificationMethods.saveFailed') }}</p>
       <p v-if="saved" class="feedback success" role="status">{{ t('notificationMethods.saveSuccess') }}</p>
       <button class="primary" type="button" data-test="notification-methods-save" :disabled="busy || !loaded" @click="save">
@@ -106,12 +108,7 @@
   import { useI18n } from 'vue-i18n';
   import ReminderEmailSheet from './ReminderEmailSheet.vue';
   import TelegramSheet from './TelegramSheet.vue';
-  import {
-    getNotificationChannels,
-    saveNotificationChannels,
-    saveNotificationOrder,
-    type NotificationChannels,
-  } from '@/api/notificationChannels';
+  import { getNotificationChannels, saveNotificationChannels, type NotificationChannels } from '@/api/notificationChannels';
 
   const { t } = useI18n();
   const emailSheet = ref(false);
@@ -121,6 +118,7 @@
   type EditableKey = Exclude<ChannelKey, 'bitpongo'>;
   const editableKeys: EditableKey[] = ['email', 'message', 'call', 'dingding', 'feishu', 'telegram'];
 
+  /*
   const perceptionOrder = ref<ChannelKey[]>([]);
   const dragged = ref<ChannelKey | null>(null);
   function moveBefore(key: ChannelKey) {
@@ -151,6 +149,7 @@
     perceptionOrder.value = next;
     saved.value = false;
   }
+  */
   const badges: Record<ChannelKey, string> = {
     bitpongo: 'APP',
     email: '@',
@@ -180,7 +179,6 @@
     for (const key of editableKeys) draft[key] = value[key].enabled;
     confirmationEnabled.value = value.confirmationEnabled;
     channels.value = value;
-    perceptionOrder.value = [...channelKeys].sort((a, b) => value[a].sequence - value[b].sequence);
     loaded.value = true;
   };
 
@@ -211,17 +209,17 @@
     error.value = false;
     saved.value = false;
     try {
-      const order = [...perceptionOrder.value];
-      await saveNotificationChannels({
-        emailEnabled: draft.email,
-        messageEnabled: draft.message,
-        callEnabled: draft.call,
-        dingdingEnabled: draft.dingding,
-        feishuEnabled: draft.feishu,
-        telegramEnabled: draft.telegram,
-        confirmationEnabled: confirmationEnabled.value,
-      });
-      applyChannels(await saveNotificationOrder(order));
+      applyChannels(
+        await saveNotificationChannels({
+          emailEnabled: draft.email,
+          messageEnabled: draft.message,
+          callEnabled: draft.call,
+          dingdingEnabled: draft.dingding,
+          feishuEnabled: draft.feishu,
+          telegramEnabled: draft.telegram,
+          confirmationEnabled: confirmationEnabled.value,
+        }),
+      );
       saved.value = true;
     } catch {
       error.value = true;

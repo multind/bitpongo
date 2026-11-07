@@ -40,13 +40,13 @@ afterEach(() => {
 });
 
 describe('notification methods', () => {
-  it('reorders channels with the keyboard and saves the complete order', async () => {
+  it('hides perception settings without saving a new channel order', async () => {
     wrapper = mount(NotificationMethods, { global: { plugins: [i18n], stubs: { RouterLink: true } } });
     await flushPromises();
-    await wrapper.get('[data-channel="email"] button').trigger('keydown', { key: 'ArrowUp' });
+    expect(wrapper.find('#perception-heading').exists()).toBe(false);
     await wrapper.get('[data-test="notification-methods-save"]').trigger('click');
     await flushPromises();
-    expect(saveNotificationOrder).toHaveBeenCalledWith(['email', 'bitpongo', 'message', 'call', 'dingding', 'feishu', 'telegram']);
+    expect(saveNotificationOrder).not.toHaveBeenCalled();
   });
   it('loads channel preferences and saves toggles in camelCase', async () => {
     wrapper = mount(NotificationMethods, {
@@ -65,14 +65,27 @@ describe('notification methods', () => {
     expect(wrapper.text()).toContain('Notification methods saved');
   });
 
-  it('persists the confirmation escalation preference', async () => {
+  it('disables SMS and phone switches while preserving existing preferences', async () => {
+    vi.mocked(getNotificationChannels).mockResolvedValue({
+      ...structuredClone(channels),
+      message: { ...channels.message, enabled: true },
+      call: { ...channels.call, enabled: true },
+      confirmationEnabled: true,
+    });
     wrapper = mount(NotificationMethods, {
       global: { plugins: [i18n], stubs: { RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' } } },
     });
     await flushPromises();
-    await wrapper.get('input[aria-label="Enable confirmation"]').setValue(true);
+    expect(
+      wrapper
+        .findAll('.channel-row input')
+        .slice(1, 3)
+        .map((input) => (input.element as HTMLInputElement).disabled),
+    ).toEqual([true, true]);
     await wrapper.get('[data-test="notification-methods-save"]').trigger('click');
     await flushPromises();
-    expect(saveNotificationChannels).toHaveBeenCalledWith(expect.objectContaining({ confirmationEnabled: true }));
+    expect(saveNotificationChannels).toHaveBeenCalledWith(
+      expect.objectContaining({ messageEnabled: true, callEnabled: true, confirmationEnabled: true }),
+    );
   });
 });
