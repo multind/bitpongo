@@ -4,7 +4,13 @@
     <p>{{ t('presets.loadFailed') }}</p>
     <button type="button" class="text-button" @click="load">{{ t('presets.retry') }}</button>
   </div>
-  <main v-else class="fng-details">
+  <main
+    v-else
+    class="fng-details"
+    @touchstart.passive="startTabSwipe"
+    @touchend.passive="finishTabSwipe"
+    @touchcancel.passive="cancelTabSwipe"
+  >
     <header class="detail-heading">
       <div class="heading-title">
         <h1>{{ strategy.name }}</h1>
@@ -289,6 +295,44 @@
     { key: 'c3', label: 'details.tabs.trades' },
     { key: 'c4', label: 'details.tabs.executions' },
   ];
+
+  const swipeThreshold = 35;
+  const screenEdgeInset = 20;
+  let swipeStart: { id: number; x: number; y: number } | null = null;
+
+  function startTabSwipe(event: TouchEvent) {
+    swipeStart = null;
+    const target = event.target;
+    if (
+      event.touches.length !== 1 ||
+      !(target instanceof Element) ||
+      !target.closest('.detail-panel') ||
+      target.closest('input, textarea, select, button, a, label, [contenteditable]')
+    )
+      return;
+    const { identifier, clientX, clientY } = event.touches[0];
+    // Preserve the system WebView's edge-swipe navigation.
+    if (clientX <= screenEdgeInset || clientX >= window.innerWidth - screenEdgeInset) return;
+    swipeStart = { id: identifier, x: clientX, y: clientY };
+  }
+
+  function cancelTabSwipe() {
+    swipeStart = null;
+  }
+
+  function finishTabSwipe(event: TouchEvent) {
+    const start = swipeStart;
+    cancelTabSwipe();
+    if (!start || event.touches.length !== 0) return;
+    const end = Array.from(event.changedTouches).find((touch) => touch.identifier === start.id);
+    if (!end) return;
+    const x = end.clientX - start.x;
+    const y = end.clientY - start.y;
+    if (Math.abs(x) < swipeThreshold || Math.abs(x) <= Math.abs(y)) return;
+    const index = tabs.findIndex((tab) => tab.key === value.value);
+    const adjacent = tabs[index + (x < 0 ? 1 : -1)];
+    if (adjacent) value.value = adjacent.key;
+  }
 
   const statusLabel = (status: string) => t(`fngDetail.statuses.${status}`);
   const pnlClass = (value: string | null | undefined) => {
@@ -605,6 +649,7 @@
 
   .detail-panel {
     margin-top: 0.625rem;
+    touch-action: pan-y pinch-zoom;
   }
 
   .detail-card,

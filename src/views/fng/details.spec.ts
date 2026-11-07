@@ -130,6 +130,48 @@ afterEach(() => {
 });
 
 describe('F&G strategy details', () => {
+  it('swipes between adjacent tabs in either direction without wrapping', async () => {
+    const view = await mountView();
+    const selected = () => view.get('.detail-tab[aria-pressed="true"]').text();
+    const swipe = async (from: number, to: number) => {
+      const panel = view.get('.detail-panel');
+      await panel.trigger('touchstart', { touches: [{ identifier: 1, clientX: from, clientY: 120 }] });
+      await panel.trigger('touchend', { touches: [], changedTouches: [{ identifier: 1, clientX: to, clientY: 126 }] });
+    };
+    await swipe(120, 220);
+    expect(selected()).toBe('Returns');
+    await swipe(240, 120);
+    expect(selected()).toBe('Strategy info');
+    await swipe(240, 120);
+    expect(selected()).toBe('Trade history');
+    await swipe(240, 120);
+    expect(selected()).toBe('Executions');
+    await swipe(240, 120);
+    expect(selected()).toBe('Executions');
+    await swipe(120, 240);
+    expect(selected()).toBe('Trade history');
+  });
+
+  it('keeps the current tab on vertical, cancelled, and screen-edge gestures', async () => {
+    const view = await mountView();
+    const panel = () => view.get('.detail-panel');
+    const selected = () => view.get('.detail-tab[aria-pressed="true"]').text();
+    const start = (x: number) => panel().trigger('touchstart', { touches: [{ identifier: 1, clientX: x, clientY: 120 }] });
+    const end = (x: number, y: number) =>
+      panel().trigger('touchend', { touches: [], changedTouches: [{ identifier: 1, clientX: x, clientY: y }] });
+    await start(240);
+    await end(160, 250);
+    expect(selected()).toBe('Returns');
+    await start(240);
+    await panel().trigger('touchcancel');
+    await end(120, 126);
+    expect(selected()).toBe('Returns');
+    await view.findAll('.detail-tab')[1].trigger('click');
+    await start(4);
+    await end(124, 126);
+    expect(selected()).toBe('Strategy info');
+  });
+
   it('prioritizes realized returns and groups strategy settings without mislabeling a USDT target', async () => {
     vi.mocked(getFngStrategy).mockResolvedValue({ ...strategy, profitTargetType: 'USDT' });
     vi.mocked(getFngPerformance).mockResolvedValue({
