@@ -621,6 +621,7 @@
     line-height: 1.2;
     color: #6c6864;
     overflow-wrap: anywhere;
+    white-space: normal;
     background: transparent;
     border: 0;
   }
