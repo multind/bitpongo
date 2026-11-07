@@ -4,13 +4,7 @@
     <p>{{ t('presets.loadFailed') }}</p>
     <button type="button" class="text-button" @click="load">{{ t('presets.retry') }}</button>
   </div>
-  <main
-    v-else
-    class="fng-details"
-    @touchstart.passive="startTabSwipe"
-    @touchend.passive="finishTabSwipe"
-    @touchcancel.passive="cancelTabSwipe"
-  >
+  <main v-else class="fng-details">
     <header class="detail-heading">
       <div class="heading-title">
         <h1>{{ strategy.name }}</h1>
@@ -27,213 +21,233 @@
       <p v-if="roundBlockMessage" class="round-notice" role="status">{{ roundBlockMessage }}</p>
     </header>
 
-    <nav class="detail-tabs" :aria-label="t('list.details')">
-      <button
-        v-for="item in tabs"
-        :key="item.key"
-        type="button"
-        class="detail-tab"
-        :class="{ active: value === item.key }"
-        :aria-pressed="value === item.key"
-        @click="value = item.key"
-      >
-        {{ t(item.label) }}
-      </button>
-    </nav>
+    <NutTabs v-model="value" class="fng-tabs" swipeable auto-height :ellipsis="false" :title-scroll="false">
+      <template #titles>
+        <nav class="detail-tabs" :aria-label="t('list.details')">
+          <button
+            v-for="item in tabs"
+            :key="item.key"
+            type="button"
+            class="detail-tab"
+            :class="{ active: value === item.key }"
+            :aria-pressed="value === item.key"
+            @click="value = item.key"
+          >
+            {{ t(item.label) }}
+          </button>
+        </nav>
+      </template>
 
-    <section v-if="value === 'c1'" class="detail-panel detail-card returns-card">
-      <div class="returns-primary">
-        <h2>{{ t('fngDetail.realizedPnl') }}</h2>
-        <strong class="money-value" :class="pnlClass(performance?.realizedPnl)"
-          ><span>{{ performance?.realizedPnl ?? '0' }}</span> <small>USDT</small></strong
-        >
-      </div>
-      <div class="summary-grid">
-        <div>
-          <span>{{ t('fngDetail.totalMargin') }}</span>
-          <strong class="money-value"
-            ><span>{{ performance?.totalMargin ?? '0' }}</span> <small>USDT</small></strong
-          >
-        </div>
-        <div>
-          <span>{{ t('fngDetail.winRate') }}</span>
-          <strong>{{ performance?.winRate ?? '0' }}%</strong>
-        </div>
-        <div>
-          <span>{{ t('fngDetail.totalTrades') }}</span>
-          <strong>{{ performance?.totalTrades ?? 0 }}</strong>
-        </div>
-        <div>
-          <span>{{ t('fngDetail.openPositions') }}</span>
-          <strong>{{ performance?.openPositions ?? 0 }}</strong>
-        </div>
-        <div>
-          <span>{{ t('fngDetail.closedPositions') }}</span>
-          <strong>{{ performance?.closedPositions ?? 0 }}</strong>
-        </div>
-      </div>
-      <h2 class="section-title">{{ t('fngDetail.pnlCurve') }}</h2>
-      <div v-if="curvePoints" class="curve-wrap">
-        <svg viewBox="0 0 320 160" class="curve-chart" role="img" :aria-label="t('fngDetail.pnlCurve')">
-          <line x1="2" y1="80" x2="318" y2="80" stroke="#e9e3dd" stroke-width="1.5" />
-          <polygon :points="curveArea" fill="rgba(25, 137, 250, 0.1)" />
-          <polyline :points="curvePoints" fill="none" stroke="#1989fa" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
-        </svg>
-      </div>
-      <p v-else class="empty-state">{{ t('fngDetail.noPnlData') }}</p>
-    </section>
-
-    <section v-else-if="value === 'c2'" class="detail-panel info-panel">
-      <section class="detail-card info-group">
-        <h2>{{ t('fngDetail.entryConditions') }}</h2>
-        <dl class="info-grid">
-          <div
-            ><dt>{{ t('fng.symbol') }}</dt
-            ><dd>{{ strategy.symbol }}</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.exchange') }}</dt
-            ><dd>{{ strategy.exchange }}</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.direction') }}</dt
-            ><dd>{{ strategy.direction === 'LONG' ? t('fng.long') : t('fng.short') }}</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.upperLimitValue') }}</dt
-            ><dd>{{ strategy.upperLimitValue }}</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.upperLimitInterval') }}</dt
-            ><dd>{{ strategy.upperLimitInterval }}</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.lowerLimitValue') }}</dt
-            ><dd>{{ strategy.lowerLimitValue }}</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.lowerLimitInterval') }}</dt
-            ><dd>{{ strategy.lowerLimitInterval }}</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.basicAmount') }}</dt
-            ><dd>{{ strategy.basicAmount }} USDT</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.increaseRatio') }}</dt
-            ><dd>{{ strategy.increaseRatio }}%</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.leverage') }}</dt
-            ><dd>{{ strategy.leverage }}x</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.maxOrders') }}</dt
-            ><dd>{{ strategy.maxOrders }}</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.maxPositions') }}</dt
-            ><dd>{{ strategy.maxPositions }}</dd></div
-          >
-        </dl>
-      </section>
-      <section class="detail-card info-group">
-        <h2>{{ t('fngDetail.exitRules') }}</h2>
-        <dl class="info-grid">
-          <div>
-            <dt>{{ t('fngDetail.profitTarget') }}</dt>
-            <dd>{{ strategy.profitTargetPercent }}{{ strategy.profitTargetType === 'PERCENT' ? '%' : ' USDT' }}</dd>
+      <NutTabPane pane-key="c1" :style="tabPaneStyle('c1')">
+        <section class="detail-panel detail-card returns-card">
+          <div class="returns-primary">
+            <h2>{{ t('fngDetail.realizedPnl') }}</h2>
+            <strong class="money-value" :class="pnlClass(performance?.realizedPnl)"
+              ><span>{{ performance?.realizedPnl ?? '0' }}</span> <small>USDT</small></strong
+            >
           </div>
-          <div
-            ><dt>{{ t('fng.profitDrawdownPercent') }}</dt
-            ><dd>{{ strategy.profitDrawdownPercent }}%</dd></div
-          >
-          <div
-            ><dt>{{ t('fng.stopLossPercent') }}</dt
-            ><dd>{{ strategy.stopLossPercent == null ? '—' : `${strategy.stopLossPercent}%` }}</dd></div
-          >
-        </dl>
-      </section>
-      <section class="detail-card info-group">
-        <h2>{{ t('fngDetail.tradeRounds') }}</h2>
-        <dl class="info-grid">
-          <div
-            ><dt>{{ t('fng.completedTradeRounds') }}</dt
-            ><dd>{{ strategy.completedTradeRounds }} / {{ strategy.maxTradeRounds ?? '—' }}</dd></div
-          >
-        </dl>
-        <form class="round-limit-form" @submit.prevent="saveRoundLimit">
-          <label>
-            {{ t('fng.maxTradeRounds') }}
-            <input v-model.number="roundLimit" type="number" min="1" max="10000" step="1" required data-test="fng-round-limit" />
-          </label>
-          <button type="submit" class="round-limit-save" :disabled="savingRoundLimit">{{ t('common.save') }}</button>
-          <small>{{ t('fng.maxTradeRoundsHint') }}</small>
-        </form>
-      </section>
-    </section>
-
-    <section v-else-if="value === 'c3'" class="detail-panel">
-      <p v-if="!positions.length" class="empty-state">{{ t('fngDetail.noPositions') }}</p>
-      <article v-for="position in positions" :key="position.id" class="trade-card">
-        <header class="trade-heading">
-          <strong>{{ position.symbol }}</strong>
-          <span class="side" :class="position.side.toLowerCase()">{{ position.side }}</span>
-          <span class="position-state">{{ statusLabel(position.status) }}</span>
-        </header>
-        <dl class="trade-stats">
-          <div
-            ><dt>{{ t('fngDetail.quantity') }}</dt
-            ><dd>{{ position.quantity }}</dd></div
-          >
-          <div v-if="position.remainingQuantity != null">
-            <dt>{{ t('fngDetail.remainingQuantity') }}</dt>
-            <dd>{{ position.remainingQuantity }}</dd>
+          <div class="summary-grid">
+            <div>
+              <span>{{ t('fngDetail.totalMargin') }}</span>
+              <strong class="money-value"
+                ><span>{{ performance?.totalMargin ?? '0' }}</span> <small>USDT</small></strong
+              >
+            </div>
+            <div>
+              <span>{{ t('fngDetail.winRate') }}</span>
+              <strong>{{ performance?.winRate ?? '0' }}%</strong>
+            </div>
+            <div>
+              <span>{{ t('fngDetail.totalTrades') }}</span>
+              <strong>{{ performance?.totalTrades ?? 0 }}</strong>
+            </div>
+            <div>
+              <span>{{ t('fngDetail.openPositions') }}</span>
+              <strong>{{ performance?.openPositions ?? 0 }}</strong>
+            </div>
+            <div>
+              <span>{{ t('fngDetail.closedPositions') }}</span>
+              <strong>{{ performance?.closedPositions ?? 0 }}</strong>
+            </div>
           </div>
-          <div>
-            <dt>{{ t('fngDetail.price') }}</dt>
-            <dd>{{ position.entryPrice ?? '—' }} → {{ position.exitPrice ?? '—' }}</dd>
+          <h2 class="section-title">{{ t('fngDetail.pnlCurve') }}</h2>
+          <div v-if="curvePoints" class="curve-wrap">
+            <svg viewBox="0 0 320 160" class="curve-chart" role="img" :aria-label="t('fngDetail.pnlCurve')">
+              <line x1="2" y1="80" x2="318" y2="80" stroke="#e9e3dd" stroke-width="1.5" />
+              <polygon :points="curveArea" fill="rgba(25, 137, 250, 0.1)" />
+              <polyline
+                :points="curvePoints"
+                fill="none"
+                stroke="#1989fa"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              />
+            </svg>
           </div>
-          <div>
-            <dt>{{ t('fngDetail.pnl') }}</dt>
-            <dd :class="pnlClass(position.realizedPnl)">
-              {{ position.realizedPnl ?? '—' }}<small v-if="position.pnlPercent">（{{ position.pnlPercent }}%）</small>
-            </dd>
-          </div>
-          <div
-            ><dt>{{ t('fngDetail.openedAt') }}</dt
-            ><dd>{{ formatInstant(position.openedAt) }}</dd></div
+          <p v-else class="empty-state">{{ t('fngDetail.noPnlData') }}</p>
+        </section>
+      </NutTabPane>
+      <NutTabPane pane-key="c2" :style="tabPaneStyle('c2')">
+        <section class="detail-panel info-panel">
+          <section class="detail-card info-group">
+            <h2>{{ t('fngDetail.entryConditions') }}</h2>
+            <dl class="info-grid">
+              <div
+                ><dt>{{ t('fng.symbol') }}</dt
+                ><dd>{{ strategy.symbol }}</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.exchange') }}</dt
+                ><dd>{{ strategy.exchange }}</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.direction') }}</dt
+                ><dd>{{ strategy.direction === 'LONG' ? t('fng.long') : t('fng.short') }}</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.upperLimitValue') }}</dt
+                ><dd>{{ strategy.upperLimitValue }}</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.upperLimitInterval') }}</dt
+                ><dd>{{ strategy.upperLimitInterval }}</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.lowerLimitValue') }}</dt
+                ><dd>{{ strategy.lowerLimitValue }}</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.lowerLimitInterval') }}</dt
+                ><dd>{{ strategy.lowerLimitInterval }}</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.basicAmount') }}</dt
+                ><dd>{{ strategy.basicAmount }} USDT</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.increaseRatio') }}</dt
+                ><dd>{{ strategy.increaseRatio }}%</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.leverage') }}</dt
+                ><dd>{{ strategy.leverage }}x</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.maxOrders') }}</dt
+                ><dd>{{ strategy.maxOrders }}</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.maxPositions') }}</dt
+                ><dd>{{ strategy.maxPositions }}</dd></div
+              >
+            </dl>
+          </section>
+          <section class="detail-card info-group">
+            <h2>{{ t('fngDetail.exitRules') }}</h2>
+            <dl class="info-grid">
+              <div>
+                <dt>{{ t('fngDetail.profitTarget') }}</dt>
+                <dd>{{ strategy.profitTargetPercent }}{{ strategy.profitTargetType === 'PERCENT' ? '%' : ' USDT' }}</dd>
+              </div>
+              <div
+                ><dt>{{ t('fng.profitDrawdownPercent') }}</dt
+                ><dd>{{ strategy.profitDrawdownPercent }}%</dd></div
+              >
+              <div
+                ><dt>{{ t('fng.stopLossPercent') }}</dt
+                ><dd>{{ strategy.stopLossPercent == null ? '—' : `${strategy.stopLossPercent}%` }}</dd></div
+              >
+            </dl>
+          </section>
+          <section class="detail-card info-group">
+            <h2>{{ t('fngDetail.tradeRounds') }}</h2>
+            <dl class="info-grid">
+              <div
+                ><dt>{{ t('fng.completedTradeRounds') }}</dt
+                ><dd>{{ strategy.completedTradeRounds }} / {{ strategy.maxTradeRounds ?? '—' }}</dd></div
+              >
+            </dl>
+            <form class="round-limit-form" @submit.prevent="saveRoundLimit">
+              <label>
+                {{ t('fng.maxTradeRounds') }}
+                <input v-model.number="roundLimit" type="number" min="1" max="10000" step="1" required data-test="fng-round-limit" />
+              </label>
+              <button type="submit" class="round-limit-save" :disabled="savingRoundLimit">{{ t('common.save') }}</button>
+              <small>{{ t('fng.maxTradeRoundsHint') }}</small>
+            </form>
+          </section>
+        </section>
+      </NutTabPane>
+      <NutTabPane pane-key="c3" :style="tabPaneStyle('c3')">
+        <section class="detail-panel">
+          <p v-if="!positions.length" class="empty-state">{{ t('fngDetail.noPositions') }}</p>
+          <article v-for="position in positions" :key="position.id" class="trade-card">
+            <header class="trade-heading">
+              <strong>{{ position.symbol }}</strong>
+              <span class="side" :class="position.side.toLowerCase()">{{ position.side }}</span>
+              <span class="position-state">{{ statusLabel(position.status) }}</span>
+            </header>
+            <dl class="trade-stats">
+              <div
+                ><dt>{{ t('fngDetail.quantity') }}</dt
+                ><dd>{{ position.quantity }}</dd></div
+              >
+              <div v-if="position.remainingQuantity != null">
+                <dt>{{ t('fngDetail.remainingQuantity') }}</dt>
+                <dd>{{ position.remainingQuantity }}</dd>
+              </div>
+              <div>
+                <dt>{{ t('fngDetail.price') }}</dt>
+                <dd>{{ position.entryPrice ?? '—' }} → {{ position.exitPrice ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt>{{ t('fngDetail.pnl') }}</dt>
+                <dd :class="pnlClass(position.realizedPnl)">
+                  {{ position.realizedPnl ?? '—' }}<small v-if="position.pnlPercent">（{{ position.pnlPercent }}%）</small>
+                </dd>
+              </div>
+              <div
+                ><dt>{{ t('fngDetail.openedAt') }}</dt
+                ><dd>{{ formatInstant(position.openedAt) }}</dd></div
+              >
+              <div
+                ><dt>{{ t('fngDetail.closedAt') }}</dt
+                ><dd>{{ position.closedAt ? formatInstant(position.closedAt) : '—' }}</dd></div
+              >
+            </dl>
+            <p v-if="position.status === 'CLOSE_REVIEW'" class="close-review-note">{{ t('fngDetail.closeReviewHint') }}</p>
+          </article>
+          <button v-if="positionsHasMore" type="button" class="load-more" :disabled="positionsLoading" @click="loadPositions(false)">
+            {{ positionsLoading ? t('common.loading') : t('fngDetail.loadMore') }}
+          </button>
+        </section>
+      </NutTabPane>
+      <NutTabPane pane-key="c4" :style="tabPaneStyle('c4')">
+        <section class="detail-panel">
+          <p v-if="!executions.length" class="empty-state">{{ t('fngDetail.noExecutions') }}</p>
+          <article
+            v-for="execution in executions"
+            :key="`${execution.id}-${execution.event}-${execution.occurredAt}`"
+            class="execution-card"
           >
-          <div
-            ><dt>{{ t('fngDetail.closedAt') }}</dt
-            ><dd>{{ position.closedAt ? formatInstant(position.closedAt) : '—' }}</dd></div
-          >
-        </dl>
-        <p v-if="position.status === 'CLOSE_REVIEW'" class="close-review-note">{{ t('fngDetail.closeReviewHint') }}</p>
-      </article>
-      <button v-if="positionsHasMore" type="button" class="load-more" :disabled="positionsLoading" @click="loadPositions(false)">
-        {{ positionsLoading ? t('common.loading') : t('fngDetail.loadMore') }}
-      </button>
-    </section>
-
-    <section v-else class="detail-panel">
-      <p v-if="!executions.length" class="empty-state">{{ t('fngDetail.noExecutions') }}</p>
-      <article v-for="execution in executions" :key="`${execution.id}-${execution.event}-${execution.occurredAt}`" class="execution-card">
-        <header class="execution-heading">
-          <span class="event" :class="execution.event.toLowerCase()">{{ t(`fngDetail.${execution.event.toLowerCase()}`) }}</span>
-          <strong>{{ execution.symbol }} {{ execution.side }}</strong>
-          <time>{{ formatInstant(execution.occurredAt) }}</time>
-        </header>
-        <p class="execution-body">
-          <span v-if="execution.price">{{ t('fngDetail.price') }} {{ execution.price }}</span>
-          <span v-if="execution.quantity">{{ t('fngDetail.quantity') }} {{ execution.quantity }}</span>
-          <span v-if="execution.reason">{{ execution.reason }}</span>
-        </p>
-      </article>
-      <button v-if="executionsHasMore" type="button" class="load-more" :disabled="executionsLoading" @click="loadExecutions(false)">
-        {{ executionsLoading ? t('common.loading') : t('fngDetail.loadMore') }}
-      </button>
-    </section>
+            <header class="execution-heading">
+              <span class="event" :class="execution.event.toLowerCase()">{{ t(`fngDetail.${execution.event.toLowerCase()}`) }}</span>
+              <strong>{{ execution.symbol }} {{ execution.side }}</strong>
+              <time>{{ formatInstant(execution.occurredAt) }}</time>
+            </header>
+            <p class="execution-body">
+              <span v-if="execution.price">{{ t('fngDetail.price') }} {{ execution.price }}</span>
+              <span v-if="execution.quantity">{{ t('fngDetail.quantity') }} {{ execution.quantity }}</span>
+              <span v-if="execution.reason">{{ execution.reason }}</span>
+            </p>
+          </article>
+          <button v-if="executionsHasMore" type="button" class="load-more" :disabled="executionsLoading" @click="loadExecutions(false)">
+            {{ executionsLoading ? t('common.loading') : t('fngDetail.loadMore') }}
+          </button>
+        </section>
+      </NutTabPane>
+    </NutTabs>
     <footer class="fng-action-bar">
       <NutButton :disabled="!strategy.enabled && !!roundBlockMessage" @click="toggleEnabled">
         {{ strategy.enabled ? t('fngDetail.pause') : t('fngDetail.resume') }}
@@ -248,7 +262,9 @@
   import { useI18n } from 'vue-i18n';
   import PlazaVisibilityAction from '@/components/PlazaVisibilityAction.vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { Button as NutButton, showDialog, showToast } from '@nutui/nutui';
+  import { Button as NutButton, Tabs as NutTabs, TabPane as NutTabPane, showDialog, showToast } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/tabs/index.css';
+  import '@nutui/nutui/dist/packages/tabpane/index.css';
   import { formatInstant } from '@/utils/timeUtils';
   import {
     deleteFngStrategy,
@@ -296,43 +312,10 @@
     { key: 'c4', label: 'details.tabs.executions' },
   ];
 
-  const swipeThreshold = 35;
-  const screenEdgeInset = 20;
-  let swipeStart: { id: number; x: number; y: number } | null = null;
-
-  function startTabSwipe(event: TouchEvent) {
-    swipeStart = null;
-    const target = event.target;
-    if (
-      event.touches.length !== 1 ||
-      !(target instanceof Element) ||
-      !target.closest('.detail-panel') ||
-      target.closest('input, textarea, select, button, a, label, [contenteditable]')
-    )
-      return;
-    const { identifier, clientX, clientY } = event.touches[0];
-    // Preserve the system WebView's edge-swipe navigation.
-    if (clientX <= screenEdgeInset || clientX >= window.innerWidth - screenEdgeInset) return;
-    swipeStart = { id: identifier, x: clientX, y: clientY };
-  }
-
-  function cancelTabSwipe() {
-    swipeStart = null;
-  }
-
-  function finishTabSwipe(event: TouchEvent) {
-    const start = swipeStart;
-    cancelTabSwipe();
-    if (!start || event.touches.length !== 0) return;
-    const end = Array.from(event.changedTouches).find((touch) => touch.identifier === start.id);
-    if (!end) return;
-    const x = end.clientX - start.x;
-    const y = end.clientY - start.y;
-    if (Math.abs(x) < swipeThreshold || Math.abs(x) <= Math.abs(y)) return;
-    const index = tabs.findIndex((tab) => tab.key === value.value);
-    const adjacent = tabs[index + (x < 0 ? 1 : -1)];
-    if (adjacent) value.value = adjacent.key;
-  }
+  const tabPaneStyle = (paneKey: string) => ({
+    height: value.value === paneKey ? 'auto' : '0',
+    overflow: value.value === paneKey ? 'visible' : 'hidden',
+  });
 
   const statusLabel = (status: string) => t(`fngDetail.statuses.${status}`);
   const pnlClass = (value: string | null | undefined) => {
@@ -624,7 +607,7 @@
   .detail-tabs {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    margin: 1rem 0 0;
+    margin: 0;
     background: #f2f2f2;
     border-radius: 0.65rem;
   }
@@ -649,7 +632,24 @@
 
   .detail-panel {
     margin-top: 0.625rem;
-    touch-action: pan-y pinch-zoom;
+  }
+
+  .fng-tabs {
+    margin-top: 1rem;
+  }
+
+  .fng-tabs :deep(.nut-tabs__titles) {
+    height: auto;
+  }
+
+  .fng-tabs :deep(.detail-tabs) {
+    width: 100%;
+  }
+
+  .fng-tabs :deep(.nut-tab-pane) {
+    padding: 0;
+    word-break: normal;
+    background: transparent;
   }
 
   .detail-card,

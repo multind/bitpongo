@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import { i18n } from '@/i18n';
 import FngDetails from './details.vue';
+import { Tabs as NutTabs } from '@nutui/nutui';
 import { getFngExecutions, getFngPerformance, getFngPositions, getFngStrategy, setFngTradeRoundLimit } from '@/api/fngStrategies';
 
 vi.mock('@/api/fngStrategies', () => ({
@@ -127,49 +128,51 @@ afterEach(() => {
   wrapper?.unmount();
   wrapper = null;
   vi.resetAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('F&G strategy details', () => {
-  it('swipes between adjacent tabs in either direction without wrapping', async () => {
+  it('uses the same animated NutUI panes as DCA, shrinking inactive content after a swipe', async () => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(390);
     const view = await mountView();
+    expect(view.getComponent(NutTabs).props('swipeable')).toBe(true);
+    expect(view.getComponent(NutTabs).props('autoHeight')).toBe(true);
+    expect(view.getComponent(NutTabs).props('animatedTime')).toBe(300);
+    await new Promise((resolve) => setTimeout(resolve, 120));
     const selected = () => view.get('.detail-tab[aria-pressed="true"]').text();
     const swipe = async (from: number, to: number) => {
-      const panel = view.get('.detail-panel');
+      const panel = view.get('.nut-tabs__content');
       await panel.trigger('touchstart', { touches: [{ identifier: 1, clientX: from, clientY: 120 }] });
+      await panel.trigger('touchmove', { touches: [{ identifier: 1, clientX: to, clientY: 120 }] });
       await panel.trigger('touchend', { touches: [], changedTouches: [{ identifier: 1, clientX: to, clientY: 126 }] });
     };
-    await swipe(120, 220);
+    await swipe(100, 280);
     expect(selected()).toBe('Returns');
-    await swipe(240, 120);
+    await swipe(280, 100);
     expect(selected()).toBe('Strategy info');
-    await swipe(240, 120);
+    expect(view.findAll('.nut-tab-pane')[0].attributes('style')).toContain('height: 0px');
+    expect(view.findAll('.nut-tab-pane')[1].attributes('style')).toContain('height: auto');
+    expect(view.get('.nut-tabs__content').attributes('style')).toContain('300ms');
+    await swipe(280, 100);
     expect(selected()).toBe('Trade history');
-    await swipe(240, 120);
+    await swipe(280, 100);
     expect(selected()).toBe('Executions');
-    await swipe(240, 120);
+    await swipe(280, 100);
     expect(selected()).toBe('Executions');
-    await swipe(120, 240);
+    await swipe(100, 280);
     expect(selected()).toBe('Trade history');
   });
 
-  it('keeps the current tab on vertical, cancelled, and screen-edge gestures', async () => {
+  it('keeps the current tab during a vertical swipe', async () => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(390);
     const view = await mountView();
-    const panel = () => view.get('.detail-panel');
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const panel = view.get('.nut-tabs__content');
     const selected = () => view.get('.detail-tab[aria-pressed="true"]').text();
-    const start = (x: number) => panel().trigger('touchstart', { touches: [{ identifier: 1, clientX: x, clientY: 120 }] });
-    const end = (x: number, y: number) =>
-      panel().trigger('touchend', { touches: [], changedTouches: [{ identifier: 1, clientX: x, clientY: y }] });
-    await start(240);
-    await end(160, 250);
+    await panel.trigger('touchstart', { touches: [{ clientX: 240, clientY: 120 }] });
+    await panel.trigger('touchmove', { touches: [{ clientX: 236, clientY: 250 }] });
+    await panel.trigger('touchend');
     expect(selected()).toBe('Returns');
-    await start(240);
-    await panel().trigger('touchcancel');
-    await end(120, 126);
-    expect(selected()).toBe('Returns');
-    await view.findAll('.detail-tab')[1].trigger('click');
-    await start(4);
-    await end(124, 126);
-    expect(selected()).toBe('Strategy info');
   });
 
   it('prioritizes realized returns and groups strategy settings without mislabeling a USDT target', async () => {
