@@ -30,6 +30,9 @@
           is-link
         />
       </button>
+      <RouterLink class="timezone-trigger preference-link" data-test="preference-notice" to="/member/notice">
+        <NutCell :title="t('member.noticeInfo')" is-link />
+      </RouterLink>
     </section>
     <p v-if="busy && !sheet" role="status">{{ t('common.loading') }}</p>
     <p v-if="error && !sheet" role="alert">{{ t('common.saveFailed') }}</p>
@@ -217,6 +220,12 @@
 
   .timezone-trigger :deep(.nut-cell) {
     min-height: 3.5rem;
+  }
+
+  .preference-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
   }
 
   .retry {

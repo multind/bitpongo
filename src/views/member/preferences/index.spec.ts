@@ -24,12 +24,18 @@ async function render() {
       stubs: {
         NutCell: { props: ['title', 'desc'], template: '<span>{{title}} {{desc}}</span>' },
         NutPopup: { props: ['visible'], template: '<div v-if="visible"><slot /></div>' },
+        RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' },
       },
     },
   });
   await flushPromises();
   return wrapper;
 }
+it('links to notification information from preferences', async () => {
+  api.getUserProfile.mockResolvedValue(initial);
+  const view = await render();
+  expect(view.get('[data-test="preference-notice"]').attributes('href')).toBe('/member/notice');
+});
 it('opens the existing color as a draft and cancel does not save', async () => {
   api.getUserProfile.mockResolvedValue(initial);
   const view = await render();

@@ -284,7 +284,7 @@
         webhookAvailable.value = false;
         void getWebhookDestinations()
           .then((settings) => {
-            webhookAvailable.value = settings.available && settings.items.some((item) => item.enabled);
+            webhookAvailable.value = settings.available && settings.enabled !== false && settings.items.some((item) => item.enabled);
           })
           .catch(() => {});
         selectedChannels.value = (['bitpongo', 'email', 'telegram'] as const).filter(

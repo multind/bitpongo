@@ -30,11 +30,6 @@
           <template #icon><Setting /></template>
         </nut-cell>
       </button>
-      <nut-cell :title="t('member.noticeInfo')" is-link @click="goNoticeInfo">
-        <template #icon>
-          <Notice />
-        </template>
-      </nut-cell>
       <nut-cell :title="t('notificationMethods.title')" is-link @click="router.push('/member/notification-methods')">
         <template #icon>
           <Message />
@@ -45,13 +40,13 @@
       <nut-cell :title="t('member.exchangeInfo')" is-link @click="goExchangeInfo">
         <template #icon><Link /></template>
       </nut-cell>
+      <nut-cell :title="t('content.help')" is-link @click="router.push('/help')">
+        <template #icon><Issue /></template>
+      </nut-cell>
       <nut-cell :title="t('member.about')" is-link @click="goAbout">
         <template #icon>
           <Issue />
         </template>
-      </nut-cell>
-      <nut-cell :title="t('content.help')" is-link @click="router.push('/help')">
-        <template #icon><Issue /></template>
       </nut-cell>
     </nut-cell-group>
     <nut-cell class="member-logout" is-link @click="goLogout">
@@ -146,9 +141,6 @@
   const goRegister = () => router.push('/register');
   const goExchangeInfo = () => {
     router.push('/member/exchange');
-  };
-  const goNoticeInfo = () => {
-    router.push('/member/notice');
   };
   const goAbout = () => {
     router.push('/member/about');

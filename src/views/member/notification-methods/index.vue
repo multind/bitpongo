@@ -12,15 +12,17 @@
           <div class="channel-copy">
             <strong>{{ t(`notificationMethods.channels.${key}`) }}</strong>
             <span>{{ t(`notificationMethods.hints.${key}`) }}</span>
-            <small class="channel-status" :class="{ available: channelState(key).available }">{{
-              channelState(key).available ? t('notificationMethods.available') : t('notificationMethods.unavailable')
-            }}</small>
-            <button v-if="key === 'email'" class="setup-link recipient-link" type="button" @click="emailSheet = true">
-              {{ t('notificationMethods.reminderEmail.recipient') }}
-            </button>
-            <button v-if="key === 'telegram'" class="setup-link recipient-link" type="button" @click="telegramSheet = true">
-              {{ t('notificationMethods.configure') }}
-            </button>
+            <div class="channel-meta">
+              <small class="channel-status" :class="{ available: channelState(key).available }">{{
+                channelState(key).available ? t('notificationMethods.available') : t('notificationMethods.unavailable')
+              }}</small>
+              <button v-if="key === 'email'" class="setup-link recipient-link" type="button" @click="emailSheet = true">
+                {{ t('notificationMethods.reminderEmail.recipient') }}
+              </button>
+              <button v-if="key === 'telegram'" class="setup-link recipient-link" type="button" @click="telegramSheet = true">
+                {{ t('notificationMethods.configure') }}
+              </button>
+            </div>
           </div>
           <RouterLink v-if="key === 'bitpongo'" class="setup-link" to="/member/notice">{{ t('notificationMethods.configure') }}</RouterLink>
           <label v-else class="switch">
@@ -29,7 +31,7 @@
               type="checkbox"
               role="switch"
               :aria-label="t(`notificationMethods.channels.${key}`)"
-              :disabled="busy || !loaded || key === 'message' || key === 'call'"
+              :disabled="busy || !loaded"
             />
             <span class="track" aria-hidden="true" />
           </label>
@@ -39,13 +41,27 @@
           <div class="channel-copy">
             <strong>{{ t('outboundWebhook.title') }}</strong>
             <span>{{ t('outboundWebhook.intro') }}</span>
+            <div class="channel-meta">
+              <small class="channel-status" :class="{ available: webhookStatus?.available }">{{
+                webhookStatus?.available ? t('notificationMethods.available') : t('notificationMethods.unavailable')
+              }}</small>
+              <button class="setup-link recipient-link" type="button" data-test="webhook-configure" @click="webhookSheet = true">
+                {{ t('notificationMethods.configure') }}
+              </button>
+            </div>
           </div>
-          <button class="setup-link" type="button" data-test="webhook-configure" @click="webhookSheet = true">
-            {{ t('notificationMethods.configure') }}
-          </button>
+          <label class="switch">
+            <input
+              v-model="webhookEnabled"
+              type="checkbox"
+              role="switch"
+              :aria-label="t('outboundWebhook.title')"
+              :disabled="busy || !webhookStatus?.available || webhookStatus.enabled === undefined"
+            />
+            <span class="track" aria-hidden="true" />
+          </label>
         </div>
       </section>
-      <!-- 感知设置暂不开放；现有偏好和顺序继续保留。
       <section class="settings-card" aria-labelledby="perception-heading">
         <h2 id="perception-heading">{{ t('notificationMethods.perception') }}</h2>
         <p class="meta">{{ t('notificationMethods.perceptionHint') }}</p>
@@ -92,7 +108,6 @@
           </span>
         </label>
       </section>
-      -->
       <p v-if="error" class="feedback error" role="alert">{{ t('notificationMethods.saveFailed') }}</p>
       <p v-if="saved" class="feedback success" role="status">{{ t('notificationMethods.saveSuccess') }}</p>
       <button class="primary" type="button" data-test="notification-methods-save" :disabled="busy || !loaded" @click="save">
@@ -122,24 +137,36 @@
   import ReminderEmailSheet from './ReminderEmailSheet.vue';
   import TelegramSheet from './TelegramSheet.vue';
   import WebhookReminderSheet from './WebhookReminderSheet.vue';
-  import { getNotificationChannels, saveNotificationChannels, type NotificationChannels } from '@/api/notificationChannels';
+  import {
+    getNotificationChannels,
+    saveNotificationChannels,
+    saveNotificationOrder,
+    type NotificationChannels,
+  } from '@/api/notificationChannels';
+  import { getWebhookDestinations, setWebhookReminderEnabled } from '@/api/webhookReminderDestinations';
 
   const { t } = useI18n();
   const emailSheet = ref(false);
   const telegramSheet = ref(false);
   const webhookSheet = ref(false);
-  const channelKeys = ['bitpongo', 'email', 'message', 'call', 'telegram'] as const;
+  const channelKeys = ['bitpongo', 'email', 'telegram'] as const;
+  // The existing order API still expects all seven entries, including the hidden ones.
+  const storedKeys = ['bitpongo', 'email', 'message', 'call', 'dingding', 'feishu', 'telegram'] as const;
+  type StoredKey = (typeof storedKeys)[number];
+  const visible = (key: StoredKey): key is ChannelKey => channelKeys.some((item) => item === key);
   type ChannelKey = (typeof channelKeys)[number];
   type EditableKey = Exclude<ChannelKey, 'bitpongo'>;
-  const editableKeys: EditableKey[] = ['email', 'message', 'call', 'telegram'];
+  const editableKeys: EditableKey[] = ['email', 'telegram'];
+  const webhookStatus = ref<{ available: boolean; enabled?: boolean }>();
+  const webhookEnabled = ref(false);
 
-  /*
   const perceptionOrder = ref<ChannelKey[]>([]);
   const dragged = ref<ChannelKey | null>(null);
   function moveBefore(key: ChannelKey) {
     if (busy.value || !dragged.value || dragged.value === key) return;
+    const index = perceptionOrder.value.indexOf(key);
     const next = perceptionOrder.value.filter((item) => item !== dragged.value);
-    next.splice(next.indexOf(key), 0, dragged.value);
+    next.splice(index, 0, dragged.value);
     perceptionOrder.value = next;
     dragged.value = null;
     saved.value = false;
@@ -147,7 +174,7 @@
   function startDrag(event: PointerEvent, key: ChannelKey) {
     if (busy.value) return;
     dragged.value = key;
-    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
   }
   function endDrag(event: PointerEvent) {
     const key = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-channel]')?.getAttribute('data-channel');
@@ -164,12 +191,9 @@
     perceptionOrder.value = next;
     saved.value = false;
   }
-  */
   const badges: Record<ChannelKey, string> = {
     bitpongo: 'APP',
     email: '@',
-    message: 'SMS',
-    call: 'TEL',
     telegram: 'TG',
   };
   const channels = ref<NotificationChannels | null>(null);
@@ -180,8 +204,6 @@
   const draft = reactive<Record<ChannelKey, boolean>>({
     bitpongo: false,
     email: false,
-    message: false,
-    call: false,
     telegram: false,
   });
   const confirmationEnabled = ref(false);
@@ -190,8 +212,10 @@
     for (const key of editableKeys) draft[key] = value[key].enabled;
     confirmationEnabled.value = value.confirmationEnabled;
     channels.value = value;
+    perceptionOrder.value = sortedOrder(value).filter(visible);
     loaded.value = true;
   };
+  const sortedOrder = (value: NotificationChannels) => [...storedKeys].sort((a, b) => value[a].sequence - value[b].sequence);
 
   const channelState = (key: ChannelKey) => {
     const value = channels.value?.[key];
@@ -206,6 +230,14 @@
     error.value = false;
     saved.value = false;
     try {
+      void getWebhookDestinations()
+        .then(({ available, enabled }) => {
+          webhookStatus.value = { available, enabled };
+          webhookEnabled.value = enabled ?? false;
+        })
+        .catch(() => {
+          webhookStatus.value = undefined;
+        });
       applyChannels(await getNotificationChannels());
     } catch {
       error.value = true;
@@ -215,22 +247,29 @@
   };
 
   const save = async () => {
-    if (busy.value || !loaded.value) return;
+    const current = channels.value;
+    if (busy.value || !loaded.value || !current) return;
     busy.value = true;
     error.value = false;
     saved.value = false;
     try {
-      applyChannels(
-        await saveNotificationChannels({
-          emailEnabled: draft.email,
-          messageEnabled: draft.message,
-          callEnabled: draft.call,
-          dingdingEnabled: channels.value!.dingding.enabled,
-          feishuEnabled: channels.value!.feishu.enabled,
-          telegramEnabled: draft.telegram,
-          confirmationEnabled: confirmationEnabled.value,
-        }),
-      );
+      const previous = sortedOrder(current);
+      let visibleIndex = 0;
+      const order = previous.map((key) => (visible(key) ? perceptionOrder.value[visibleIndex++] : key));
+      const updated = await saveNotificationChannels({
+        emailEnabled: draft.email,
+        messageEnabled: current.message.enabled,
+        callEnabled: current.call.enabled,
+        dingdingEnabled: current.dingding.enabled,
+        feishuEnabled: current.feishu.enabled,
+        telegramEnabled: draft.telegram,
+        confirmationEnabled: confirmationEnabled.value,
+      });
+      if (webhookStatus.value?.enabled !== undefined && webhookStatus.value.enabled !== webhookEnabled.value) {
+        await setWebhookReminderEnabled(webhookEnabled.value);
+        webhookStatus.value.enabled = webhookEnabled.value;
+      }
+      applyChannels(order.some((key, index) => key !== previous[index]) ? await saveNotificationOrder(order) : updated);
       saved.value = true;
     } catch {
       error.value = true;
@@ -326,6 +365,18 @@
 
   .channel-status.available {
     color: #328642;
+  }
+
+  .channel-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+
+  .channel-meta .recipient-link {
+    display: inline-block;
+    margin-top: 0;
   }
 
   .setup-link {

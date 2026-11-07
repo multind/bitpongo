@@ -3,6 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { i18n } from '@/i18n';
 import NotificationMethods from './index.vue';
 import { getNotificationChannels, saveNotificationChannels, saveNotificationOrder } from '@/api/notificationChannels';
+import { getWebhookDestinations, setWebhookReminderEnabled } from '@/api/webhookReminderDestinations';
+
+vi.mock('@/api/webhookReminderDestinations', () => ({
+  getWebhookDestinations: vi.fn(),
+  setWebhookReminderEnabled: vi.fn(),
+}));
 
 vi.mock('@/api/notificationChannels', () => ({
   getNotificationChannels: vi.fn(),
@@ -24,6 +30,7 @@ let wrapper: ReturnType<typeof mount> | null = null;
 
 beforeEach(() => {
   i18n.global.locale.value = 'en-us';
+  vi.mocked(getWebhookDestinations).mockResolvedValue({ available: true, enabled: true, items: [] });
   vi.mocked(getNotificationChannels).mockResolvedValue(structuredClone(channels));
   vi.mocked(saveNotificationOrder).mockResolvedValue(structuredClone(channels));
   vi.mocked(saveNotificationChannels).mockImplementation(async (update) => ({
@@ -44,16 +51,28 @@ describe('notification methods', () => {
     wrapper = mount(NotificationMethods, { global: { plugins: [i18n], stubs: { RouterLink: true } } });
     await flushPromises();
     expect(wrapper.findAll('[data-test="webhook-configure"]')).toHaveLength(1);
+    const row = wrapper.get('[data-test="webhook-configure"]').element.closest('.channel-row')!;
+    expect(row.querySelector('.channel-meta .channel-status.available')).not.toBeNull();
+    await wrapper.get('input[aria-label="Webhook reminders"]').setValue(false);
+    expect(setWebhookReminderEnabled).not.toHaveBeenCalled();
+    await wrapper.get('[data-test="notification-methods-save"]').trigger('click');
+    await flushPromises();
+    expect(setWebhookReminderEnabled).toHaveBeenCalledWith(false);
     expect(wrapper.text()).not.toContain('DingTalk reminders');
     expect(wrapper.text()).not.toContain('Feishu reminders');
   });
-  it('hides perception settings without saving a new channel order', async () => {
+  it('restores perception order while preserving the hidden channel positions', async () => {
     wrapper = mount(NotificationMethods, { global: { plugins: [i18n], stubs: { RouterLink: true } } });
     await flushPromises();
-    expect(wrapper.find('#perception-heading').exists()).toBe(false);
+    expect(wrapper.find('#perception-heading').exists()).toBe(true);
+    expect(wrapper.findAll('[data-channel]').map((row) => row.attributes('data-channel'))).toEqual(['bitpongo', 'email', 'telegram']);
     await wrapper.get('[data-test="notification-methods-save"]').trigger('click');
     await flushPromises();
     expect(saveNotificationOrder).not.toHaveBeenCalled();
+    await wrapper.get('[data-channel="telegram"] button').trigger('keydown', { key: 'ArrowUp' });
+    await wrapper.get('[data-test="notification-methods-save"]').trigger('click');
+    await flushPromises();
+    expect(saveNotificationOrder).toHaveBeenCalledWith(['bitpongo', 'telegram', 'message', 'call', 'dingding', 'feishu', 'email']);
   });
   it('loads channel preferences and saves toggles in camelCase', async () => {
     wrapper = mount(NotificationMethods, {
@@ -72,7 +91,7 @@ describe('notification methods', () => {
     expect(wrapper.text()).toContain('Notification methods saved');
   });
 
-  it('disables SMS and phone switches while preserving existing preferences', async () => {
+  it('hides SMS and phone switches while preserving existing preferences', async () => {
     vi.mocked(getNotificationChannels).mockResolvedValue({
       ...structuredClone(channels),
       message: { ...channels.message, enabled: true },
@@ -83,12 +102,7 @@ describe('notification methods', () => {
       global: { plugins: [i18n], stubs: { RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' } } },
     });
     await flushPromises();
-    expect(
-      wrapper
-        .findAll('.channel-row input')
-        .slice(1, 3)
-        .map((input) => (input.element as HTMLInputElement).disabled),
-    ).toEqual([true, true]);
+    expect(wrapper.findAll('.channel-row input')).toHaveLength(3);
     await wrapper.get('[data-test="notification-methods-save"]').trigger('click');
     await flushPromises();
     expect(saveNotificationChannels).toHaveBeenCalledWith(

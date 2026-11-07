@@ -110,4 +110,12 @@ describe('guest member view', () => {
     expect(mocks.push).toHaveBeenNthCalledWith(1, '/member/preferences');
     expect(mocks.push).toHaveBeenNthCalledWith(2, '/member/security');
   });
+
+  it('lists Help Center before About and leaves notification information to preferences', () => {
+    const wrapper = mountMemberView({ name: 'Member', email: 'member@example.com' });
+    const menu = wrapper.text();
+    expect(menu).not.toContain('通知信息');
+    expect(menu.indexOf('帮助中心')).toBeGreaterThan(-1);
+    expect(menu.indexOf('关于')).toBeGreaterThan(menu.indexOf('帮助中心'));
+  });
 });
