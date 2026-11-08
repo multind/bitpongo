@@ -1,39 +1,35 @@
 import { describe, expect, it } from 'vitest';
 
-import { lang as enUs } from '@/i18n/lang/en-us';
-import { lang as zhCn } from '@/i18n/lang/zh-cn';
-import { lang as zhTw } from '@/i18n/lang/zh-tw';
+const packs = Object.entries(
+  import.meta.glob<Record<string, unknown>>(['./lang/*.ts', '!./lang/lang-base.ts'], { eager: true, import: 'lang' }),
+).map(([path, pack]) => [path.replace('./lang/', '').replace('.ts', ''), pack] as const);
 
-function flattenKeys(target: Record<string, unknown>, prefix = ''): string[] {
-  return Object.entries(target).flatMap(([key, value]) => {
-    const path = prefix ? `${prefix}.${key}` : key;
-    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-      return flattenKeys(value as Record<string, unknown>, path);
-    }
-    return [path];
-  });
+function flatten(target: Record<string, unknown>, prefix = ''): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(target).flatMap(([key, value]) => {
+      const path = prefix ? `${prefix}.${key}` : key;
+      if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+        return Object.entries(flatten(value as Record<string, unknown>, path));
+      }
+      return [[path, value]];
+    }),
+  );
 }
 
+const source = flatten(packs.find(([locale]) => locale === 'en-us')![1]);
+const placeholders = (message: string) => [...new Set(message.match(/\{[\w-]+\}/g) ?? [])].sort();
+
 describe('i18n language packs', () => {
-  it('provides the load-more label used by alerts and running strategies in every locale', () => {
-    for (const lang of [zhCn, zhTw, enUs]) {
-      expect((lang.fng as Record<string, unknown>).loadMore).toEqual(expect.any(String));
+  it.each(packs)('%s preserves every key and interpolation placeholder', (locale, pack) => {
+    const messages = flatten(pack);
+    expect(Object.keys(messages).sort()).toEqual(Object.keys(source).sort());
+    for (const [key, value] of Object.entries(messages)) {
+      if (typeof source[key] !== 'string') continue;
+      expect(typeof value, `${locale}:${key}`).toBe('string');
+      expect(placeholders(value as string), `${locale}:${key}`).toEqual(placeholders(source[key]));
     }
   });
-  it('exposes identical key sets across all locales', () => {
-    const keys = {
-      'zh-cn': flattenKeys(zhCn).sort(),
-      'zh-tw': flattenKeys(zhTw).sort(),
-      'en-us': flattenKeys(enUs).sort(),
-    };
-
-    expect(keys['zh-tw']).toEqual(keys['zh-cn']);
-    expect(keys['en-us']).toEqual(keys['zh-cn']);
-  });
-
-  it('keeps weekday arrays the same length in every locale', () => {
-    expect(zhCn.frequency.weekDays.split(',')).toHaveLength(7);
-    expect(zhTw.frequency.weekDays.split(',')).toHaveLength(7);
-    expect(enUs.frequency.weekDays.split(',')).toHaveLength(7);
+  it.each(packs)('%s provides seven weekday labels', (_locale, pack) => {
+    expect((flatten(pack)['frequency.weekDays'] as string).split(',')).toHaveLength(7);
   });
 });
