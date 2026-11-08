@@ -1,0 +1,28 @@
+{
+  "shared": {
+    "fng.loadMore": "Cargar más",
+    "fng.exchange": "Plataforma de intercambio",
+    "fng.exchangeMissing": "Agrega una conexión de API de Binance en Mi cuenta → Gestión de API y habilita el permiso de futuros.",
+    "fng.long": "Posición larga",
+    "fng.short": "Posición corta",
+    "fng.maxTradeRounds": "Máximo de ciclos de operación",
+    "fng.maxTradeRoundsHint": "Cada posición cerrada por completo por toma de ganancias, límite de pérdidas o stop dinámico cuenta como un ciclo. Al alcanzar el límite, no se abren nuevas posiciones.",
+    "fng.completedTradeRounds": "Ciclos completados",
+    "fng.roundLimitRequired": "Establece un límite de ciclos en Información de la estrategia antes de reanudarla.",
+    "fng.roundLimitReached": "Se alcanzó el límite de ciclos. Auméntalo para reanudar la estrategia.",
+    "fng.profitDrawdownHint": "Cierra la posición cuando la ganancia retrocede este porcentaje desde su máximo. Por ejemplo, si la ganancia máxima fue del 20 % y el retroceso es del 5 %, se activa al bajar al 19 %.",
+    "fng.stopLossHint": "Cierra la posición a precio de mercado cuando la pérdida alcanza este porcentaje del margen (por ejemplo, el 30 %).",
+    "fng.maxPositionsHint": "Número máximo de posiciones que pueden mantenerse abiertas al mismo tiempo.",
+    "fng.notificationHint": "Cuando se activa, la estrategia coloca órdenes de futuros USDT-M en Binance automáticamente y envía una notificación después de la ejecución. Verifica la conexión, los permisos de futuros y los parámetros de riesgo.",
+    "fng.amountHint": "Las alertas se activan cuando el índice entra en [límite inferior − intervalo inferior, límite inferior] o [límite superior, límite superior + intervalo superior]. La banda inferior aumenta el importe y la superior lo reduce; fuera de ambas se aplica 1×.",
+    "security.logoutHint": "Si cambias la contraseña o el correo electrónico, se cerrarán todas las sesiones. Vuelve a iniciar sesión después del cambio."
+  },
+  "es-es": {
+    "fng.exchangeMissing": "Añade una conexión de API de Binance en Mi cuenta → Gestión de API y habilita el permiso de futuros.",
+    "fng.maxTradeRoundsHint": "Cada posición cerrada por completo por toma de beneficios, límite de pérdidas o stop dinámico cuenta como un ciclo. Al alcanzar el límite, no se abren nuevas posiciones.",
+    "fng.profitDrawdownHint": "Cierra la posición cuando el beneficio retrocede este porcentaje desde su máximo. Por ejemplo, si el beneficio máximo fue del 20 % y el retroceso es del 5 %, se activa al bajar al 19 %."
+  },
+  "es-mx": {
+    "fng.amountHint": "Las alertas se activan cuando el índice entra en [límite inferior − intervalo inferior, límite inferior] o [límite superior, límite superior + intervalo superior]. La banda inferior aumenta el monto y la superior lo reduce; fuera de ambas se aplica 1×."
+  }
+}
