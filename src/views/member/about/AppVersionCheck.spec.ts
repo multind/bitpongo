@@ -2,58 +2,55 @@ import { mount, flushPromises } from '@vue/test-utils';
 import { afterEach, expect, it, vi } from 'vitest';
 import { i18n } from '@/i18n';
 import AppVersionCheck from './AppVersionCheck.vue';
-const api = vi.hoisted(() => ({ getAppRelease: vi.fn(), getNativeContext: vi.fn() }));
-vi.mock('@/api/content', () => ({ getAppRelease: api.getAppRelease }));
-vi.mock('@/mobile/bridge', () => ({ getNativeContext: api.getNativeContext }));
+
+const bridge = vi.hoisted(() => ({ getNativeContext: vi.fn(), checkNativeStoreUpdate: vi.fn() }));
+vi.mock('@/mobile/bridge', () => bridge);
+const legacy = vi.hoisted(() => vi.fn());
+vi.mock('@/api/content', () => ({ getAppRelease: legacy }));
 let wrapper: ReturnType<typeof mount>;
 afterEach(() => {
   wrapper?.unmount();
   vi.resetAllMocks();
 });
-it('checks the native App version rather than the H5 bundle version and provides a store link', async () => {
-  api.getNativeContext.mockResolvedValue({
-    platform: 'ios',
-    appVersion: '1.0.1+15',
-    systemVersion: '26',
-    safeArea: { top: 0, bottom: 0, left: 0, right: 0 },
-  });
-  api.getAppRelease.mockResolvedValue({
-    available: true,
-    updateAvailable: true,
-    latestVersion: '1.0.2',
-    latestBuild: 20,
-    storeUrl: 'https://apps.apple.com/app/id6473227759',
-    releaseNotes: 'Bug fixes',
-  });
+
+async function render(context: object | null) {
+  bridge.getNativeContext.mockResolvedValue(context);
   i18n.global.locale.value = 'en-us';
   wrapper = mount(AppVersionCheck, { global: { plugins: [i18n] } });
   await flushPromises();
+}
+
+it('uses the native store check and links to the official listing', async () => {
+  bridge.checkNativeStoreUpdate.mockResolvedValue('updateAvailable');
+  await render({ platform: 'ios', supportsStoreUpdate: true });
   await wrapper.get('button').trigger('click');
   await flushPromises();
-  expect(api.getAppRelease).toHaveBeenCalledWith({ platform: 'ios', version: '1.0.1', build: 15 });
+  expect(bridge.checkNativeStoreUpdate).toHaveBeenCalledOnce();
+  expect(legacy).not.toHaveBeenCalled();
   expect(wrapper.get('a').attributes('href')).toBe('https://apps.apple.com/app/id6473227759');
 });
-it('shows unconfigured release information without falsely saying the App is up to date', async () => {
-  api.getNativeContext.mockResolvedValue({
-    platform: 'ios',
-    appVersion: '1.0.1',
-    systemVersion: '26',
-    safeArea: { top: 0, bottom: 0, left: 0, right: 0 },
-  });
-  api.getAppRelease.mockResolvedValue({
-    available: false,
-    updateAvailable: false,
-    latestVersion: '',
-    latestBuild: 0,
-    storeUrl: '',
-    releaseNotes: '',
-  });
-  i18n.global.locale.value = 'en-us';
-  wrapper = mount(AppVersionCheck, { global: { plugins: [i18n] } });
-  await flushPromises();
+
+it.each([null, { platform: 'android' }])('shows store links without checking on unsupported clients', async (context) => {
+  await render(context);
+  expect(wrapper.find('button').exists()).toBe(false);
+  expect(wrapper.findAll('a').length).toBe(context ? 1 : 2);
+  expect(legacy).not.toHaveBeenCalled();
+});
+
+it('does not claim the app is current if the store cannot be checked', async () => {
+  bridge.checkNativeStoreUpdate.mockResolvedValue('unavailable');
+  await render({ platform: 'android', supportsStoreUpdate: true });
   await wrapper.get('button').trigger('click');
   await flushPromises();
-  expect(wrapper.text()).toContain('not configured');
+  expect(wrapper.get('[role="status"]').text()).toContain('Unable to check');
+  expect(wrapper.get('a').attributes('href')).toContain('play.google.com');
+});
+
+it('reports a confirmed up-to-date installation', async () => {
+  bridge.checkNativeStoreUpdate.mockResolvedValue('upToDate');
+  await render({ platform: 'android', supportsStoreUpdate: true });
+  await wrapper.get('button').trigger('click');
+  await flushPromises();
+  expect(wrapper.get('[role="status"]').text()).toContain('up to date');
   expect(wrapper.find('a').exists()).toBe(false);
-  expect(api.getAppRelease).toHaveBeenCalledWith({ platform: 'ios', version: '1.0.1', build: undefined });
 });

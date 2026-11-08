@@ -9,6 +9,7 @@ export interface NativeContext {
   timeZone?: string;
   timeZoneOffsetMinutes?: number;
   supportsAvatarPicker?: boolean;
+  supportsStoreUpdate?: boolean;
 }
 
 export interface ImageRequest {
@@ -22,6 +23,7 @@ type NativeCommand =
   | 'shareImage'
   | 'saveCanvasImage'
   | 'pickAvatar'
+  | 'checkStoreUpdate'
   | 'pushGetStatus'
   | 'pushRequestPermission'
   | 'pushSyncSession'
@@ -115,6 +117,12 @@ export function pickNativeAvatar(): Promise<string | null> {
 
 export function getNativeContext(): Promise<NativeContext | null> {
   return invokeNative('getContext', {}, null);
+}
+
+export type StoreUpdateStatus = 'updateAvailable' | 'upToDate' | 'unavailable';
+export async function checkNativeStoreUpdate(): Promise<StoreUpdateStatus> {
+  const result = await invokeNative<unknown>('checkStoreUpdate', {}, null);
+  return result === 'updateAvailable' || result === 'upToDate' ? result : 'unavailable';
 }
 
 export async function saveImage(request: ImageRequest): Promise<boolean> {

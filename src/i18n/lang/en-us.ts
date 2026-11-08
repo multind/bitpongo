@@ -34,8 +34,8 @@ export const lang: langType = {
     appOnly: 'Open this page in the Bitpongo App to check its version.',
     failed: 'Unable to check for updates. Please retry.',
     unavailable: 'App release information is not configured.',
-    update: 'Update available: {version}',
-    current: 'No newer release found (published: {version}).',
+    update: 'An update is available.',
+    current: 'Your app is up to date.',
     store: 'Open App store',
   },
   content: {

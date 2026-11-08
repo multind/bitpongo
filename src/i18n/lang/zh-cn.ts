@@ -34,8 +34,8 @@ export const lang: langType = {
     appOnly: '请在 Bitpongo App 内检查应用版本。',
     failed: '检查更新失败，请重试。',
     unavailable: '尚未配置 App 发布版本。',
-    update: '可更新至 {version}',
-    current: '未发现更新版本（已发布：{version}）。',
+    update: '有新版本可更新。',
+    current: '当前已是最新版本。',
     store: '打开应用商店',
   },
   content: {

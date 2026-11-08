@@ -1,55 +1,47 @@
 <template>
   <section class="release-check">
-    <button :disabled="busy || !native" @click="check">{{ t('release.check') }}</button>
-    <p v-if="!native" class="meta">{{ t('release.appOnly') }}</p>
-    <p v-if="error" role="alert">{{ t('release.failed') }}</p>
-    <p v-if="release && !release.available" role="status">{{ t('release.unavailable') }}</p>
-    <template v-if="release?.available">
-      <p role="status">{{ t(release.updateAvailable ? 'release.update' : 'release.current', { version: release.latestVersion }) }}</p>
-      <p v-if="release.releaseNotes" class="release-notes">{{ release.releaseNotes }}</p>
-      <a v-if="release.updateAvailable && safeStoreUrl" :href="safeStoreUrl" target="_blank" rel="noopener noreferrer">{{
-        t('release.store')
-      }}</a>
-    </template>
+    <button v-if="native?.supportsStoreUpdate" :disabled="busy" @click="check">{{ t('release.check') }}</button>
+    <p v-if="status" role="status">{{ t(messages[status]) }}</p>
+    <div v-if="loaded && (!native?.supportsStoreUpdate || (status && status !== 'upToDate'))" class="store-links">
+      <a
+        v-if="native?.platform !== 'android'"
+        href="https://apps.apple.com/app/id6473227759"
+        :target="native ? undefined : '_blank'"
+        rel="noopener noreferrer"
+      >
+        App Store
+      </a>
+      <a
+        v-if="native?.platform !== 'ios'"
+        href="https://play.google.com/store/apps/details?id=io.imastermind.bitpongo"
+        :target="native ? undefined : '_blank'"
+        rel="noopener noreferrer"
+      >
+        Google Play
+      </a>
+    </div>
   </section>
 </template>
 <script setup lang="ts">
-  import { computed, onMounted, onUnmounted, ref } from 'vue';
+  import { onMounted, onUnmounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { getNativeContext, type NativeContext } from '@/mobile/bridge';
-  import { getAppRelease, type AppRelease } from '@/api/content';
+  import { checkNativeStoreUpdate, getNativeContext, type NativeContext, type StoreUpdateStatus } from '@/mobile/bridge';
   const { t } = useI18n();
   const native = ref<NativeContext | null>(null),
-    release = ref<AppRelease | null>(null),
+    status = ref<StoreUpdateStatus | null>(null),
     busy = ref(false),
-    error = ref(false);
+    loaded = ref(false);
+  const messages = { updateAvailable: 'release.update', upToDate: 'release.current', unavailable: 'release.failed' } as const;
   let mounted = true;
-  const safeStoreUrl = computed(() => {
-    try {
-      const url = new URL(release.value?.storeUrl || '');
-      return url.protocol === 'https:' && !url.username && !url.password && ['apps.apple.com', 'play.google.com'].includes(url.hostname)
-        ? url.href
-        : '';
-    } catch {
-      return '';
-    }
-  });
   async function check() {
-    if (busy.value || !native.value) return;
+    if (busy.value || !native.value?.supportsStoreUpdate) return;
     busy.value = true;
-    error.value = false;
-    release.value = null;
+    status.value = null;
     try {
-      const parts = /^(\d+\.\d+\.\d+)(?:\+(\d+))?$/.exec(native.value.appVersion);
-      if (!parts) throw new Error('Invalid native version');
-      const result = await getAppRelease({
-        platform: native.value.platform,
-        version: parts[1],
-        build: parts[2] ? Number(parts[2]) : undefined,
-      });
-      if (mounted) release.value = result;
+      const result = await checkNativeStoreUpdate();
+      if (mounted) status.value = result;
     } catch {
-      if (mounted) error.value = true;
+      if (mounted) status.value = 'unavailable';
     } finally {
       if (mounted) busy.value = false;
     }
@@ -59,7 +51,9 @@
       const context = await getNativeContext();
       if (mounted) native.value = context;
     } catch {
-      if (mounted) error.value = true;
+      // The store links are still usable without a working bridge.
+    } finally {
+      if (mounted) loaded.value = true;
     }
   });
   onUnmounted(() => {
@@ -89,17 +83,9 @@
     opacity: 0.6;
   }
 
-  .meta {
-    font-size: 0.875rem;
-    color: #777;
-  }
-
-  .release-notes {
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
-  }
-
-  [role='alert'] {
-    color: #dc2626;
+  .store-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
 </style>
