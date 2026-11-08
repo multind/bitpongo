@@ -71,12 +71,14 @@ describe('user registration', () => {
     vi.mocked(api.registerAccount).mockResolvedValue(session);
     const store = useUserStore();
 
-    await expect(store.register('新用户', 'new@example.com', 'abc12345')).resolves.toEqual(session);
+    await expect(store.register('新用户', 'new@example.com', 'abc12345', 'challenge-1', '01234567')).resolves.toEqual(session);
 
     expect(api.registerAccount).toHaveBeenCalledWith({
       name: '新用户',
       email: 'new@example.com',
       password: 'abc12345',
+      challengeId: 'challenge-1',
+      code: '01234567',
     });
     expect(store.token).toBe('new-access-token');
     expect(store.info).toEqual(session.info);
@@ -89,7 +91,7 @@ describe('user registration', () => {
     store.token = 'current-token';
     store.info = { id: 1, name: '当前用户', email: 'current@example.com' };
 
-    await expect(store.register('新用户', 'new@example.com', 'abc12345')).rejects.toThrow('邮箱已注册');
+    await expect(store.register('新用户', 'new@example.com', 'abc12345', 'challenge-1', '01234567')).rejects.toThrow('邮箱已注册');
 
     expect(store.token).toBe('current-token');
     expect(store.info).toEqual({ id: 1, name: '当前用户', email: 'current@example.com' });

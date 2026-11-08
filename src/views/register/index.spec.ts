@@ -13,7 +13,9 @@ const mocks = vi.hoisted(() => ({
   push: vi.fn(),
   toastHide: vi.fn(),
   showToastLoading: vi.fn(() => ({ hide: vi.fn() })),
+  requestEmailCode: vi.fn(),
 }));
+vi.mock('@/api/security', () => ({ requestEmailCode: mocks.requestEmailCode }));
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal();
@@ -80,21 +82,27 @@ async function completeForm(wrapper: VueWrapper) {
   await wrapper.get('[data-test="register-confirm-password"]').setValue('abc12345');
   await wrapper.get('[data-test="register-agreement"]').setValue(true);
 }
+async function verifyEmail(wrapper: VueWrapper) {
+  await wrapper.get('[data-test="register-send-code"]').trigger('click');
+  await flushPromises();
+  await wrapper.get('[data-test="register-code"]').setValue('01234567');
+}
 
 describe('registration view', () => {
   beforeEach(() => {
     mocks.replace.mockReset();
     mocks.push.mockReset();
     mocks.showToastLoading.mockClear();
+    mocks.requestEmailCode.mockReset().mockResolvedValue({ challengeId: 'challenge-1' });
   });
 
-  it('renders four visible localized field labels', () => {
+  it('renders five visible localized field labels', () => {
     const { wrapper } = mountView();
     const fields = wrapper.findAll('.register-field');
     expect(wrapper.get('[data-test="auth-brand"]').attributes('alt')).toBe('Bitpongo');
 
-    expect(fields).toHaveLength(4);
-    expect(fields.map((field) => field.find('.stub-label').text())).toEqual(['昵称', '邮箱', '密码', '确认密码']);
+    expect(fields).toHaveLength(5);
+    expect(fields.map((field) => field.find('.stub-label').text())).toEqual(['昵称', '邮箱', '邮箱验证码', '密码', '确认密码']);
   });
 
   it('requires a matching strong password and agreement', async () => {
@@ -103,6 +111,8 @@ describe('registration view', () => {
 
     expect(button.attributes('disabled')).toBeDefined();
     await completeForm(wrapper);
+    expect(button.attributes('disabled')).toBeDefined();
+    await verifyEmail(wrapper);
     expect(button.attributes('disabled')).toBeUndefined();
     await wrapper.get('[data-test="register-confirm-password"]').setValue('different1');
     expect(button.attributes('disabled')).toBeDefined();
@@ -148,11 +158,13 @@ describe('registration view', () => {
       info: { id: 8, name: '新用户', email: 'new@example.com' },
     });
     await completeForm(wrapper);
+    await verifyEmail(wrapper);
 
     await wrapper.get('[data-test="register-submit"]').trigger('click');
     await flushPromises();
 
-    expect(register).toHaveBeenCalledWith('新用户', 'new@example.com', 'abc12345');
+    expect(mocks.requestEmailCode).toHaveBeenCalledWith({ purpose: 'REGISTER', email: 'new@example.com' });
+    expect(register).toHaveBeenCalledWith('新用户', 'new@example.com', 'abc12345', 'challenge-1', '01234567');
     expect(mocks.replace).toHaveBeenCalledWith('/member');
   });
 
@@ -160,6 +172,7 @@ describe('registration view', () => {
     const { store, wrapper } = mountView();
     vi.spyOn(store, 'register').mockRejectedValue(new Error('用户已存在'));
     await completeForm(wrapper);
+    await verifyEmail(wrapper);
 
     await wrapper.get('[data-test="register-submit"]').trigger('click');
     await flushPromises();
@@ -167,5 +180,32 @@ describe('registration view', () => {
     expect(wrapper.text()).toContain('用户已存在');
     expect(wrapper.get('[data-test="register-email"]').element).toHaveProperty('value', 'new@example.com');
     expect(mocks.replace).not.toHaveBeenCalled();
+  });
+  it('invalidates the challenge and clears its code when the email changes', async () => {
+    const { wrapper } = mountView();
+    await completeForm(wrapper);
+    await verifyEmail(wrapper);
+    expect(wrapper.get('[data-test="register-send-code"]').attributes('disabled')).toBeDefined();
+    await wrapper.get('[data-test="register-email"]').setValue('other@example.com');
+    expect(wrapper.get('[data-test="register-submit"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[data-test="register-code"]').element).toHaveProperty('value', '');
+    wrapper.unmount();
+  });
+  it('discards an issuance response after the email has changed', async () => {
+    let resolve!: (value: { challengeId: string }) => void;
+    mocks.requestEmailCode.mockReturnValueOnce(
+      new Promise((r) => {
+        resolve = r;
+      }),
+    );
+    const { wrapper } = mountView();
+    await completeForm(wrapper);
+    await wrapper.get('[data-test="register-send-code"]').trigger('click');
+    await wrapper.get('[data-test="register-email"]').setValue('other@example.com');
+    resolve({ challengeId: 'old-challenge' });
+    await flushPromises();
+    await wrapper.get('[data-test="register-code"]').setValue('01234567');
+    expect(wrapper.get('[data-test="register-submit"]').attributes('disabled')).toBeDefined();
+    wrapper.unmount();
   });
 });

@@ -641,6 +641,7 @@ export const lang: langType = {
     goRegister: '立即註冊',
   },
   register: {
+    emailCodeLabel: '電子郵件驗證碼',
     title: '建立帳號',
     subtitle: '註冊後即可開始使用 Bitpongo',
     nameLabel: '暱稱',

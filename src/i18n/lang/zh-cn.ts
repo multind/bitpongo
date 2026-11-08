@@ -640,6 +640,7 @@ export const lang: langType = {
     goRegister: '立即注册',
   },
   register: {
+    emailCodeLabel: '邮箱验证码',
     title: '创建账号',
     subtitle: '注册后即可开始使用 Bitpongo',
     nameLabel: '昵称',

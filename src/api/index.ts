@@ -52,7 +52,13 @@ export function loginPassword(data: { username: string; password: string }): Pro
   return http.post<AuthSession>('/users/login', data);
 }
 
-export function registerAccount(data: { name: string; email: string; password: string }): Promise<AuthSession> {
+export function registerAccount(data: {
+  name: string;
+  email: string;
+  password: string;
+  challengeId: string;
+  code: string;
+}): Promise<AuthSession> {
   return http.post<AuthSession>('/users/register', data);
 }
 

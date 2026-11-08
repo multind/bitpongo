@@ -59,8 +59,8 @@ export const useUserStore = defineStore('user', {
         throw error;
       }
     },
-    async register(name: string, email: string, password: string) {
-      const session = await registerAccount({ name, email, password });
+    async register(name: string, email: string, password: string, challengeId: string, code: string) {
+      const session = await registerAccount({ name, email, password, challengeId, code });
       this.setSession(session);
       void initializeSessionTimeZone();
       void this.syncProfile();

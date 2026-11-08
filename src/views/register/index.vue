@@ -12,6 +12,23 @@
       <nut-form-item class="register-field" :label="t('register.emailLabel')">
         <nut-input v-model="form.email" data-test="register-email" :placeholder="t('register.emailPlaceholder')" type="email" />
       </nut-form-item>
+      <nut-form-item class="register-field" :label="t('register.emailCodeLabel')">
+        <div class="verification-row">
+          <nut-input
+            v-model="form.code"
+            data-test="register-code"
+            :placeholder="t('security.code')"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            :max-length="8"
+          />
+          <button type="button" data-test="register-send-code" :disabled="!canSend" @click="sendCode">
+            {{ seconds > 0 ? t('security.resend', { seconds }) : t('security.sendCode') }}
+          </button>
+        </div>
+        <p v-if="challengeId" class="verification-hint" role="status">{{ t('security.codeSent') }}</p>
+      </nut-form-item>
       <nut-form-item class="register-field" :label="t('register.passwordLabel')">
         <nut-input v-model="form.password" data-test="register-password" :placeholder="t('register.passwordPlaceholder')" type="password" />
       </nut-form-item>
@@ -74,25 +91,47 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, reactive, ref } from 'vue';
+  import { computed, onUnmounted, reactive, ref, watch } from 'vue';
   import { useRouter } from 'vue-router';
   import { useI18n } from 'vue-i18n';
   import { showToast } from '@nutui/nutui';
   import { useUserStore } from '@/store/modules/user';
+  import { requestEmailCode } from '@/api/security';
 
   const router = useRouter();
   const { t } = useI18n();
   const userStore = useUserStore();
   const submitting = ref(false);
   const errorMessage = ref('');
-  const form = reactive({ name: '', email: '', password: '', confirmPassword: '', agreed: false });
-  const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+  const form = reactive({ name: '', email: '', code: '', password: '', confirmPassword: '', agreed: false });
+  const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d).{8,128}$/;
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const email = computed(() => form.email.trim().toLowerCase());
+  const emailValid = computed(() => email.value.length <= 100 && emailPattern.test(email.value));
+  const challengeId = ref('');
+  const sending = ref(false);
+  const seconds = ref(0);
+  let timer: ReturnType<typeof setInterval> | undefined;
+  let generation = 0;
+  const canSend = computed(() => emailValid.value && !sending.value && !submitting.value && seconds.value === 0);
+  function clearChallenge() {
+    generation++;
+    clearInterval(timer);
+    seconds.value = 0;
+    challengeId.value = '';
+    form.code = '';
+    sending.value = false;
+  }
+  watch(email, clearChallenge, { flush: 'sync' });
+  onUnmounted(clearChallenge);
 
   const canSubmit = computed(
     () =>
       form.name.trim().length > 0 &&
-      emailPattern.test(form.email.trim()) &&
+      emailValid.value &&
+      !!challengeId.value &&
+      /^[0-9]{8}$/.test(form.code.trim()) &&
+      !sending.value &&
       passwordPattern.test(form.password) &&
       form.password === form.confirmPassword &&
       form.agreed &&
@@ -111,6 +150,29 @@
   function toggleAgreement() {
     form.agreed = !form.agreed;
   }
+  async function sendCode() {
+    if (!canSend.value) return;
+    const current = generation;
+    sending.value = true;
+    errorMessage.value = '';
+    challengeId.value = '';
+    form.code = '';
+    try {
+      const result = await requestEmailCode({ purpose: 'REGISTER', email: email.value });
+      if (current !== generation) return;
+      challengeId.value = result.challengeId;
+      const resendAt = Date.now() + 60_000;
+      seconds.value = 60;
+      timer = setInterval(() => {
+        seconds.value = Math.max(0, Math.ceil((resendAt - Date.now()) / 1000));
+        if (seconds.value === 0) clearInterval(timer);
+      }, 1000);
+    } catch (error) {
+      if (current === generation) errorMessage.value = messageFrom(error);
+    } finally {
+      if (current === generation) sending.value = false;
+    }
+  }
 
   async function submit() {
     if (!canSubmit.value) return;
@@ -118,7 +180,7 @@
     submitting.value = true;
     const toast = showToast.loading(t('register.submitting'), { duration: 0, cover: true });
     try {
-      await userStore.register(form.name.trim(), form.email.trim(), form.password);
+      await userStore.register(form.name.trim(), email.value, form.password, challengeId.value, form.code.trim());
       await router.replace('/member');
     } catch (error) {
       errorMessage.value = messageFrom(error);
@@ -173,6 +235,38 @@
     margin: 0.5rem 0.875rem;
     font-size: 0.875rem;
     line-height: 1.5;
+  }
+
+  .verification-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    align-items: center;
+  }
+
+  .verification-row :deep(.nut-input) {
+    flex: 1 1 7rem;
+    min-width: 0;
+  }
+
+  .verification-row button {
+    padding: 0.5rem 0.625rem;
+    font: inherit;
+    font-size: 0.875rem;
+    color: #176bc5;
+    background: transparent;
+    border: 1px solid currentcolor;
+    border-radius: 0.5rem;
+  }
+
+  .verification-row button:disabled {
+    opacity: 0.5;
+  }
+
+  .verification-hint {
+    margin: 0.375rem 0 0;
+    font-size: 0.875rem;
+    color: #666;
   }
 
   .hint,

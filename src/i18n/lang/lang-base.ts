@@ -567,6 +567,7 @@ export type langType = {
     goRegister: string;
   };
   register: {
+    emailCodeLabel: string;
     title: string;
     subtitle: string;
     nameLabel: string;

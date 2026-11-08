@@ -658,6 +658,7 @@ export const lang: langType = {
     goRegister: 'Create one',
   },
   register: {
+    emailCodeLabel: 'Email verification code',
     title: 'Create account',
     subtitle: 'Register to start using Bitpongo',
     nameLabel: 'Display name',
