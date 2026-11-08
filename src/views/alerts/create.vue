@@ -52,12 +52,7 @@
                 type="checkbox"
                 :value="key"
                 :data-test="`channel-${key}`"
-                :disabled="
-                  !selectedChannels.includes(key) &&
-                  (!channelSettings[key].available ||
-                    !channelSettings[key].enabled ||
-                    (key === 'email' && !channelSettings.confirmationEnabled))
-                "
+                :disabled="!selectedChannels.includes(key) && (!channelSettings[key].available || !channelSettings[key].enabled)"
                 @change="channelsChanged = true"
               />
               {{ t(`notificationMethods.channels.${key}`) }}
@@ -288,10 +283,7 @@
           })
           .catch(() => {});
         selectedChannels.value = (['bitpongo', 'email', 'telegram'] as const).filter(
-          (key) =>
-            channelSettings.value![key].enabled &&
-            channelSettings.value![key].available &&
-            (key !== 'email' || channelSettings.value!.confirmationEnabled),
+          (key) => channelSettings.value![key].enabled && channelSettings.value![key].available,
         );
       } catch {
         channelSettings.value = null;

@@ -166,9 +166,10 @@ export const lang: langType = {
     saveSuccess: '提醒方式已保存',
     saveFailed: '保存失败，请重试',
     perception: '感知设置',
-    perceptionHint: '提醒触发后按感知强弱依次发送；未确认时按感知顺序继续发送。',
+    perceptionHint: '开启确认后，提醒从最弱一档开始发送，同档渠道一起发送。',
+    levels: { WEAK: '弱', MODERATE_WEAK: '较弱', MODERATE: '中等', MODERATE_STRONG: '较强', STRONG: '强' },
     confirmation: '开启确认',
-    confirmationHint: '触发后 5 分钟未在 APP 内确认，将按感知顺序尝试后续可用渠道。',
+    confirmationHint: '每隔 5 分钟仍未在 App 内确认，就发送下一档。关闭后，所选渠道一起发送。',
     channels: {
       bitpongo: 'APP 提醒',
       email: '邮件提醒',
@@ -422,7 +423,7 @@ export const lang: langType = {
     greed: '贪婪阈值（≥）',
   },
   wizard: {
-    channelHint: '邮件仅在开启确认提醒且 5 分钟内未确认时补发；渠道还需在账号设置中启用。',
+    channelHint: '开启确认时，所选渠道按感知强度从弱到强发送；关闭时一起发送。',
     identityHelp: '为提醒起个便于识别的名称，并选择需要关注的交易对。',
     priceHelp: '选择价格触发条件，填写希望关注的价格。',
     deliveryIntro: '确认提醒触发后使用的通知设置。',

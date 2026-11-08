@@ -1,6 +1,12 @@
 import { http } from '@/utils/request';
 
 export type NotificationLevel = 'Strong' | 'ModerateStrong' | 'Moderate' | 'ModerateWeak' | 'Weak';
+export const perceptionLevels = ['WEAK', 'MODERATE_WEAK', 'MODERATE', 'MODERATE_STRONG', 'STRONG'] as const;
+export type PerceptionLevel = (typeof perceptionLevels)[number];
+export type PerceptionStrengths = Record<'email' | 'bitpongo' | 'telegram' | 'webhook', PerceptionLevel>;
+export const getPerceptionStrengths = () => http.get<PerceptionStrengths>('/users/notifications/channels/strengths');
+export const savePerceptionStrengths = (strengths: PerceptionStrengths) =>
+  http.put<PerceptionStrengths>('/users/notifications/channels/strengths', strengths);
 
 export interface NotificationChannel {
   enabled: boolean;

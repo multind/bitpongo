@@ -65,30 +65,12 @@
       <section class="settings-card" aria-labelledby="perception-heading">
         <h2 id="perception-heading">{{ t('notificationMethods.perception') }}</h2>
         <p class="meta">{{ t('notificationMethods.perceptionHint') }}</p>
-        <ol class="perception-order">
-          <li
-            v-for="key in perceptionOrder"
-            :key="key"
-            :data-channel="key"
-            draggable="true"
-            @dragstart="dragged = key"
-            @dragover.prevent
-            @drop.prevent="moveBefore(key)"
-            @dragend="dragged = null"
-          >
-            <span>{{ t(`notificationMethods.channels.${key}`) }}</span>
-            <button
-              type="button"
-              class="drag-handle"
-              :disabled="busy"
-              :aria-label="t(`notificationMethods.channels.${key}`)"
-              @pointerdown.prevent="startDrag($event, key)"
-              @pointerup="endDrag"
-              @pointercancel="dragged = null"
-              @keydown.up.prevent="moveBy(key, -1)"
-              @keydown.down.prevent="moveBy(key, 1)"
-              >⠿</button
-            >
+        <ol v-if="strengths" class="perception-order">
+          <li v-for="key in strengthOrder" :key="key" :data-channel="key">
+            <label :for="'perception-' + key">{{ channelLabel(key) }}</label>
+            <select :id="'perception-' + key" v-model="strengths[key]" :disabled="busy">
+              <option v-for="level in perceptionLevels" :key="level" :value="level">{{ t(`notificationMethods.levels.${level}`) }}</option>
+            </select>
           </li>
         </ol>
         <label class="confirmation-row">
@@ -132,7 +114,7 @@
   </main>
 </template>
 <script setup lang="ts">
-  import { onMounted, reactive, ref } from 'vue';
+  import { computed, onMounted, reactive, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import ReminderEmailSheet from './ReminderEmailSheet.vue';
   import TelegramSheet from './TelegramSheet.vue';
@@ -140,7 +122,10 @@
   import {
     getNotificationChannels,
     saveNotificationChannels,
-    saveNotificationOrder,
+    getPerceptionStrengths,
+    savePerceptionStrengths,
+    perceptionLevels,
+    type PerceptionStrengths,
     type NotificationChannels,
   } from '@/api/notificationChannels';
   import { getWebhookDestinations, setWebhookReminderEnabled } from '@/api/webhookReminderDestinations';
@@ -150,47 +135,21 @@
   const telegramSheet = ref(false);
   const webhookSheet = ref(false);
   const channelKeys = ['bitpongo', 'email', 'telegram'] as const;
-  // The existing order API still expects all seven entries, including the hidden ones.
-  const storedKeys = ['bitpongo', 'email', 'message', 'call', 'dingding', 'feishu', 'telegram'] as const;
-  type StoredKey = (typeof storedKeys)[number];
-  const visible = (key: StoredKey): key is ChannelKey => channelKeys.some((item) => item === key);
   type ChannelKey = (typeof channelKeys)[number];
   type EditableKey = Exclude<ChannelKey, 'bitpongo'>;
   const editableKeys: EditableKey[] = ['email', 'telegram'];
   const webhookStatus = ref<{ available: boolean; enabled?: boolean }>();
   const webhookEnabled = ref(false);
 
-  const perceptionOrder = ref<ChannelKey[]>([]);
-  const dragged = ref<ChannelKey | null>(null);
-  function moveBefore(key: ChannelKey) {
-    if (busy.value || !dragged.value || dragged.value === key) return;
-    const index = perceptionOrder.value.indexOf(key);
-    const next = perceptionOrder.value.filter((item) => item !== dragged.value);
-    next.splice(index, 0, dragged.value);
-    perceptionOrder.value = next;
-    dragged.value = null;
-    saved.value = false;
-  }
-  function startDrag(event: PointerEvent, key: ChannelKey) {
-    if (busy.value) return;
-    dragged.value = key;
-    (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
-  }
-  function endDrag(event: PointerEvent) {
-    const key = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-channel]')?.getAttribute('data-channel');
-    if (key && channelKeys.includes(key as ChannelKey)) moveBefore(key as ChannelKey);
-    dragged.value = null;
-  }
-  function moveBy(key: ChannelKey, delta: number) {
-    const target = perceptionOrder.value[perceptionOrder.value.indexOf(key) + delta];
-    if (!target || busy.value) return;
-    const next = [...perceptionOrder.value];
-    const from = next.indexOf(key),
-      to = next.indexOf(target);
-    [next[from], next[to]] = [next[to], next[from]];
-    perceptionOrder.value = next;
-    saved.value = false;
-  }
+  const strengths = ref<PerceptionStrengths>();
+  let savedStrengths: PerceptionStrengths | undefined;
+  const strengthKeys = ['email', 'bitpongo', 'telegram', 'webhook'] as const;
+  const strengthOrder = computed(() => {
+    const values = strengths.value;
+    return values ? [...strengthKeys].sort((a, b) => perceptionLevels.indexOf(values[a]) - perceptionLevels.indexOf(values[b])) : [];
+  });
+  const channelLabel = (key: keyof PerceptionStrengths) =>
+    t(key === 'webhook' ? 'outboundWebhook.title' : `notificationMethods.channels.${key}`);
   const badges: Record<ChannelKey, string> = {
     bitpongo: 'APP',
     email: '@',
@@ -212,10 +171,8 @@
     for (const key of editableKeys) draft[key] = value[key].enabled;
     confirmationEnabled.value = value.confirmationEnabled;
     channels.value = value;
-    perceptionOrder.value = sortedOrder(value).filter(visible);
     loaded.value = true;
   };
-  const sortedOrder = (value: NotificationChannels) => [...storedKeys].sort((a, b) => value[a].sequence - value[b].sequence);
 
   const channelState = (key: ChannelKey) => {
     const value = channels.value?.[key];
@@ -238,7 +195,10 @@
         .catch(() => {
           webhookStatus.value = undefined;
         });
-      applyChannels(await getNotificationChannels());
+      const [channelSettings, levels] = await Promise.all([getNotificationChannels(), getPerceptionStrengths()]);
+      strengths.value = levels;
+      savedStrengths = { ...levels };
+      applyChannels(channelSettings);
     } catch {
       error.value = true;
     } finally {
@@ -253,9 +213,6 @@
     error.value = false;
     saved.value = false;
     try {
-      const previous = sortedOrder(current);
-      let visibleIndex = 0;
-      const order = previous.map((key) => (visible(key) ? perceptionOrder.value[visibleIndex++] : key));
       const updated = await saveNotificationChannels({
         emailEnabled: draft.email,
         messageEnabled: current.message.enabled,
@@ -269,7 +226,12 @@
         await setWebhookReminderEnabled(webhookEnabled.value);
         webhookStatus.value.enabled = webhookEnabled.value;
       }
-      applyChannels(order.some((key, index) => key !== previous[index]) ? await saveNotificationOrder(order) : updated);
+      if (strengths.value && strengthKeys.some((key) => strengths.value?.[key] !== savedStrengths?.[key])) {
+        const levels = await savePerceptionStrengths(strengths.value);
+        savedStrengths = { ...levels };
+        strengths.value = levels;
+      }
+      applyChannels(updated);
       saved.value = true;
     } catch {
       error.value = true;

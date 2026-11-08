@@ -167,9 +167,18 @@ export const lang: langType = {
     saveSuccess: 'Notification methods saved',
     saveFailed: 'Could not save. Try again.',
     perception: 'Perception settings',
-    perceptionHint: 'Reminders are sent from strongest to weakest perception. Unconfirmed reminders continue in perception order.',
+    perceptionHint:
+      'When confirmation is enabled, reminders start at the weakest selected level. Channels at the same level are sent together.',
+    levels: {
+      WEAK: 'Weak',
+      MODERATE_WEAK: 'Moderately weak',
+      MODERATE: 'Moderate',
+      MODERATE_STRONG: 'Moderately strong',
+      STRONG: 'Strong',
+    },
     confirmation: 'Enable confirmation',
-    confirmationHint: 'If not confirmed in the app within 5 minutes, subsequent available channels are tried in perception order.',
+    confirmationHint:
+      'If you do not confirm in the app within 5 minutes, the next level is sent. When disabled, all selected channels are sent together.',
     channels: {
       bitpongo: 'App reminders',
       email: 'Email reminders',
@@ -426,7 +435,8 @@ export const lang: langType = {
     greed: 'Greed threshold (≥)',
   },
   wizard: {
-    channelHint: 'Email is a follow-up after five minutes without confirmation. Channels must also be enabled in account settings.',
+    channelHint:
+      'With confirmation enabled, selected channels are notified from weakest to strongest. Otherwise they are notified together.',
     identityHelp: 'Give this alert a recognizable name and choose a trading pair to follow.',
     priceHelp: 'Choose a trigger condition and enter the price you want to follow.',
     deliveryIntro: 'Review the notification settings used when this alert triggers.',

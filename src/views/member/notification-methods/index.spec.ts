@@ -2,7 +2,13 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { i18n } from '@/i18n';
 import NotificationMethods from './index.vue';
-import { getNotificationChannels, saveNotificationChannels, saveNotificationOrder } from '@/api/notificationChannels';
+import type * as NotificationChannelsApi from '@/api/notificationChannels';
+import {
+  getNotificationChannels,
+  saveNotificationChannels,
+  getPerceptionStrengths,
+  savePerceptionStrengths,
+} from '@/api/notificationChannels';
 import { getWebhookDestinations, setWebhookReminderEnabled } from '@/api/webhookReminderDestinations';
 
 vi.mock('@/api/webhookReminderDestinations', () => ({
@@ -10,10 +16,12 @@ vi.mock('@/api/webhookReminderDestinations', () => ({
   setWebhookReminderEnabled: vi.fn(),
 }));
 
-vi.mock('@/api/notificationChannels', () => ({
+vi.mock('@/api/notificationChannels', async (original) => ({
+  ...(await original<typeof NotificationChannelsApi>()),
   getNotificationChannels: vi.fn(),
   saveNotificationChannels: vi.fn(),
-  saveNotificationOrder: vi.fn(),
+  getPerceptionStrengths: vi.fn(),
+  savePerceptionStrengths: vi.fn(),
 }));
 
 const channels = {
@@ -32,7 +40,13 @@ beforeEach(() => {
   i18n.global.locale.value = 'en-us';
   vi.mocked(getWebhookDestinations).mockResolvedValue({ available: true, enabled: true, items: [] });
   vi.mocked(getNotificationChannels).mockResolvedValue(structuredClone(channels));
-  vi.mocked(saveNotificationOrder).mockResolvedValue(structuredClone(channels));
+  vi.mocked(getPerceptionStrengths).mockResolvedValue({
+    email: 'WEAK',
+    bitpongo: 'MODERATE_WEAK',
+    telegram: 'MODERATE',
+    webhook: 'MODERATE',
+  });
+  vi.mocked(savePerceptionStrengths).mockImplementation(async (value) => ({ ...value }));
   vi.mocked(saveNotificationChannels).mockImplementation(async (update) => ({
     ...structuredClone(channels),
     email: { enabled: update.emailEnabled, available: false, level: 'Weak', sequence: 1 },
@@ -61,18 +75,34 @@ describe('notification methods', () => {
     expect(wrapper.text()).not.toContain('DingTalk reminders');
     expect(wrapper.text()).not.toContain('Feishu reminders');
   });
-  it('restores perception order while preserving the hidden channel positions', async () => {
+  it('orders channels by strength and saves the selected Webhook tier', async () => {
     wrapper = mount(NotificationMethods, { global: { plugins: [i18n], stubs: { RouterLink: true } } });
     await flushPromises();
     expect(wrapper.find('#perception-heading').exists()).toBe(true);
-    expect(wrapper.findAll('[data-channel]').map((row) => row.attributes('data-channel'))).toEqual(['bitpongo', 'email', 'telegram']);
+    expect(wrapper.findAll('[data-channel]').map((row) => row.attributes('data-channel'))).toEqual([
+      'email',
+      'bitpongo',
+      'telegram',
+      'webhook',
+    ]);
     await wrapper.get('[data-test="notification-methods-save"]').trigger('click');
     await flushPromises();
-    expect(saveNotificationOrder).not.toHaveBeenCalled();
-    await wrapper.get('[data-channel="telegram"] button').trigger('keydown', { key: 'ArrowUp' });
+    expect(savePerceptionStrengths).not.toHaveBeenCalled();
+    await wrapper.get('#perception-webhook').setValue('WEAK');
+    expect(wrapper.findAll('[data-channel]').map((row) => row.attributes('data-channel'))).toEqual([
+      'email',
+      'webhook',
+      'bitpongo',
+      'telegram',
+    ]);
     await wrapper.get('[data-test="notification-methods-save"]').trigger('click');
     await flushPromises();
-    expect(saveNotificationOrder).toHaveBeenCalledWith(['bitpongo', 'telegram', 'message', 'call', 'dingding', 'feishu', 'email']);
+    expect(savePerceptionStrengths).toHaveBeenCalledWith({
+      email: 'WEAK',
+      bitpongo: 'MODERATE_WEAK',
+      telegram: 'MODERATE',
+      webhook: 'WEAK',
+    });
   });
   it('loads channel preferences and saves toggles in camelCase', async () => {
     wrapper = mount(NotificationMethods, {

@@ -191,6 +191,7 @@ export type langType = {
     saveFailed: string;
     perception: string;
     perceptionHint: string;
+    levels: Record<'WEAK' | 'MODERATE_WEAK' | 'MODERATE' | 'MODERATE_STRONG' | 'STRONG', string>;
     confirmation: string;
     confirmationHint: string;
     channels: Record<'bitpongo' | 'email' | 'message' | 'call' | 'dingding' | 'feishu' | 'telegram', string>;
