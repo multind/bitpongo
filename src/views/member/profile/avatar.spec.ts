@@ -9,9 +9,17 @@ vi.mock('@/api/avatar', () => api);
 let view: ReturnType<typeof mount>;
 afterEach(() => {
   view?.unmount();
+  delete window.ZhitoubaoBridge;
   vi.resetAllMocks();
 });
 function render() {
+  window.ZhitoubaoBridge = {
+    postMessage(message) {
+      const { command, requestId } = JSON.parse(message);
+      const result = command === 'getContext' ? { supportsAvatarPicker: true } : selected;
+      window.__ZHITOUBAO_NATIVE_RESOLVE__?.(requestId, result);
+    },
+  };
   const pinia = createPinia();
   setActivePinia(pinia);
   useUserStore().setSession({ token: 'one', info: { id: 1, name: 'Alice', email: 'alice@example.com' } });
@@ -20,10 +28,10 @@ function render() {
   return view;
 }
 const image = 'data:image/png;base64,aGVsbG8=';
-async function choose(file: File) {
-  const input = view.get('input[type="file"]');
-  Object.defineProperty(input.element, 'files', { configurable: true, value: [file] });
-  await input.trigger('change');
+let selected: string | null;
+async function choose(data: string | null = image) {
+  selected = data;
+  await view.get('.avatar-upload').trigger('click');
   await flushPromises();
 }
 it('displays saved avatar, replaces it after upload, and removes it', async () => {
@@ -33,21 +41,21 @@ it('displays saved avatar, replaces it after upload, and removes it', async () =
   render();
   await flushPromises();
   expect(view.get('img').attributes('src')).toBe(image);
-  await choose(new File(['png'], 'photo.png', { type: 'image/png' }));
+  await choose();
   expect(view.get('img').attributes('src')).toBe(image + 'new');
   await view.get('button[data-remove]').trigger('click');
   await flushPromises();
   expect(view.get('img').attributes('src')).not.toContain('data:image');
 });
-it('keeps previous image when upload fails and rejects oversized files locally', async () => {
+it('keeps the previous avatar on upload failure and does not upload when the picker is cancelled', async () => {
   api.getAvatar.mockResolvedValue({ imageData: image });
   api.uploadAvatar.mockRejectedValue(new Error('offline'));
   render();
   await flushPromises();
-  await choose(new File(['png'], 'x.png', { type: 'image/png' }));
+  await choose();
   expect(view.get('img').attributes('src')).toBe(image);
   expect(view.find('[role="alert"]').exists()).toBe(true);
-  await choose(new File([new Uint8Array(2 * 1024 * 1024 + 1)], 'big.png', { type: 'image/png' }));
+  await choose(null);
   expect(api.uploadAvatar).toHaveBeenCalledTimes(1);
 });
 it('hides previous account image and ignores stale upload results after logout', async () => {
@@ -61,11 +69,11 @@ it('hides previous account image and ignores stale upload results after logout',
   );
   render();
   await flushPromises();
-  await choose(new File(['png'], 'x.png', { type: 'image/png' }));
+  await choose();
   useUserStore().setSession({ token: '', info: { id: 0, name: '', email: '' } });
   await flushPromises();
   resolve({ imageData: image });
   await flushPromises();
   expect(view.get('img').attributes('src')).not.toContain('data:image');
-  expect(view.get('input').attributes('disabled')).toBeDefined();
+  expect(view.get('.avatar-upload').attributes('disabled')).toBeDefined();
 });

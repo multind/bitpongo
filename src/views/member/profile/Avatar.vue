@@ -46,6 +46,7 @@
         </section>
       </NutPopup>
       <p v-if="native" class="meta">{{ t('profile.avatarHint') }}</p>
+      <p v-else-if="legacyNative" class="meta">{{ t('profile.avatarUpdateApp') }}</p>
       <button v-if="image" type="button" class="avatar-remove" data-remove :disabled="busy || !ready" @click="remove">{{
         t('profile.removeAvatar')
       }}</button>
@@ -55,22 +56,23 @@
   </section>
 </template>
 <script setup lang="ts">
-  import { ref, watch, onUnmounted } from 'vue';
+  import { ref, watch, onMounted, onUnmounted } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useUserStore } from '@/store/modules/user';
   import { getAvatar, uploadAvatar, deleteAvatar } from '@/api/avatar';
   import logo from '@/assets/logo.png';
-  import { hasNativeChannel, pickNativeAvatar } from '@/mobile/bridge';
+  import { getNativeContext, hasNativeChannel, pickNativeAvatar } from '@/mobile/bridge';
   import { Popup as NutPopup } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/popup/index.css';
   import '@nutui/nutui/dist/packages/overlay/index.css';
   import { trapSheetTab } from '@/views/list/components/timezone-sheet';
-  const native = hasNativeChannel();
+  const native = ref(false);
+  const legacyNative = ref(false);
   const presetOpen = ref(false);
   const presetTrigger = ref<HTMLButtonElement>();
   const presetClose = ref<HTMLButtonElement>();
   const presets = import.meta.glob<string>('../../../assets/avatars/*.png', { eager: true, import: 'default' });
-  defineProps<{ editable?: boolean }>();
+  const props = defineProps<{ editable?: boolean }>();
   const { t } = useI18n();
   const user = useUserStore();
   const image = ref<string | null>(null),
@@ -78,6 +80,20 @@
     ready = ref(false),
     error = ref('');
   let generation = 0;
+  let disposed = false;
+  let contextRequest = 0;
+  async function loadPickerCapability() {
+    if (!props.editable || !hasNativeChannel()) return;
+    const request = ++contextRequest;
+    try {
+      const context = await getNativeContext();
+      if (disposed || request !== contextRequest || !context) return;
+      native.value = context.supportsAvatarPicker === true;
+      legacyNative.value = !native.value;
+    } catch {
+      // Keep built-in avatars available even if the native bridge is unavailable.
+    }
+  }
   function current(id: number) {
     return id === generation && !!user.token;
   }
@@ -152,8 +168,14 @@
     return false;
   }
   const remove = () => change(deleteAvatar);
+  onMounted(() => {
+    window.addEventListener('flutterInAppWebViewPlatformReady', loadPickerCapability);
+    void loadPickerCapability();
+  });
   watch(() => user.token, load, { immediate: true, flush: 'sync' });
   onUnmounted(() => {
+    disposed = true;
+    window.removeEventListener('flutterInAppWebViewPlatformReady', loadPickerCapability);
     generation++;
   });
 </script>

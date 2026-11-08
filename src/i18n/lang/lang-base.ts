@@ -66,6 +66,7 @@ export type langType = {
   profile: {
     avatar: string;
     uploadAvatar: string;
+    avatarUpdateApp: string;
     choosePresetAvatar: string;
     removeAvatar: string;
     avatarHint: string;

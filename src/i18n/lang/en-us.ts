@@ -78,6 +78,7 @@ export const lang: langType = {
   profile: {
     avatar: 'Avatar',
     uploadAvatar: 'Upload avatar',
+    avatarUpdateApp: 'Update Bitpongo to choose a photo from your device.',
     choosePresetAvatar: 'Choose an avatar',
     removeAvatar: 'Remove avatar',
     avatarHint: 'PNG or JPEG, up to 2 MB and 4096 pixels per side.',

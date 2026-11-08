@@ -78,6 +78,7 @@ export const lang: langType = {
   profile: {
     avatar: '头像',
     uploadAvatar: '上传头像',
+    avatarUpdateApp: '更新 Bitpongo 后即可从相册选择头像。',
     choosePresetAvatar: '选择内置头像',
     removeAvatar: '移除头像',
     avatarHint: '支持 PNG、JPEG，最大 2 MB，每边不超过 4096 像素。',

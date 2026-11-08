@@ -8,6 +8,7 @@ export interface NativeContext {
   locale?: LocaleKey;
   timeZone?: string;
   timeZoneOffsetMinutes?: number;
+  supportsAvatarPicker?: boolean;
 }
 
 export interface ImageRequest {
