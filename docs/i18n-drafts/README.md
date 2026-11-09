@@ -18,6 +18,6 @@ For local UI review, start the frontend with `VITE_PREVIEW_LOCALES=true npm run 
 
 - Language selection: update both the Preferences page and the language sheet on the Me page, and test stored preferences on reload.
 - Notifications: the API client and native push registration use the same locale normalization. The notification settings page has separate catalogs under `src/views/member/notice`. Its visible title, save/test actions, device states, no-trade explanation, queued confirmation, and registration-failure instructions received targeted review; the remaining generated strings still need linguistic review. The internal diagnostics panel remains hidden.
-- Legal copy: the Terms of Service and privacy policy have separate catalogs. Track their review separately from the 809 UI keys.
+- Legal copy: the Terms of Service and privacy policy have separate catalogs. See [the source review checklist](legal-source-review.md) before translating either document; track that review separately from the 809 UI keys.
 - Mobile components: the installed NutUI package supplies only English, Indonesian, Simplified Chinese, and Traditional Chinese catalogs. Review calendar and picker text instead of assuming that translating the app's own catalog also translates those controls.
 - Arabic: check RTL layout on real screens; keep market symbols, API identifiers, prices, and dates readable inside right-to-left copy.
