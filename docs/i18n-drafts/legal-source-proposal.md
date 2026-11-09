@@ -38,9 +38,9 @@ You can start account deletion under Me → Account Security → Delete Account.
 
 ### 1. 个人资料 / Profile information
 
-如果你上传头像，Bitpongo 会处理图片并保存头像，用于显示你的个人资料。你可以在个人资料中更换或移除头像。如果你选择公开展示或分享策略，请在操作前检查页面展示的个人资料和策略信息。
+如果你上传头像，Bitpongo 会处理并保存图片，用于显示你的个人资料。你可以在个人资料中更换或移除头像。策略在策略广场展示时，其他已登录用户可能看到你的头像和显示名称；如果没有名称，界面可能显示遮罩后的邮箱地址。分享策略前，请先检查分享页展示的信息。
 
-If you upload an avatar, Bitpongo processes the image and stores the avatar to display your profile. You can replace or remove it in Profile. If you choose to make a strategy public or share it, check the profile and strategy information shown on the page before proceeding.
+If you upload an avatar, Bitpongo processes and stores the image to display your profile. You can replace or remove it in Profile. When a strategy is listed in the strategy gallery, other signed-in users may see your avatar and display name. If no name is set, the interface may show a masked email address. Before sharing a strategy, check the information shown on the share page.
 
 ### 1、3. 通知信息与外部服务 / Notification information and external services
 
@@ -56,8 +56,8 @@ You can start account deletion under Me → Account Security → Delete Account.
 
 ## 发布前核对 / Before publishing
 
-- Confirm the production provider list, exact notification payload and recipient data, and whether legacy Bark wording must remain.
-- Confirm the avatar visibility on public and shared strategy pages, including whether an existing downloaded image can be recalled; do not promise that.
-- Confirm the production deletion verification steps and which records and backups are retained, for what purpose, and for how long. The current H5 code submits the account password; the separate proposed email-verified deletion flow is not asserted here.
+- Production configuration check (2026-11-10): the deployed API is `ab7e6ee`; native FCM, outbound webhook, account email, and legacy Bark flags are enabled, and the Telegram settings are present. This does not prove delivery or establish that email alerts use the same configuration as account verification mail. Confirm channel payloads and retain legacy Bark disclosure while it remains enabled.
+- The deployed `PresetController` requires a signed-in user for the strategy gallery, and `PresetService` supplies the listed strategy author's stored avatar and name (or masked email fallback). This does not establish visibility on independent share URLs or whether existing downloaded images can be recalled.
+- The deployed `AccountDeletionService` verifies the current password, anonymizes the account record, stops its DCA plans, clears exchange credentials, and removes selected associated data. Do not describe this as immediate erasure of all data. Confirm the inventory of retained records and backups, retention purpose, and duration. The proposed email-verified deletion flow is not asserted here.
 - Confirm the operator/contact details and effective date. Review the full source, not just these passages, with the policy owner before translation.
 - Apple’s [App Review Guidelines §5.1.1](https://developer.apple.com/app-store/review/guidelines/#data-collection-and-storage) provide the store-review checklist for collection, use, retention and deletion disclosures. This proposal does not establish compliance.
