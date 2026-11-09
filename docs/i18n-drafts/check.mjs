@@ -16,6 +16,11 @@ const source = flatten(lang);
 const tokens = (message) => (message.match(/\{[\w-]+\}/g) ?? []).sort();
 const catalogs = readdirSync(directory).filter((file) => file.endsWith('.draft.json'));
 assert.ok(catalogs.length, 'No drafts found');
+if (process.argv.includes('--all')) {
+  const expected = ['ar', 'de', 'es-es', 'es-mx', 'fr', 'id', 'it', 'ja', 'ko', 'pt-br', 'th', 'vi'];
+  const full = catalogs.filter((file) => !file.endsWith('.account.draft.json'));
+  assert.deepEqual(full.sort(), expected.map((locale) => locale + '.draft.json'), 'Incomplete set of full catalogs');
+}
 const readCatalog = (file) => JSON.parse(readFileSync(new URL(file, directory), 'utf8'));
 
 for (const file of catalogs) {
@@ -28,6 +33,7 @@ for (const file of catalogs) {
     assert.equal(typeof draft[key], 'string', label);
     if (source[key].trim()) assert.ok(draft[key].trim(), label + ': empty translation');
     assert.deepEqual(tokens(draft[key]), tokens(source[key]), label + ': placeholder mismatch');
+    assert.doesNotMatch(draft[key], /⁇|QZX|XZQ/i, label + ': unresolved model token');
   }
   if (!accountOnly) {
     assert.equal(draft['frequency.weekDays'].split(',').filter((day) => day.trim()).length, 7, file + ': weekday labels');

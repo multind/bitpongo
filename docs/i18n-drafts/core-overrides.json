@@ -1,0 +1,67 @@
+{
+  "pt-br": {
+    "frequency.weekDays": "Seg,Ter,Qua,Qui,Sex,Sáb,Dom",
+    "fng.exchange": "Corretora",
+    "fng.exchangeMissing": "Adicione uma conexão à API da Binance em Minha conta → Gerenciamento de API e habilite a permissão para operar futuros.",
+    "fng.long": "Posição comprada",
+    "fng.short": "Posição vendida",
+    "fng.maxTradeRoundsHint": "Uma posição totalmente encerrada por realização de lucro, limite de perda ou stop móvel conta como um ciclo. Ao atingir o limite, nenhuma nova posição é aberta.",
+    "fng.profitTargetHint": "Realize o lucro quando o lucro não realizado atingir esta porcentagem (por exemplo, 10%).",
+    "fng.profitDrawdownHint": "Encerre a posição quando o lucro recuar esta porcentagem em relação ao pico. Por exemplo, de um pico de 20%, um recuo de 5% aciona a saída em 19%.",
+    "fng.stopLossHint": "Encerre a posição a mercado quando a perda atingir esta porcentagem da margem (por exemplo, 30%).",
+    "fng.notificationHint": "Estratégias acionadas enviam ordens de futuros USDT-M à Binance automaticamente e notificam após a execução. Confira a conexão com a corretora, as permissões para futuros e as configurações de risco.",
+    "fng.amountHint": "Os alertas disparam quando o índice entra em [limite inferior − intervalo inferior, limite inferior] ou [limite superior, limite superior + intervalo superior]. A faixa inferior aumenta o valor e a superior reduz; fora delas, aplica-se 1×."
+  },
+  "ja": {
+    "frequency.weekDays": "月,火,水,木,金,土,日",
+    "subscriptions.greed": "強欲",
+    "webhook.revoke": "無効化",
+    "fng.exchange": "取引所",
+    "fng.long": "ロング",
+    "fng.short": "ショート",
+    "fng.maxTradeRoundsHint": "利確、損切り、またはトレーリングストップでポジションを全決済すると1サイクルに数えます。上限に達すると、新規ポジションは開きません。",
+    "fng.stopLossHint": "損失が証拠金に対してこの割合（例：30%）に達すると、成行で決済します。"
+  },
+  "ko": {
+    "frequency.weekDays": "월,화,수,목,금,토,일",
+    "subscriptions.greed": "탐욕",
+    "common.pending": "대기 중",
+    "fng.long": "롱 포지션",
+    "fng.short": "숏 포지션"
+  },
+  "id": {
+    "frequency.weekDays": "Sen,Sel,Rab,Kam,Jum,Sab,Min",
+    "fng.long": "Posisi long",
+    "fng.short": "Posisi short"
+  },
+  "th": {
+    "frequency.weekDays": "จ.,อ.,พ.,พฤ.,ศ.,ส.,อา.",
+    "fng.long": "สถานะ Long",
+    "fng.short": "สถานะ Short"
+  },
+  "vi": {
+    "frequency.weekDays": "T2,T3,T4,T5,T6,T7,CN",
+    "fng.long": "Vị thế mua (Long)",
+    "fng.short": "Vị thế bán (Short)"
+  },
+  "ar": {
+    "frequency.weekDays": "الاثنين,الثلاثاء,الأربعاء,الخميس,الجمعة,السبت,الأحد",
+    "fng.long": "مركز شراء",
+    "fng.short": "مركز بيع"
+  },
+  "fr": {
+    "frequency.weekDays": "Lun.,Mar.,Mer.,Jeu.,Ven.,Sam.,Dim.",
+    "fng.long": "Position longue",
+    "fng.short": "Position courte"
+  },
+  "de": {
+    "frequency.weekDays": "Mo,Di,Mi,Do,Fr,Sa,So",
+    "fng.long": "Long-Position",
+    "fng.short": "Short-Position"
+  },
+  "it": {
+    "frequency.weekDays": "Lun,Mar,Mer,Gio,Ven,Sab,Dom",
+    "fng.long": "Posizione lunga",
+    "fng.short": "Posizione corta"
+  }
+}
