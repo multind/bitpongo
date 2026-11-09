@@ -18,11 +18,11 @@
 <script setup lang="ts">
   import { computed } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { isSupportedLocale } from '@/i18n';
+  import { isStableLocale } from '@/i18n';
   import { agreementCopy } from './agreement-content';
 
   const { locale } = useI18n();
-  const content = computed(() => agreementCopy[isSupportedLocale(locale.value) ? locale.value : 'en-us']);
+  const content = computed(() => agreementCopy[isStableLocale(locale.value) ? locale.value : 'en-us']);
 </script>
 
 <style scoped lang="scss">

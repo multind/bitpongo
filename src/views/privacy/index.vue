@@ -29,11 +29,11 @@
 <script setup lang="ts">
   import { computed } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { isSupportedLocale } from '@/i18n';
+  import { isStableLocale } from '@/i18n';
   import { privacyCopy } from './content';
 
   const { locale } = useI18n();
-  const content = computed(() => privacyCopy[isSupportedLocale(locale.value) ? locale.value : 'en-us']);
+  const content = computed(() => privacyCopy[isStableLocale(locale.value) ? locale.value : 'en-us']);
 </script>
 
 <style scoped lang="scss">

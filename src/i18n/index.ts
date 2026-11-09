@@ -3,17 +3,45 @@ import { Locale } from '@nutui/nutui';
 import enUS from '@nutui/nutui/dist/packages/locale/lang/en-US.js';
 import zhCN from '@nutui/nutui/dist/packages/locale/lang/zh-CN.js';
 import zhTW from '@nutui/nutui/dist/packages/locale/lang/zh-TW.js';
+import idID from '@nutui/nutui/dist/packages/locale/lang/id-ID.js';
 
-export type LocaleKey = 'zh-cn' | 'zh-tw' | 'en-us';
+export type StableLocaleKey = 'zh-cn' | 'zh-tw' | 'en-us';
+
+const LOCALE_NAMES = {
+  'zh-cn': '简体中文',
+  'zh-tw': '繁體中文',
+  'en-us': 'English',
+  'es-mx': 'Español (México)',
+  'pt-br': 'Português (Brasil)',
+  ja: '日本語',
+  ko: '한국어',
+  id: 'Bahasa Indonesia',
+  th: 'ไทย',
+  vi: 'Tiếng Việt',
+  ar: 'العربية',
+  fr: 'Français',
+  de: 'Deutsch',
+  it: 'Italiano',
+  'es-es': 'Español (España)',
+} as const;
+export type LocaleKey = keyof typeof LOCALE_NAMES;
 
 const STORAGE_KEY = 'lang';
-const SUPPORTED: LocaleKey[] = ['zh-cn', 'zh-tw', 'en-us'];
+const PREVIEW_ENABLED = import.meta.env.VITE_PREVIEW_LOCALES === 'true';
+export const supportedLocales: readonly LocaleKey[] = PREVIEW_ENABLED
+  ? (Object.keys(LOCALE_NAMES) as LocaleKey[])
+  : ['zh-cn', 'zh-tw', 'en-us'];
 
-const NUTUI_LOCALES: Record<LocaleKey, [string, any]> = {
+const NUTUI_LOCALES: Partial<Record<LocaleKey, [string, any]>> = {
   'zh-cn': ['zh-CN', zhCN],
   'zh-tw': ['zh-TW', zhTW],
   'en-us': ['en-US', enUS],
+  id: ['id-ID', idID],
 };
+
+export function languageName(locale: string) {
+  return isSupportedLocale(locale) ? LOCALE_NAMES[locale] : LOCALE_NAMES['en-us'];
+}
 
 export function loadLang() {
   const modules: Record<string, any> = import.meta.glob('./lang/*.ts', { eager: true });
@@ -24,6 +52,23 @@ export function loadLang() {
     const lang = modules[path].lang;
     if (lang) {
       langs[name] = lang;
+    }
+  }
+  if (PREVIEW_ENABLED) {
+    const drafts = import.meta.glob<Record<string, string>>(
+      ['../../docs/i18n-drafts/*.draft.json', '!../../docs/i18n-drafts/*.account.draft.json'],
+      { eager: true, import: 'default' },
+    );
+    for (const [path, entries] of Object.entries(drafts)) {
+      const locale = path.split('/').pop()?.replace('.draft.json', '');
+      if (!isSupportedLocale(locale)) continue;
+      const catalog: Record<string, any> = (langs[locale] = Object.create(null));
+      for (const [key, value] of Object.entries(entries)) {
+        const parts = key.split('.');
+        const field = parts.pop()!;
+        const target = parts.reduce((parent, part) => (parent[part] ??= Object.create(null)), catalog);
+        target[field] = value;
+      }
     }
   }
   return langs;
@@ -38,7 +83,11 @@ export const i18n = createI18n({
 });
 
 export function isSupportedLocale(value: unknown): value is LocaleKey {
-  return typeof value === 'string' && SUPPORTED.includes(value as LocaleKey);
+  return typeof value === 'string' && supportedLocales.includes(value as LocaleKey);
+}
+
+export function isStableLocale(value: unknown): value is StableLocaleKey {
+  return value === 'zh-cn' || value === 'zh-tw' || value === 'en-us';
 }
 
 function normalizeLocale(locale?: unknown): LocaleKey {
@@ -55,7 +104,7 @@ export function currentLocale(defaultLocale?: unknown): LocaleKey {
 }
 
 function applyNutuiLocale(locale: LocaleKey) {
-  const [name, pack] = NUTUI_LOCALES[locale];
+  const [name, pack] = NUTUI_LOCALES[locale] ?? ['en-US', enUS];
   Locale.use(name, pack);
 }
 
@@ -65,6 +114,8 @@ export function setLang(locale?: unknown, persist = locale !== undefined) {
   }
   const target = currentLocale(locale);
   i18n.global.locale.value = target;
+  document.documentElement.lang = Intl.getCanonicalLocales(target)[0]!;
+  document.documentElement.dir = target === 'ar' ? 'rtl' : 'ltr';
   applyNutuiLocale(target);
 }
 

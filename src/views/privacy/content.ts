@@ -1,4 +1,4 @@
-import type { LocaleKey } from '@/i18n';
+import type { StableLocaleKey } from '@/i18n';
 
 export interface PrivacySection {
   title: string;
@@ -16,7 +16,7 @@ export interface PrivacyCopy {
   contactLabel: string;
 }
 
-export const privacyCopy: Record<LocaleKey, PrivacyCopy> = {
+export const privacyCopy: Record<StableLocaleKey, PrivacyCopy> = {
   'zh-cn': {
     title: '隐私政策',
     updated: '最后更新：2026 年 9 月 13 日',

@@ -2,8 +2,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { createMemoryHistory, createRouter, useRoute, useRouter } from 'vue-router';
 import { computed, onMounted } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
-import NutTabs from '@nutui/nutui/dist/packages/tabs/Tabs';
-import NutTabPane from '@nutui/nutui/dist/packages/tabpane/TabPane';
+import { Tabs as NutTabs, TabPane as NutTabPane } from '@nutui/nutui';
 import { i18n } from '@/i18n';
 import ListPage from './index.vue';
 

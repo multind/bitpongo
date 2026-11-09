@@ -12,6 +12,8 @@ Before release, review the full copy in each region, especially order direction,
 
 Run `node docs/i18n-drafts/check.mjs --all` from the frontend checkout to require all twelve full catalogs and validate them and the account-only drafts against the current English source.
 
+For local UI review, start the frontend with `VITE_PREVIEW_LOCALES=true npm run dev` and choose a language from Me or Preferences. Do not set this build flag in production until the review below is complete. English remains the fallback for the separate legal pages.
+
 ## Integration checks beyond the main catalog
 
 - Language selection: update both the Preferences page and the language sheet on the Me page, and test stored preferences on reload.

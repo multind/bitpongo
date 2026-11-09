@@ -1,4 +1,4 @@
-import type { LocaleKey } from '@/i18n';
+import type { StableLocaleKey } from '@/i18n';
 
 export interface AgreementSection {
   title: string;
@@ -12,7 +12,7 @@ export interface AgreementCopy {
   sections: AgreementSection[];
 }
 
-export const agreementCopy: Record<LocaleKey, AgreementCopy> = {
+export const agreementCopy: Record<StableLocaleKey, AgreementCopy> = {
   'zh-cn': {
     title: '服务条款',
     updated: '最后更新：2026 年 8 月 25 日',
@@ -62,9 +62,7 @@ export const agreementCopy: Record<LocaleKey, AgreementCopy> = {
       },
       {
         title: '8. 条款变更',
-        paragraphs: [
-          '我们可能随服务变化更新本条款，更新日期会显示在页面顶部。条款更新后继续使用 Bitpongo，即表示你接受修订后的条款。',
-        ],
+        paragraphs: ['我们可能随服务变化更新本条款，更新日期会显示在页面顶部。条款更新后继续使用 Bitpongo，即表示你接受修订后的条款。'],
       },
     ],
   },
@@ -117,9 +115,7 @@ export const agreementCopy: Record<LocaleKey, AgreementCopy> = {
       },
       {
         title: '8. 條款變更',
-        paragraphs: [
-          '我們可能隨服務變化更新本條款，更新日期會顯示在頁面頂部。條款更新後繼續使用 Bitpongo，即表示你接受修訂後的條款。',
-        ],
+        paragraphs: ['我們可能隨服務變化更新本條款，更新日期會顯示在頁面頂部。條款更新後繼續使用 Bitpongo，即表示你接受修訂後的條款。'],
       },
     ],
   },

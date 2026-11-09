@@ -97,16 +97,14 @@
     </button>
   </main>
 
-  <nut-popup v-model:visible="languagePopup" position="bottom" round :style="{ height: '30%' }">
+  <nut-popup v-model:visible="languagePopup" position="bottom" round :style="{ maxHeight: '70vh', overflowY: 'auto' }">
     <nut-row style="margin-top: 23px; text-align: center" type="flex">
       <nut-col span="24">
         <div style="font-size: 18px">{{ t('language.label') }}</div>
       </nut-col>
     </nut-row>
     <nut-cell-group style="margin-top: 10px">
-      <nut-cell :title="t('language.zhCn')" @click="switchLanguage('zh-cn')" />
-      <nut-cell :title="t('language.zhTw')" @click="switchLanguage('zh-tw')" />
-      <nut-cell :title="t('language.enUs')" @click="switchLanguage('en-us')" />
+      <nut-cell v-for="language in supportedLocales" :key="language" :title="languageName(language)" @click="switchLanguage(language)" />
     </nut-cell-group>
   </nut-popup>
 </template>
@@ -119,7 +117,7 @@
   import { Issue, Link, Message, My, Notice, Setting } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
   import { computed, ref } from 'vue';
-  import { switchLang, type LocaleKey } from '@/i18n';
+  import { languageName, supportedLocales, switchLang, type LocaleKey } from '@/i18n';
 
   const { t } = useI18n();
   const router = useRouter();

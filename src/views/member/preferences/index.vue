@@ -89,16 +89,14 @@
   import '@nutui/nutui/dist/packages/cell/index.css';
   import '@nutui/nutui/dist/packages/popup/index.css';
   import '@nutui/nutui/dist/packages/overlay/index.css';
-  import { switchLang, type LocaleKey } from '@/i18n';
+  import { languageName, supportedLocales as languages, switchLang, type LocaleKey } from '@/i18n';
   import { getUserProfile, saveUserProfile, type MarketColorMode } from '@/api/profile';
   import { useUserStore } from '@/store/modules/user';
   import { trapSheetTab } from '@/views/list/components/timezone-sheet';
 
   const { t, locale } = useI18n();
   const user = useUserStore();
-  const languages: LocaleKey[] = ['zh-cn', 'zh-tw', 'en-us'];
   const colors: MarketColorMode[] = ['GREEN_UP', 'RED_UP'];
-  const languageName = (value: string) => t(value === 'zh-cn' ? 'language.zhCn' : value === 'zh-tw' ? 'language.zhTw' : 'language.enUs');
   const color = ref<MarketColorMode>('GREEN_UP');
   const draftColor = ref<MarketColorMode>('GREEN_UP');
   const draftLanguage = ref<LocaleKey>('en-us');
