@@ -1,4 +1,7 @@
+import extraCopy from './push-copy-locales.json';
+
 export const pushCopy = {
+  ...extraCopy,
   'en-us': {
     yes: 'Yes',
     no: 'No',

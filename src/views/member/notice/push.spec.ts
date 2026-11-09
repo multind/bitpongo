@@ -23,6 +23,7 @@ vi.mock('@/store/modules/user', () => ({ useUserStore: () => ({ token: 'jwt', in
 vi.mock('@/mobile/app-context', () => ({ displayTimeZone: () => 'UTC' }));
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ locale: mocks.locale }) }));
 import View from './index.vue';
+import { pushCopy } from './push-copy';
 const prefs = {
   available: true,
   enabled: true,
@@ -49,6 +50,43 @@ beforeEach(() => {
   mocks.testPush.mockResolvedValue({ queued: true });
 });
 describe('native notification settings', () => {
+  it('provides every notification label and error in each locale', () => {
+    const keys = (catalog: object, prefix = ''): string[] =>
+      Object.entries(catalog)
+        .flatMap(([key, value]) => {
+          const path = prefix + key;
+          if (typeof value === 'object' && value) return keys(value, path + '.');
+          expect(typeof value === 'string' && value.trim().length > 0, path).toBe(true);
+          return [path];
+        })
+        .sort();
+    const english = keys(pushCopy['en-us']);
+    for (const [locale, catalog] of Object.entries(pushCopy)) {
+      expect(keys(catalog), locale).toEqual(english);
+    }
+  });
+  it.each([
+    ['ar', 'الإشعارات'],
+    ['de', 'Benachrichtigungen'],
+    ['es-es', 'Notificaciones'],
+    ['es-mx', 'Notificaciones'],
+    ['fr', 'Notifications'],
+    ['id', 'Notifikasi'],
+    ['it', 'Notifiche'],
+    ['ja', '通知設定'],
+    ['ko', '알림 설정'],
+    ['pt-br', 'Notificações'],
+    ['th', 'การแจ้งเตือน'],
+    ['vi', 'Thông báo'],
+  ])('renders notification settings without falling back to English in %s', async (locale, title) => {
+    mocks.locale.value = locale;
+    const view = render();
+    await flushPromises();
+    expect(view.get('h1').text()).toBe(title);
+    expect(view.get('[data-test="push-save"]').text()).not.toBe('Save preferences');
+    expect(view.get('[data-test="push-test"]').text()).not.toBe('Send test notification');
+    view.unmount();
+  });
   it('hides diagnostics and keeps registration errors visible and names preference and device sections', async () => {
     mocks.pushGetStatus.mockResolvedValue({ ...status, registered: false, error: 'token_unavailable' });
     const view = render();
