@@ -2,6 +2,7 @@ import { watch } from 'vue';
 import type { Router } from 'vue-router';
 import { i18n } from '@/i18n';
 import { getPlanInfo } from '@/api';
+import { pushLocale } from '@/api/push';
 import { displayTimeZone } from './app-context';
 import { pushClearSession, pushSyncSession, pushTakePendingOpen, type NotificationOpen } from './bridge';
 
@@ -66,7 +67,7 @@ export function installPushLifecycle(user: { token: string; info: { id?: number 
   async function sync() {
     const id = identity();
     if (!id) return;
-    const locale = { 'en-us': 'en-US', 'zh-cn': 'zh-CN', 'zh-tw': 'zh-TW' }[String(i18n.global.locale.value)] || 'en-US';
+    const locale = pushLocale(i18n.global.locale.value);
     await pushSyncSession({ accessToken: user.token, userId: id, locale, timezone: displayTimeZone() });
     void consume();
   }

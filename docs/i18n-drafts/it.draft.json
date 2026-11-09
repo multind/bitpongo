@@ -191,7 +191,7 @@
   "fng.profitTargetHint": "Prendi profitto quando il profitto non realizzato raggiunge questo percentuale (ad esempio il 10%).",
   "fng.profitDrawdownPercent": "Calo del profitto (%)",
   "fng.profitDrawdownHint": "Chiude la posizione quando il profitto scende di questa percentuale rispetto al picco. Ad esempio, con un picco del 20% e un calo del 5%, la chiusura scatta al 19%.",
-  "fng.stopLossPercent": "Stop per la perdita %",
+  "fng.stopLossPercent": "Soglia di stop loss (%)",
   "fng.stopLossHint": "Chiude la posizione a mercato quando la perdita raggiunge questa percentuale del margine (ad esempio il 30%).",
   "fng.profitTargetType": "Tipo obiettivo profitto",
   "fng.maxOrders": "Max Ordini aperti",

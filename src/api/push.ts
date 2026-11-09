@@ -1,5 +1,22 @@
 import { http } from '@/utils/request';
-export const pushLocale = (locale: string) => ({ 'en-us': 'en-US', 'zh-cn': 'zh-CN', 'zh-tw': 'zh-TW' })[locale.toLowerCase()] || 'en-US';
+const pushLocales = new Map([
+  ['en-us', 'en-US'],
+  ['zh-cn', 'zh-CN'],
+  ['zh-tw', 'zh-TW'],
+  ['ar', 'ar'],
+  ['de', 'de'],
+  ['es-es', 'es-ES'],
+  ['es-mx', 'es-MX'],
+  ['fr', 'fr'],
+  ['id', 'id'],
+  ['it', 'it'],
+  ['ja', 'ja'],
+  ['ko', 'ko'],
+  ['pt-br', 'pt-BR'],
+  ['th', 'th'],
+  ['vi', 'vi'],
+]);
+export const pushLocale = (locale: string) => pushLocales.get(locale.toLowerCase()) ?? 'en-US';
 export interface PushSettings {
   available: boolean;
   enabled: boolean;

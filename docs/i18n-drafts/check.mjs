@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
+import { baseCompile } from '@intlify/message-compiler';
 import { lang } from '../../src/i18n/lang/en-us.ts';
 
 function flatten(tree, prefix = '') {
@@ -34,6 +35,7 @@ for (const file of catalogs) {
     if (source[key].trim()) assert.ok(draft[key].trim(), label + ': empty translation');
     assert.deepEqual(tokens(draft[key]), tokens(source[key]), label + ': placeholder mismatch');
     assert.doesNotMatch(draft[key], /⁇|QZX|XZQ/i, label + ': unresolved model token');
+    baseCompile(draft[key], { onError: (error) => assert.fail(label + ': ' + error.message) });
   }
   if (!accountOnly) {
     assert.equal(draft['frequency.weekDays'].split(',').filter((day) => day.trim()).length, 7, file + ': weekday labels');
