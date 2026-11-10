@@ -69,6 +69,7 @@
     margin-top: 0.5rem;
     font-size: 0.6875rem;
     line-height: 1.4;
-    overflow-wrap: anywhere;
+    hyphens: auto;
+    overflow-wrap: break-word;
   }
 </style>
