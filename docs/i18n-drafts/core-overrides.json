@@ -14,7 +14,7 @@
   },
   "ja": {
     "frequency.weekDays": "月,火,水,木,金,土,日",
-    "subscriptions.greed": "強欲",
+    "subscriptions.greed": "強欲のしきい値（≥）",
     "webhook.revoke": "無効化",
     "fng.exchange": "取引所",
     "fng.long": "ロング",
@@ -24,7 +24,7 @@
   },
   "ko": {
     "frequency.weekDays": "월,화,수,목,금,토,일",
-    "subscriptions.greed": "탐욕",
+    "subscriptions.greed": "탐욕 임계값(≥)",
     "common.pending": "대기 중",
     "fng.long": "롱 포지션",
     "fng.short": "숏 포지션"
