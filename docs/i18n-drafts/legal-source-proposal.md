@@ -54,9 +54,23 @@ When you enable notifications, Bitpongo uses your preferences and the informatio
 
 You can start account deletion under Me → Account Security → Delete Account. For other requests to access, correct, or delete personal information, use the contact details at the end of the Privacy Policy.
 
+### 通知发送字段与注销行为 / Verified implementation notes
+
+The following reflects the deployed API source at `ab7e6ee`, not a live delivery test or a retention-policy statement:
+
+| Channel | Data sent |
+| --- | --- |
+| Native push | Device registration token, notification title and body, event ID and type, Bitpongo user ID, and a plan ID when applicable. Platform delivery options can include sound, priority and expiration. FCM relays iOS notifications through APNs. |
+| Email alerts | Recipient address, subject and message body. The system uses the configured reminder address or falls back to the account email. The deployed alert code uses the same SMTP sender as account verification, but the two message types are separate. |
+| Telegram | Bound chat ID and notification text. |
+| Outbound webhooks | Notification text in the destination provider's format. DingTalk, Feishu, Slack and Discord are supported; provider-specific authentication and formatting may also be included. |
+| Legacy Bark | Device key, notification title/body and delivery options; a link can be included. |
+
+The deletion service removes records such as the uploaded avatar, profile, login sessions, native push devices and preferences, and certain alert records. It anonymizes the account record, clears exchange credentials, and marks DCA plans stopped rather than deleting their records. These observations do not establish the retention periods of remaining records or backups, or what third-party providers keep after delivery.
+
 ## 发布前核对 / Before publishing
 
-- Production configuration check (2026-11-10): the deployed API is `ab7e6ee`; native FCM, outbound webhook, account email, and legacy Bark flags are enabled, and the Telegram settings are present. This does not prove delivery or establish that email alerts use the same configuration as account verification mail. Confirm channel payloads and retain legacy Bark disclosure while it remains enabled.
+- Production configuration check (2026-11-10): the deployed API is `ab7e6ee`; native FCM, outbound webhook, account email, and legacy Bark flags are enabled, and the Telegram settings are present. This does not prove delivery. Retain legacy Bark disclosure while it remains enabled.
 - The deployed `PresetController` requires a signed-in user for the strategy gallery, and `PresetService` supplies the listed strategy author's stored avatar and name (or masked email fallback). This does not establish visibility on independent share URLs or whether existing downloaded images can be recalled.
 - The deployed `AccountDeletionService` verifies the current password, anonymizes the account record, stops its DCA plans, clears exchange credentials, and removes selected associated data. Do not describe this as immediate erasure of all data. Confirm the inventory of retained records and backups, retention purpose, and duration. The proposed email-verified deletion flow is not asserted here.
 - Confirm the operator/contact details and effective date. Review the full source, not just these passages, with the policy owner before translation.
