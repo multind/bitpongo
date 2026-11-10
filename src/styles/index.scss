@@ -30,6 +30,26 @@ select {
   font: inherit;
 }
 
+// NutUI ships no RTL styles; mirror the cell alignment and the navbar back button for Arabic.
+:root[dir='rtl'] {
+  .nut-cell__title {
+    text-align: right;
+  }
+
+  .nut-cell__value {
+    text-align: left;
+  }
+
+  .nut-navbar__left {
+    right: 0;
+    left: auto;
+
+    .nut-icon {
+      transform: scaleX(-1);
+    }
+  }
+}
+
 .abc {
   width: 10px;
 }
