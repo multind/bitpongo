@@ -78,11 +78,12 @@ it('prevents writing a previous account draft after switching accounts', async (
   expect(view.find('[data-test="preference-confirm"]').exists()).toBe(false);
   expect(api.saveUserProfile).not.toHaveBeenCalled();
 });
-it('shows three language choices without changing language on cancel', async () => {
+it('shows all fifteen language choices without changing language on cancel', async () => {
   api.getUserProfile.mockResolvedValue(initial);
   const view = await render();
   await view.get('[data-test="preference-language"]').trigger('click');
-  expect(view.findAll('input[type="radio"]')).toHaveLength(3);
+  expect(view.findAll('input[type="radio"]')).toHaveLength(15);
+  expect(view.find('input[value="ja"]').exists()).toBe(true);
   await view.get('input[value="zh-tw"]').setValue();
   await view.get('[data-test="preference-cancel"]').trigger('click');
   expect(i18n.global.locale.value).toBe('en-us');

@@ -1,15 +1,16 @@
-import { afterAll, describe, expect, it, vi } from 'vitest';
-import { i18n, isSupportedLocale, setLang } from './index';
-
-vi.hoisted(() => vi.stubEnv('VITE_PREVIEW_LOCALES', 'true'));
+import { afterAll, describe, expect, it } from 'vitest';
+import { i18n, isSupportedLocale, setLang, supportedLocales } from './index';
 
 afterAll(() => {
   localStorage.clear();
   setLang();
-  vi.unstubAllEnvs();
 });
 
-describe('translation preview', () => {
+describe('released languages', () => {
+  it('offers all fifteen languages in the language menu', () => {
+    expect(supportedLocales).toHaveLength(15);
+  });
+
   it.each(['ar', 'de', 'es-es', 'es-mx', 'fr', 'id', 'it', 'ja', 'ko', 'pt-br', 'th', 'vi'])(
     'loads the %s catalog as a saved locale',
     (locale) => {

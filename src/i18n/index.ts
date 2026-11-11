@@ -27,10 +27,7 @@ const LOCALE_NAMES = {
 export type LocaleKey = keyof typeof LOCALE_NAMES;
 
 const STORAGE_KEY = 'lang';
-const PREVIEW_ENABLED = import.meta.env.VITE_PREVIEW_LOCALES === 'true';
-export const supportedLocales: readonly LocaleKey[] = PREVIEW_ENABLED
-  ? (Object.keys(LOCALE_NAMES) as LocaleKey[])
-  : ['zh-cn', 'zh-tw', 'en-us'];
+export const supportedLocales: readonly LocaleKey[] = Object.keys(LOCALE_NAMES) as LocaleKey[];
 
 const NUTUI_LOCALES: Partial<Record<LocaleKey, [string, any]>> = {
   'zh-cn': ['zh-CN', zhCN],
@@ -52,23 +49,6 @@ export function loadLang() {
     const lang = modules[path].lang;
     if (lang) {
       langs[name] = lang;
-    }
-  }
-  if (PREVIEW_ENABLED) {
-    const drafts = import.meta.glob<Record<string, string>>(
-      ['../../docs/i18n-drafts/*.draft.json', '!../../docs/i18n-drafts/*.account.draft.json'],
-      { eager: true, import: 'default' },
-    );
-    for (const [path, entries] of Object.entries(drafts)) {
-      const locale = path.split('/').pop()?.replace('.draft.json', '');
-      if (!isSupportedLocale(locale)) continue;
-      const catalog: Record<string, any> = (langs[locale] = Object.create(null));
-      for (const [key, value] of Object.entries(entries)) {
-        const parts = key.split('.');
-        const field = parts.pop()!;
-        const target = parts.reduce((parent, part) => (parent[part] ??= Object.create(null)), catalog);
-        target[field] = value;
-      }
     }
   }
   return langs;

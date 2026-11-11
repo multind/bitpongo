@@ -1,6 +1,14 @@
 # H5 translation review drafts
 
-These flat catalogs are review inputs, not runtime language packs. Do not add them to the language menu as-is. The source is `src/i18n/lang/en-us.ts` at `0e68001`.
+These flat catalogs are the editable source for the twelve released language packs in `src/i18n/lang/`. Edit the drafts or `regional-overrides.json`, then regenerate the packs:
+
+```bash
+node docs/i18n-drafts/apply-regional.mjs
+node --experimental-strip-types docs/i18n-drafts/build-packs.mjs
+npx prettier --write src/i18n/lang
+```
+
+Do not edit the generated `src/i18n/lang/<locale>.ts` files by hand; the next regeneration overwrites them. The English source is `src/i18n/lang/en-us.ts`.
 
 - `es-ES` and `es-MX`: locally generated Spanish drafts, with reviewed wording for selected trading and account-security messages. Each draft has all 809 source keys and preserves interpolation placeholders.
 - The other full drafts are generated offline and include the manually written account copy. `core-overrides.json` records reviewed corrections for weekday labels and selected trading terms. These corrections do not constitute a full linguistic review.
@@ -22,7 +30,7 @@ Before release, review the full copy in each region, especially order direction,
 
 Run `node docs/i18n-drafts/check.mjs --all` from the frontend checkout to require all twelve full catalogs and validate them and the account-only drafts against the current English source.
 
-For local UI review, start the frontend with `VITE_PREVIEW_LOCALES=true npm run dev` and choose a language from Me or Preferences. Do not set this build flag in production until the review below is complete. English remains the fallback for the separate legal pages.
+All fifteen languages appear in the language menu under Me and Preferences. English remains the fallback for the separate legal pages.
 
 ## Integration checks beyond the main catalog
 
