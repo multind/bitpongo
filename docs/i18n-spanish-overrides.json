@@ -1,12 +1,12 @@
 {
   "shared": {
     "fng.loadMore": "Cargar más",
-    "fng.exchange": "Plataforma de intercambio",
+    "fng.exchange": "Exchange",
     "fng.exchangeMissing": "Agrega una conexión de API de Binance en Mi cuenta → Gestión de API y habilita el permiso de futuros.",
     "fng.long": "Posición larga",
     "fng.short": "Posición corta",
     "fng.maxTradeRounds": "Máximo de ciclos de operación",
-    "fng.maxTradeRoundsHint": "Cada posición cerrada por completo por toma de ganancias, límite de pérdidas o stop dinámico cuenta como un ciclo. Al alcanzar el límite, no se abren nuevas posiciones.",
+    "fng.maxTradeRoundsHint": "Cada posición cerrada por completo por take profit, stop loss o trailing stop cuenta como un ciclo. Al alcanzar el límite, no se abren nuevas posiciones.",
     "fng.completedTradeRounds": "Ciclos completados",
     "fng.roundLimitRequired": "Establece un límite de ciclos en Información de la estrategia antes de reanudarla.",
     "fng.roundLimitReached": "Se alcanzó el límite de ciclos. Auméntalo para reanudar la estrategia.",
@@ -19,7 +19,7 @@
   },
   "es-es": {
     "fng.exchangeMissing": "Añade una conexión de API de Binance en Mi cuenta → Gestión de API y habilita el permiso de futuros.",
-    "fng.maxTradeRoundsHint": "Cada posición cerrada por completo por toma de beneficios, límite de pérdidas o stop dinámico cuenta como un ciclo. Al alcanzar el límite, no se abren nuevas posiciones.",
+    "fng.maxTradeRoundsHint": "Cada posición cerrada por completo por take profit, stop loss o trailing stop cuenta como un ciclo. Al alcanzar el límite, no se abren nuevas posiciones.",
     "fng.profitDrawdownHint": "Cierra la posición cuando el beneficio retrocede este porcentaje desde su máximo. Por ejemplo, si el beneficio máximo fue del 20 % y el retroceso es del 5 %, se activa al bajar al 19 %."
   },
   "es-mx": {

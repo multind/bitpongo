@@ -5,7 +5,7 @@
     "fng.exchangeMissing": "Adicione uma conexão à API da Binance em Minha conta → Gerenciamento de API e habilite a permissão para operar futuros.",
     "fng.long": "Posição comprada",
     "fng.short": "Posição vendida",
-    "fng.maxTradeRoundsHint": "Uma posição totalmente encerrada por realização de lucro, limite de perda ou stop móvel conta como um ciclo. Ao atingir o limite, nenhuma nova posição é aberta.",
+    "fng.maxTradeRoundsHint": "Uma posição totalmente encerrada por take-profit, stop-loss ou trailing stop conta como um ciclo. Ao atingir o limite, nenhuma nova posição é aberta.",
     "fng.profitTargetHint": "Realize o lucro quando o lucro não realizado atingir esta porcentagem (por exemplo, 10%).",
     "fng.profitDrawdownHint": "Encerre a posição quando o lucro recuar esta porcentagem em relação ao pico. Por exemplo, de um pico de 20%, um recuo de 5% aciona a saída em 19%.",
     "fng.stopLossHint": "Encerre a posição a mercado quando a perda atingir esta porcentagem da margem (por exemplo, 30%).",
@@ -61,7 +61,7 @@
   },
   "it": {
     "frequency.weekDays": "Lun,Mar,Mer,Gio,Ven,Sab,Dom",
-    "fng.long": "Posizione lunga",
-    "fng.short": "Posizione corta"
+    "fng.long": "Posizione long",
+    "fng.short": "Posizione short"
   }
 }
