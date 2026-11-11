@@ -115,8 +115,12 @@ export function pickNativeAvatar(): Promise<string | null> {
   return invokeNative('pickAvatar', {}, null, 120_000);
 }
 
+// The App answers getContext from local data within milliseconds. Startup waits for it
+// before mounting, so an unanswered request must not hold a blank screen for long.
+const contextTimeoutMs = 3_000;
+
 export function getNativeContext(): Promise<NativeContext | null> {
-  return invokeNative('getContext', {}, null);
+  return invokeNative('getContext', {}, null, contextTimeoutMs);
 }
 
 export type StoreUpdateStatus = 'updateAvailable' | 'upToDate' | 'unavailable';

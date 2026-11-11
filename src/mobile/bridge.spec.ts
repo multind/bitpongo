@@ -57,12 +57,16 @@ describe('native bridge', () => {
     expect(callHandler).toHaveBeenCalledWith('ZhitoubaoBridge', expect.stringContaining('"command":"saveCanvasImage"'));
   });
 
-  it('expires an unanswered request after ten seconds', async () => {
+  it('expires an unanswered startup context request after three seconds', async () => {
     vi.useFakeTimers();
     window.ZhitoubaoBridge = { postMessage: vi.fn() };
 
     const result = getNativeContext();
-    await vi.advanceTimersByTimeAsync(10_000);
+    let settled = false;
+    void result.then(() => (settled = true));
+    await vi.advanceTimersByTimeAsync(2_900);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(100);
 
     await expect(result).resolves.toBeNull();
     vi.useRealTimers();
