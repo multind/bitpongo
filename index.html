@@ -9,6 +9,28 @@
     />
     <meta name="format-detection" content="telephone=no, email=no, date=no, address=no" />
     <title>Bitpongo</title>
+    <script>
+      // 发布后，缓存的旧入口可能引用已不存在的脚本或样式：刷新一次换取最新页面（10 秒内最多一次，避免循环）
+      // 与 src/utils/stale-build.ts 共用同一个 sessionStorage 键
+      window.addEventListener(
+        'error',
+        function (event) {
+          var target = event.target;
+          var url = target && (target.src || target.href);
+          if (!target || (target.tagName !== 'SCRIPT' && target.tagName !== 'LINK') || !/\/assets\//.test(url || '')) return;
+          try {
+            var key = 'bitpongo:stale-build-reload';
+            var last = Number(sessionStorage.getItem(key)) || 0;
+            if (Date.now() - last < 10000) return;
+            sessionStorage.setItem(key, String(Date.now()));
+          } catch (e) {
+            return;
+          }
+          location.reload();
+        },
+        true,
+      );
+    </script>
     <script src="/app-config.js"></script>
     <style>
       body::before {
